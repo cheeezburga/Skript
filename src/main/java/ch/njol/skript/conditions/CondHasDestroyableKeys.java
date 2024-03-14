@@ -22,8 +22,8 @@ public class CondHasDestroyableKeys extends PropertyCondition<ItemType> {
 
 	@Override
 	public boolean check(ItemType item) {
-		return item.getItemMeta().hasDestroyableKeys();
-	}
+		return item.getRandom().hasItemMeta() && item.getItemMeta().hasDestroyableKeys();
+    }
 
 	@Override
 	protected @NotNull String getPropertyName() {
