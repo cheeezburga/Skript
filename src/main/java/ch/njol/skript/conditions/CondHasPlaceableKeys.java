@@ -13,7 +13,8 @@ import org.jetbrains.annotations.NotNull;
 @Name("Has Placeable Keys")
 @Description("Check if an item has any placeable keys.")
 @Examples("player's tool has placeable keys")
-@Since("x.x.x") // 2.9.0?
+@Since("INSERT VERSION")
+@RequiredPlugins("Paper")
 public class CondHasPlaceableKeys extends PropertyCondition<ItemType> {
 
 	static {
