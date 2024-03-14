@@ -58,15 +58,12 @@ public class EffDestroyableKeys extends Effect {
 		for (ItemType item : items) {
 			ItemMeta meta = item.getItemMeta();
 
-			if (this.remove) {
-				if (meta.hasDestroyableKeys()) {
-					Set<Namespaced> alreadyOn = meta.getDestroyableKeys();
+			if (meta.hasDestroyableKeys()) {
+		        Set<Namespaced> alreadyOn = meta.getDestroyableKeys();
+				if (this.remove) {
 					alreadyOn.removeAll(keys);
-					meta.setDestroyableKeys(alreadyOn);
-				}
-			} else {
-				if (meta.hasDestroyableKeys()) {
-					keys.addAll(meta.getDestroyableKeys());
+				} else {
+					alreadyOn.addAll(keys));
 				}
 				meta.setDestroyableKeys(keys);
 			}
