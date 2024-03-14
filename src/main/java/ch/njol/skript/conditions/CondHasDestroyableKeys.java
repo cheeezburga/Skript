@@ -10,7 +10,8 @@ import org.jetbrains.annotations.NotNull;
 @Name("Has Destroyable Keys")
 @Description("Check if an item has any destroyable keys.")
 @Examples("player's tool has destroyable keys")
-@Since("x.x.x") // 2.9.0?
+@Since("INSERT VERSION")
+@RequiredPlugins("Paper")
 public class CondHasDestroyableKeys extends PropertyCondition<ItemType> {
 
 	static {
