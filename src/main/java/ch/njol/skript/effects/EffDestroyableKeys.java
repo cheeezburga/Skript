@@ -42,9 +42,8 @@ public class EffDestroyableKeys extends Effect {
 	@Override
 	protected void execute(Event event) {
 		ItemType[] items = this.items.getArray(event);
-		if (items.length == 0) {
+		if (items.length == 0)
 			return;
-		}
 
 		Set<Namespaced> keys = new HashSet<>();
 
