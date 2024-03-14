@@ -22,7 +22,7 @@ public class CondHasPlaceableKeys extends PropertyCondition<ItemType> {
 
 	@Override
 	public boolean check(ItemType item) {
-		return item.getRandom().hasItemMeta() && item.getItemMeta().hasDestroyableKeys();
+		return item.getRandom().hasItemMeta() && item.getItemMeta().hasPlaceableKeys();
 	}
 
 	@Override
