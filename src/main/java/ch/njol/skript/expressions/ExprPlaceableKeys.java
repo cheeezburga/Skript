@@ -1,18 +1,16 @@
 package ch.njol.skript.expressions;
 
 import ch.njol.skript.aliases.ItemType;
+import ch.njol.skript.bukkitutil.BukkitUnsafe;
 import ch.njol.skript.classes.Changer.ChangeMode;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.expressions.base.PropertyExpression;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
 import com.destroystokyo.paper.Namespaced;
-import org.bukkit.NamespacedKey;
+import org.bukkit.Material;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
@@ -26,11 +24,12 @@ import java.util.*;
 	"add stone and diamond ore to place on blocks of {_item}",
 	"clear placeable items of {_item}",
 	"remove sand from place keys of {_item}"})
-@Since("x.x.x") // 2.9.0?
-public class ExprPlaceableKeys extends PropertyExpression<ItemType, NamespacedKey> {
+@Since("INSERT VERSION")
+@RequiredPlugins("Paper")
+public class ExprPlaceableKeys extends PropertyExpression<ItemType, ItemType> {
 
 	static {
-		register(ExprPlaceableKeys.class, NamespacedKey.class, "place[able| on] (keys|items|blocks)", "itemtypes");
+		register(ExprPlaceableKeys.class, ItemType.class, "place[able| on] (keys|items|blocks)", "itemtypes");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -40,26 +39,31 @@ public class ExprPlaceableKeys extends PropertyExpression<ItemType, NamespacedKe
 		return true;
 	}
 
+	@SuppressWarnings("")
 	@Override
-	protected NamespacedKey @NotNull [] get(Event event, ItemType [] source) {
-		List<NamespacedKey> keys = new ArrayList<>();
+	protected ItemType @NotNull [] get(Event event, ItemType [] source) {
+		Set<ItemType> onItem = new HashSet<>();
 		for (ItemType item : source) {
-			ItemMeta meta = item.getItemMeta();
-			if (meta.hasPlaceableKeys()) {
-				Set<Namespaced> onItem = meta.getPlaceableKeys();
-				for (Namespaced ns : onItem) {
-					keys.add(NamespacedKey.fromString(ns.getNamespace() + ":" + ns.getKey()));
+			if (item.getRandom().hasItemMeta()) {
+				ItemMeta meta = item.getItemMeta();
+				if (meta.hasPlaceableKeys()) {
+					for (Namespaced key : meta.getPlaceableKeys()) {
+						Material material = BukkitUnsafe.getMaterialFromMinecraftId(key.toString());
+						if (material != null) {
+							onItem.add(new ItemType(material));
+						}
+					}
 				}
 			}
 		}
-		return keys.toArray(new NamespacedKey[0]);
+		return onItem.toArray(new ItemType[0]);
 	}
 
 	@SuppressWarnings("NullableProblems")
 	@Override
 	public Class<?> @Nullable [] acceptChange(ChangeMode mode) {
 		if (mode == ChangeMode.SET || mode == ChangeMode.ADD || mode == ChangeMode.REMOVE) {
-			return CollectionUtils.array(NamespacedKey[].class, ItemType[].class);
+			return CollectionUtils.array(ItemType[].class);
 		} else if (mode == ChangeMode.RESET || mode == ChangeMode.DELETE) {
 			return CollectionUtils.array();
 		}
@@ -80,15 +84,12 @@ public class ExprPlaceableKeys extends PropertyExpression<ItemType, NamespacedKe
 			}
 		} else if (mode == ChangeMode.SET || mode == ChangeMode.ADD || mode == ChangeMode.REMOVE) {
 
-			// only do this if the mode requires it
 			Set<Namespaced> keys = new HashSet<>();
 
 			if (delta != null) {
 				for (Object o : delta) {
 					if (o instanceof ItemType item) {
 						keys.add(item.getMaterial().getKey());
-					} else if (o instanceof NamespacedKey key) {
-						keys.add(key);
 					}
 				}
 			}
@@ -99,23 +100,19 @@ public class ExprPlaceableKeys extends PropertyExpression<ItemType, NamespacedKe
 					meta.setPlaceableKeys(keys);
 					item.setItemMeta(meta);
 				}
-			} else if (mode == ChangeMode.ADD) {
-				for (ItemType item : source) {
-					ItemMeta meta = item.getItemMeta();
-					if (meta.hasPlaceableKeys()) {
-						keys.addAll(meta.getPlaceableKeys());
-					}
-					meta.setPlaceableKeys(keys);
-					item.setItemMeta(meta);
-				}
-			} else if (mode == ChangeMode.REMOVE) {
+			} else if (mode == ChangeMode.ADD || mode == ChangeMode.REMOVE) {
 				for (ItemType item : source) {
 					ItemMeta meta = item.getItemMeta();
 					if (meta.hasPlaceableKeys()) {
 						Set<Namespaced> alreadyOn = meta.getPlaceableKeys();
-						alreadyOn.removeAll(keys);
+						if (mode == ChangeMode.ADD) {
+							alreadyOn.addAll(keys);
+						} else if (mode == ChangeMode.REMOVE) {
+							alreadyOn.removeAll(keys);
+						}
 						meta.setPlaceableKeys(alreadyOn);
 					}
+
 					item.setItemMeta(meta);
 				}
 			}
@@ -128,8 +125,8 @@ public class ExprPlaceableKeys extends PropertyExpression<ItemType, NamespacedKe
 	}
 
 	@Override
-	public @NotNull Class<? extends NamespacedKey> getReturnType() {
-		return NamespacedKey.class;
+	public @NotNull Class<? extends ItemType> getReturnType() {
+		return ItemType.class;
 	}
 
 	@Override

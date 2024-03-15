@@ -68,7 +68,7 @@ public class EffPlaceableKeys extends Effect {
 					} else {
 						alreadyOn.addAll(keys);
 					}
-					meta.setPlaceableKeys(keys);
+					meta.setPlaceableKeys(alreadyOn);
 				}
 
 				item.setItemMeta(meta);

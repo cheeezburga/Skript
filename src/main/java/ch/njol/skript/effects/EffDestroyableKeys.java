@@ -72,7 +72,7 @@ public class EffDestroyableKeys extends Effect {
 					} else {
 						alreadyOn.addAll(keys);
 					}
-					meta.setDestroyableKeys(keys);
+					meta.setDestroyableKeys(alreadyOn);
 				}
 
 				item.setItemMeta(meta);
