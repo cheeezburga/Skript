@@ -2,12 +2,12 @@ package ch.njol.skript.effects;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.aliases.ItemType;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 import com.destroystokyo.paper.Namespaced;
-import org.bukkit.NamespacedKey;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
@@ -15,26 +15,33 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
+@Name("Apply Destroyable Keys")
+@Description("Allow or prevent an item to destroy certain types of blocks while in /gamemode adventure.")
+@Examples("allow player's tool to destroy (stone and oak wood planks)")
+@Since("INSERT VERSION")
+@RequiredPlugins("Paper")
 public class EffDestroyableKeys extends Effect {
 
 	static {
-		Skript.registerEffect(EffDestroyableKeys.class,
-			"allow %~itemtypes% to (destroy|break|mine) %itemtypes/namespacedkeys%",
-			"prevent %~itemtypes% from (destroy|break|mine)[ing] %itemtypes/namespacedkeys%");
-		// could these patterns be combined into 1 using a parse tag? like `[:dis]allow` or smth?
+		if (Skript.methodExists(ItemMeta.class, "setDestroyableKeys")) {
+			Skript.registerEffect(EffDestroyableKeys.class,
+				"allow %~itemtypes% to (destroy|break|mine) %itemtypes%",
+				"prevent %~itemtypes% from (destroy|break|mine)[ing] %itemtypes%");
+			// might add [:dis]allow as an option, but seems like it could be a bit messy
+		}
 	}
 
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<ItemType> items;
 	@SuppressWarnings("NotNullFieldNotInitialized")
-	private Expression<?> modifyWith;
+	private Expression<ItemType> modifyWith;
 	private boolean remove;
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		this.items = (Expression<ItemType>) exprs[0];
-		this.modifyWith = exprs[1];
+		this.modifyWith = (Expression<ItemType>) exprs[1];
 		this.remove = matchedPattern != 0;
 		return true;
 	}
@@ -47,35 +54,38 @@ public class EffDestroyableKeys extends Effect {
 
 		Set<Namespaced> keys = new HashSet<>();
 
-		for (Object o : modifyWith.getArray(event)) {
-			if (o instanceof ItemType item) {
-				keys.add(item.getMaterial().getKey());
-			} else if (o instanceof NamespacedKey key) {
-				keys.add(key);
-			}
+		for (ItemType item : modifyWith.getArray(event)) {
+			keys.add(item.getRandom().getType().getKey());
+			// still not quite sure how to extend this to work with things like `any log`, etc.
+			// would it just involve a like, isAll() check and then getAll() if that was true?
+			// or maybe just the getAll() call, like fuse suggested?
 		}
 
 		for (ItemType item : items) {
-			ItemMeta meta = item.getItemMeta();
 
-			if (meta.hasDestroyableKeys()) {
-		        Set<Namespaced> alreadyOn = meta.getDestroyableKeys();
-				if (this.remove) {
-					alreadyOn.removeAll(keys);
-				} else {
-					alreadyOn.addAll(keys));
+			if (item.getRandom().hasItemMeta()) {
+				ItemMeta meta = item.getItemMeta();
+				if (meta.hasDestroyableKeys()) {
+					Set<Namespaced> alreadyOn = meta.getDestroyableKeys();
+					if (this.remove) {
+						alreadyOn.removeAll(keys);
+					} else {
+						alreadyOn.addAll(keys);
+					}
+					meta.setDestroyableKeys(keys);
 				}
-				meta.setDestroyableKeys(keys);
-			}
 
-			item.setItemMeta(meta);
+				item.setItemMeta(meta);
+			}
 		}
 	}
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return remove
-			? "allow " + items.toString(event, debug) + " to destroy " + modifyWith.toString(event, debug)
-			: "prevent " + items.toString(event, debug) + " from destroying " + modifyWith.toString(event, debug);
+		if (remove) {
+			return "allow " + items.toString(event, debug) + " to destroy " + modifyWith.toString(event, debug);
+		} else {
+			return "prevent " + items.toString(event, debug) + " from destroying " + modifyWith.toString(event, debug);
+		}
 	}
 }
