@@ -1,5 +1,6 @@
 package ch.njol.skript.expressions;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.bukkitutil.BukkitUnsafe;
 import ch.njol.skript.classes.Changer.ChangeMode;
@@ -29,7 +30,9 @@ import java.util.*;
 public class ExprDestroyableKeys extends PropertyExpression<ItemType, ItemType> {
 
 	static {
-		register(ExprDestroyableKeys.class, ItemType.class, "destroy[able] (keys|items|blocks)", "itemtypes");
+		if (Skript.methodExists(ItemMeta.class, "getDestroyableKeys")) {
+			register(ExprDestroyableKeys.class, ItemType.class, "destroy[able] (keys|items|blocks)", "itemtypes");
+		}
 	}
 
 	@SuppressWarnings("unchecked")

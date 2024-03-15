@@ -1,5 +1,6 @@
 package ch.njol.skript.expressions;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.bukkitutil.BukkitUnsafe;
 import ch.njol.skript.classes.Changer.ChangeMode;
@@ -29,7 +30,9 @@ import java.util.*;
 public class ExprPlaceableKeys extends PropertyExpression<ItemType, ItemType> {
 
 	static {
-		register(ExprPlaceableKeys.class, ItemType.class, "place[able| on] (keys|items|blocks)", "itemtypes");
+		if (Skript.methodExists(ItemMeta.class, "getPlaceableKeys")) {
+			register(ExprPlaceableKeys.class, ItemType.class, "place[able| on] (keys|items|blocks)", "itemtypes");
+		}
 	}
 
 	@SuppressWarnings("unchecked")
