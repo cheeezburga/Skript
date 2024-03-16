@@ -13,6 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Name("Apply Destroyable Keys")
@@ -20,29 +21,32 @@ import java.util.Set;
 @Examples("allow player's tool to destroy (stone and oak wood planks)")
 @Since("INSERT VERSION")
 @RequiredPlugins("Paper")
-public class EffDestroyableKeys extends Effect {
+public class EffBuildRestrictions extends Effect {
 
 	static {
 		if (Skript.methodExists(ItemMeta.class, "setDestroyableKeys")) {
-			Skript.registerEffect(EffDestroyableKeys.class,
-				"allow %~itemtypes% to (destroy|break|mine) %itemtypes%",
-				"prevent %~itemtypes% from (destroy|break|mine)[ing] %itemtypes%");
-			// might add [:dis]allow as an option, but seems like it could be a bit messy
+			Skript.registerEffect(EffBuildRestrictions.class,
+				"allow %~itemtypes% to (:(destroy|break|mine|be placed on)) %itemtypes%",
+				"(disallow|prevent) %~itemtypes% from (:(destroying|breaking|mining|being placed on)) %itemtypes%");
+			// should this require notnull? and can the patterns here be made any better?
 		}
 	}
 
+	private boolean allow;
+	private boolean destroy;
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<ItemType> items;
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<ItemType> modifyWith;
-	private boolean remove;
+	private static final List<String> destroyTags = List.of("destroy", "destroying", "break", "breaking", "mine", "mining");
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		this.items = (Expression<ItemType>) exprs[0];
 		this.modifyWith = (Expression<ItemType>) exprs[1];
-		this.remove = matchedPattern != 0;
+		this.allow = matchedPattern == 0;
+		this.destroy = destroyTags.stream().anyMatch(parseResult::hasTag);
 		return true;
 	}
 
@@ -65,15 +69,15 @@ public class EffDestroyableKeys extends Effect {
 
 			if (item.getRandom().hasItemMeta()) {
 				ItemMeta meta = item.getItemMeta();
-				if (meta.hasDestroyableKeys()) {
-					Set<Namespaced> alreadyOn = meta.getDestroyableKeys();
-					if (this.remove) {
-						alreadyOn.removeAll(keys);
-					} else {
+				if (destroy ? meta.hasDestroyableKeys() : meta.hasPlaceableKeys()) {
+					Set<Namespaced> alreadyOn = destroy ? meta.getDestroyableKeys() : meta.getPlaceableKeys();
+					if (allow) {
 						alreadyOn.addAll(keys);
+					} else {
+						alreadyOn.removeAll(keys);
 					}
-					meta.setDestroyableKeys(alreadyOn);
-				}
+                    if (destroy) { meta.setDestroyableKeys(alreadyOn); } else { meta.setPlaceableKeys(alreadyOn); }
+                }
 
 				item.setItemMeta(meta);
 			}
@@ -82,10 +86,10 @@ public class EffDestroyableKeys extends Effect {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		if (remove) {
-			return "allow " + items.toString(event, debug) + " to destroy " + modifyWith.toString(event, debug);
+		if (allow) {
+			return "allow " + items.toString(event, debug) + " to " + (destroy ? "destroy " : "be placed on ") + modifyWith.toString(event, debug);
 		} else {
-			return "prevent " + items.toString(event, debug) + " from destroying " + modifyWith.toString(event, debug);
+			return "prevent " + items.toString(event, debug) + " from " + (destroy ? "destroying " : "being placed on ") + modifyWith.toString(event, debug);
 		}
 	}
 }
