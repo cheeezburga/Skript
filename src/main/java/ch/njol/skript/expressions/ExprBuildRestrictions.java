@@ -31,7 +31,7 @@ import java.util.*;
 public class ExprBuildRestrictions extends PropertyExpression<ItemType, ItemType> {
 
 	static {
-		if (Skript.methodExists(ItemMeta.class, "getBuildRestrictions")) {
+		if (Skript.methodExists(ItemMeta.class, "getDestroyableKeys")) {
 			Skript.registerExpression(ExprBuildRestrictions.class, ItemType.class, ExpressionType.PROPERTY,
 				"[the] destroy[able] (key|block|item)[s] (of|on) %itemtypes%",
 				"[the] place[able| on] (key|block|item)[s] (of|on) %itemtypes%");
