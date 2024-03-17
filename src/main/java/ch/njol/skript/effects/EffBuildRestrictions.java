@@ -16,8 +16,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Name("Apply Destroyable Keys")
-@Description("Allow or prevent an item to destroy certain types of blocks while in /gamemode adventure.")
+@Name("Apply Build Restrictions")
+@Description("Allow or prevent an item to destroy or be placed on certain types of blocks while in /gamemode adventure.")
 @Examples("allow player's tool to destroy (stone and oak wood planks)")
 @Since("INSERT VERSION")
 @RequiredPlugins("Paper")
