@@ -9,6 +9,7 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 import com.destroystokyo.paper.Namespaced;
 import org.bukkit.event.Event;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,28 +59,32 @@ public class EffBuildRestrictions extends Effect {
 
 		Set<Namespaced> keys = new HashSet<>();
 
-		for (ItemType item : modifyWith.getArray(event)) {
-			keys.add(item.getRandom().getType().getKey());
+		for (ItemType itemType : modifyWith.getArray(event)) {
+			for (ItemStack item : itemType.getAll()) {
+				keys.add(item.getType().getKey());
+			}
 			// still not quite sure how to extend this to work with things like `any log`, etc.
 			// would it just involve a like, isAll() check and then getAll() if that was true?
 			// or maybe just the getAll() call, like fuse suggested?
 		}
 
-		for (ItemType item : items) {
+		if (!keys.isEmpty()) {
+			for (ItemType item : items) {
 
-			if (item.getRandom().hasItemMeta()) {
-				ItemMeta meta = item.getItemMeta();
-				if (destroy ? meta.hasDestroyableKeys() : meta.hasPlaceableKeys()) {
-					Set<Namespaced> alreadyOn = destroy ? meta.getDestroyableKeys() : meta.getPlaceableKeys();
-					if (allow) {
-						alreadyOn.addAll(keys);
-					} else {
-						alreadyOn.removeAll(keys);
+				if (item.getRandom().hasItemMeta()) {
+					ItemMeta meta = item.getItemMeta();
+					if (destroy ? meta.hasDestroyableKeys() : meta.hasPlaceableKeys()) {
+						Set<Namespaced> alreadyOn = destroy ? meta.getDestroyableKeys() : meta.getPlaceableKeys();
+						if (allow) {
+							alreadyOn.addAll(keys);
+						} else {
+							alreadyOn.removeAll(keys);
+						}
+						if (destroy) { meta.setDestroyableKeys(alreadyOn); } else { meta.setPlaceableKeys(alreadyOn); }
 					}
-                    if (destroy) { meta.setDestroyableKeys(alreadyOn); } else { meta.setPlaceableKeys(alreadyOn); }
-                }
 
-				item.setItemMeta(meta);
+					item.setItemMeta(meta);
+				}
 			}
 		}
 	}
