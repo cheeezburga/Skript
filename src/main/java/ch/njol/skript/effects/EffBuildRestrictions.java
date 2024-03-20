@@ -63,9 +63,6 @@ public class EffBuildRestrictions extends Effect {
 			for (ItemStack item : itemType.getAll()) {
 				keys.add(item.getType().getKey());
 			}
-			// still not quite sure how to extend this to work with things like `any log`, etc.
-			// would it just involve a like, isAll() check and then getAll() if that was true?
-			// or maybe just the getAll() call, like fuse suggested?
 		}
 
 		if (!keys.isEmpty()) {
