@@ -6,7 +6,6 @@ import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser;
-import ch.njol.util.Checker;
 import ch.njol.util.Kleenean;
 import com.destroystokyo.paper.Namespaced;
 import org.bukkit.event.Event;
