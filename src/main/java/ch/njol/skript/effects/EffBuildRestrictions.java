@@ -88,10 +88,8 @@ public class EffBuildRestrictions extends Effect {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		if (allow) {
+		if (allow)
 			return "allow " + items.toString(event, debug) + " to " + (destroy ? "destroy " : "be placed on ") + modifyWith.toString(event, debug);
-		} else {
-			return "prevent " + items.toString(event, debug) + " from " + (destroy ? "destroying " : "being placed on ") + modifyWith.toString(event, debug);
-		}
+		return "prevent " + items.toString(event, debug) + " from " + (destroy ? "destroying " : "being placed on ") + modifyWith.toString(event, debug);
 	}
 }
