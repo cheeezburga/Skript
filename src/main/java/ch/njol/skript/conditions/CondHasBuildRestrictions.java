@@ -46,9 +46,8 @@ public class CondHasBuildRestrictions extends Condition {
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		this.itemTypes = (Expression<ItemType>) exprs[0];
-		if (matchedPattern == 0 || matchedPattern == 1) {
+		if (matchedPattern == 0 || matchedPattern == 1)
 			this.keys = (Expression<ItemType>) exprs[1];
-		}
 		this.place = parseResult.hasTag("place");
 		setNegated(matchedPattern == 1 || matchedPattern == 3);
 		return true;
