@@ -44,7 +44,7 @@ public class CondHasBuildRestrictions extends Condition {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
+	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		this.itemTypes = (Expression<ItemType>) exprs[0];
 		if (matchedPattern == 0 || matchedPattern == 1) {
 			this.keys = (Expression<ItemType>) exprs[1];
