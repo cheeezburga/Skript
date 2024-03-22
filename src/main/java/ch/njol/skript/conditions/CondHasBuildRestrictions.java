@@ -69,7 +69,7 @@ public class CondHasBuildRestrictions extends Condition {
 				if (s.hasItemMeta()) {
 					ItemMeta meta = s.getItemMeta();
 					if (place ? meta.hasPlaceableKeys() : meta.hasDestroyableKeys()) {
-						Set<Namespaced> alreadyOn = place ? meta.getPlaceableKeys() : meta.getDestroyableKeys();
+						Set<Namespaced> existingKeys = place ? meta.getPlaceableKeys() : meta.getDestroyableKeys();
 						for (Namespaced key : keysKeys) {
 							if (alreadyOn.contains(key))
 								return true;
