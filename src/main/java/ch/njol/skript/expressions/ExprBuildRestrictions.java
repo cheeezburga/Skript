@@ -4,7 +4,11 @@ import ch.njol.skript.Skript;
 import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.bukkitutil.BukkitUnsafe;
 import ch.njol.skript.classes.Changer.ChangeMode;
-import ch.njol.skript.doc.*;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.RequiredPlugins;
+import ch.njol.skript.doc.Since;
 import ch.njol.skript.expressions.base.PropertyExpression;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
@@ -18,7 +22,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Name("Build Restrictions Of Item")
 @Description("Get or modify the build restrictions of an item.")
@@ -33,39 +40,38 @@ public class ExprBuildRestrictions extends PropertyExpression<ItemType, ItemType
 	static {
 		if (Skript.methodExists(ItemMeta.class, "getDestroyableKeys")) {
 			Skript.registerExpression(ExprBuildRestrictions.class, ItemType.class, ExpressionType.PROPERTY,
-				"[the] destroy[able] (key|block|item)[s] (of|on) %itemtypes%",
-				"[the] place[able| on] (key|block|item)[s] (of|on) %itemtypes%");
+				"[the] (break|destroy)able (key|block|item|restriction)s (of|on) %itemtypes%",
+				"[the] (placeable|build[able]) (key|block|item|restriction)s (of|on) %itemtypes%");
 		}
 	}
 
-	private static final int DESTROYABLE = 0;
-	private int pattern;
+	private boolean destroy;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		setExpr((Expression<ItemType>) exprs[0]);
-		this.pattern = matchedPattern;
+		this.destroy = matchedPattern == 0;
 		return true;
 	}
 
 	@Override
 	protected ItemType @NotNull [] get(Event event, ItemType [] source) {
-		Set<ItemType> onItem = new HashSet<>();
+		Set<ItemType> existingKeys = new HashSet<>();
 		for (ItemType item : source) {
 			if (item.getRandom().hasItemMeta()) {
 				ItemMeta meta = item.getItemMeta();
-				if (pattern == DESTROYABLE ? meta.hasDestroyableKeys() : meta.hasPlaceableKeys()) {
-					for (Namespaced key : pattern == DESTROYABLE ? meta.getDestroyableKeys() : meta.getPlaceableKeys()) {
+				if (destroy ? meta.hasDestroyableKeys() : meta.hasPlaceableKeys()) {
+					for (Namespaced key : destroy ? meta.getDestroyableKeys() : meta.getPlaceableKeys()) {
 						Material material = BukkitUnsafe.getMaterialFromMinecraftId(key.toString());
 						if (material != null) {
-							onItem.add(new ItemType(material));
+							existingKeys.add(new ItemType(material));
 						}
 					}
 				}
 			}
 		}
-		return onItem.toArray(new ItemType[0]);
+		return existingKeys.toArray(new ItemType[0]);
 	}
 
 	@SuppressWarnings("NullableProblems")
@@ -84,49 +90,51 @@ public class ExprBuildRestrictions extends PropertyExpression<ItemType, ItemType
 	public void change(Event event, @Nullable Object[] delta, ChangeMode mode) {
 		ItemType[] source = getExpr().getArray(event);
 
-		if (mode == ChangeMode.RESET || mode == ChangeMode.DELETE) {
-			for (ItemType item : source) {
-				ItemMeta meta = item.getItemMeta();
-				Collection<Namespaced> empty = new ArrayList<>();
-                if (pattern == DESTROYABLE) { meta.setDestroyableKeys(empty); } else { meta.setPlaceableKeys(empty); }
-                item.setItemMeta(meta);
-			}
-		} else if (mode == ChangeMode.SET || mode == ChangeMode.ADD || mode == ChangeMode.REMOVE) {
-
-			// only do this if the mode requires it
-			Set<Namespaced> keys = new HashSet<>();
-
-			// get a list of all the provided itemtypes' namespaced keys
+		Set<Namespaced> deltaKeys = new HashSet<>();
+		if (mode == ChangeMode.SET || mode == ChangeMode.ADD || mode == ChangeMode.REMOVE) {
 			if (delta != null) {
 				for (Object o : delta) {
 					if (o instanceof ItemType item) {
-						keys.add(item.getRandom().getType().getKey());
+						deltaKeys.add(item.getRandom().getType().getKey());
 					}
 				}
 			}
+		}
 
-			if (mode == ChangeMode.SET) {
-				for (ItemType item : source) {
-					ItemMeta meta = item.getItemMeta();
-                    if (pattern == DESTROYABLE) { meta.setDestroyableKeys(keys); } else { meta.setPlaceableKeys(keys); }
-                    item.setItemMeta(meta);
-				}
-			} else if (mode == ChangeMode.ADD || mode == ChangeMode.REMOVE) {
-				for (ItemType item : source) {
-					ItemMeta meta = item.getItemMeta();
-					if (pattern == DESTROYABLE ? meta.hasDestroyableKeys() : meta.hasPlaceableKeys()) {
-						Set<Namespaced> alreadyOn = pattern == DESTROYABLE ? meta.getDestroyableKeys() : meta.getPlaceableKeys();
-						if (mode == ChangeMode.ADD) {
-							alreadyOn.addAll(keys);
-						} else if (mode == ChangeMode.REMOVE) {
-							alreadyOn.removeAll(keys);
-						}
-                        if (pattern == DESTROYABLE) { meta.setDestroyableKeys(alreadyOn); } else { meta.setPlaceableKeys(alreadyOn); }
-                    }
+		for (ItemType item : source) {
+			if (!item.getRandom().hasItemMeta())
+				continue;
 
-					item.setItemMeta(meta);
-				}
+			ItemMeta meta = item.getItemMeta();
+			Collection<Namespaced> newKeys = new ArrayList<>();
+
+			switch (mode) {
+				case RESET:
+				case DELETE:
+                    break;
+				case SET:
+					newKeys = deltaKeys;
+					break;
+				case ADD:
+				case REMOVE:
+					newKeys = new HashSet<>(destroy ? meta.getDestroyableKeys() : meta.getPlaceableKeys());
+					if (mode == ChangeMode.ADD) {
+						newKeys.addAll(deltaKeys);
+					} else {
+						newKeys.removeAll(deltaKeys);
+					}
+					break;
+				case REMOVE_ALL:
+					assert false;
 			}
+
+			if (destroy) {
+				meta.setDestroyableKeys(newKeys);
+			} else {
+				meta.setPlaceableKeys(newKeys);
+			}
+
+			item.setItemMeta(meta);
 		}
 	}
 
@@ -141,8 +149,12 @@ public class ExprBuildRestrictions extends PropertyExpression<ItemType, ItemType
 	}
 
 	@Override
-	public @NotNull String toString(@Nullable Event e, boolean b) {
-		return "build restrictions of " + getExpr().toString(e, b);
+	public @NotNull String toString(@Nullable Event event, boolean debug) {
+		if (destroy) {
+			return "destroyable keys of " + getExpr().toString(event, debug);
+		} else {
+			return "placeable keys of " + getExpr().toString(event, debug);
+		}
 	}
 
 }
