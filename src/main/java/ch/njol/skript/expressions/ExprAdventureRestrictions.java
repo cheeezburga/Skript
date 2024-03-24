@@ -27,19 +27,19 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-@Name("Build Restrictions Of Item")
-@Description("Get or modify the build restrictions of an item.")
-@Examples({"add dirt to destroyable keys of player's tool",
-	"add stone and diamond ore to destroy blocks of {_item}",
-	"clear destroyable items of {_item}",
-	"remove sand from destroy keys of {_item}"})
+@Name("Adventure Restrictions Of Item")
+@Description("Get or modify the adventure restrictions of an item.")
+@Examples({"add dirt to destroyable restrictions of player's tool",
+	"add (stone, diamond ore) to breakable keys of {_item}",
+	"clear breakable restrictions of {_item}",
+	"remove sand from destroyable keys of {_item}"})
 @Since("INSERT VERSION")
 @RequiredPlugins("Paper")
-public class ExprBuildRestrictions extends PropertyExpression<ItemType, ItemType> {
+public class ExprAdventureRestrictions extends PropertyExpression<ItemType, ItemType> {
 
 	static {
 		if (Skript.methodExists(ItemMeta.class, "getDestroyableKeys")) {
-			Skript.registerExpression(ExprBuildRestrictions.class, ItemType.class, ExpressionType.PROPERTY,
+			Skript.registerExpression(ExprAdventureRestrictions.class, ItemType.class, ExpressionType.PROPERTY,
 				"[the] (break|destroy)able (key|block|item|restriction)s (of|on) %itemtypes%",
 				"[the] (placeable|build[able]) (key|block|item|restriction)s (of|on) %itemtypes%");
 		}

@@ -20,23 +20,24 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
-@Name("Has Build Restrictions")
-@Description("Check if an item has any build restrictions.")
-@Examples({"player's tool has destroyable blocks",
-	"{_item} doesn't have placeable keys",
-	"{_item} is able to break stone and dirt",
+@Name("Has Adventure Restrictions")
+@Description("Check if an item has any adventure restrictions.")
+@Examples({"player's tool has any build restrictions",
+	"{_item} doesn't have a break restriction",
+	"{_item} is able to break (stone and dirt)",
 	"{_item} can not be placed on diamond ore"})
 @Since("INSERT VERSION")
 @RequiredPlugins("Paper")
-public class CondHasBuildRestrictions extends Condition {
+public class CondHasAdventureRestrictions extends Condition {
 
 	static {
 		if (Skript.methodExists(ItemMeta.class, "hasDestroyableKeys")) {
-			Skript.registerCondition(CondHasBuildRestrictions.class,
+			Skript.registerCondition(CondHasAdventureRestrictions.class,
+				"%itemtypes% (has|have) [a|any] (break|place:build) restriction[s]",
+				"%itemtypes% (doesn't|does not|do not|don't) have [a|any] (break|place:build) restriction[s]",
 				"%itemtypes% (can|is able to) (break|destroy|mine|place:be placed on) %itemtypes%",
-				"%itemtypes% (can't|can[ ]not|is unable to) (break|destroy|mine|place:be placed on) %itemtypes%",
-				"%itemtypes% (has|have) [a|any] (break|place:build) restrictions",
-				"%itemtypes% (doesn't|does not|do not|don't) have [a|any] (break|place:build) restrictions");
+				"%itemtypes% (can't|can[ ]not|is unable to) (break|destroy|mine|place:be placed on) %itemtypes%"
+			);
 		}
 	}
 

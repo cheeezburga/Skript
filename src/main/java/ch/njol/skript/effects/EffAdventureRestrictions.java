@@ -20,16 +20,17 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
-@Name("Apply Build Restrictions")
+@Name("Apply Adventure Restrictions")
 @Description("Allow or prevent an item to destroy or be placed on certain types of blocks while in /gamemode adventure.")
-@Examples("allow player's tool to destroy (stone and oak wood planks)")
+@Examples({"allow player's tool to destroy (stone, oak wood planks)",
+	"prevent {_item} from being placed on (diamond ore, diamond block)"})
 @Since("INSERT VERSION")
 @RequiredPlugins("Paper")
-public class EffBuildRestrictions extends Effect {
+public class EffAdventureRestrictions extends Effect {
 
 	static {
 		if (Skript.methodExists(ItemMeta.class, "setDestroyableKeys")) {
-			Skript.registerEffect(EffBuildRestrictions.class,
+			Skript.registerEffect(EffAdventureRestrictions.class,
 				"allow %~itemtypes% to (destroy|break|mine|place:be placed on) %itemtypes%",
 				"(disallow|prevent) %~itemtypes% from (destroying|breaking|mining|place:being placed on) %itemtypes%");
 			// should this require notnull? and can the patterns here be made any better?
