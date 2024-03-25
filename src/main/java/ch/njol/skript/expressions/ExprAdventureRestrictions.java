@@ -47,10 +47,12 @@ import java.util.Set;
 
 @Name("Adventure Restrictions Of Item")
 @Description("Get or modify the adventure restrictions of an item.")
-@Examples({"add dirt to destroyable restrictions of player's tool",
+@Examples({
+	"add dirt to destroyable restrictions of player's tool",
 	"add (stone, diamond ore) to breakable keys of {_item}",
 	"clear breakable restrictions of {_item}",
-	"remove sand from destroyable keys of {_item}"})
+	"remove sand from destroyable keys of {_item}"
+})
 @Since("INSERT VERSION")
 @RequiredPlugins("Paper")
 public class ExprAdventureRestrictions extends PropertyExpression<ItemType, ItemType> {
