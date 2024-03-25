@@ -22,10 +22,12 @@ import java.util.Set;
 
 @Name("Has Adventure Restrictions")
 @Description("Check if an item has any adventure restrictions.")
-@Examples({"player's tool has any build restrictions",
+@Examples({
+	"player's tool has any build restrictions",
 	"{_item} doesn't have a break restriction",
 	"{_item} is able to break (stone and dirt)",
-	"{_item} can not be placed on diamond ore"})
+	"{_item} can not be placed on diamond ore"
+})
 @Since("INSERT VERSION")
 @RequiredPlugins("Paper")
 public class CondHasAdventureRestrictions extends Condition {

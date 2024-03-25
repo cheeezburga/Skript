@@ -22,8 +22,10 @@ import java.util.Set;
 
 @Name("Apply Adventure Restrictions")
 @Description("Allow or prevent an item to destroy or be placed on certain types of blocks while in /gamemode adventure.")
-@Examples({"allow player's tool to destroy (stone, oak wood planks)",
-	"prevent {_item} from being placed on (diamond ore, diamond block)"})
+@Examples({
+	"allow player's tool to destroy (stone, oak wood planks)",
+	"prevent {_item} from being placed on (diamond ore, diamond block)"
+})
 @Since("INSERT VERSION")
 @RequiredPlugins("Paper")
 public class EffAdventureRestrictions extends Effect {
