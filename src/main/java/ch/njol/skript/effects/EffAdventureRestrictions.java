@@ -35,7 +35,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 @Name("Apply Adventure Restrictions")
@@ -49,20 +51,20 @@ import java.util.Set;
 public class EffAdventureRestrictions extends Effect {
 
 	static {
-		if (Skript.methodExists(ItemMeta.class, "setDestroyableKeys")) {
+		if (Skript.methodExists(ItemMeta.class, "setDestroyableKeys", Collection.class)) {
 			Skript.registerEffect(EffAdventureRestrictions.class,
 				"allow %~itemtypes% to (destroy|break|mine|place:be placed on) %itemtypes%",
 				"(disallow|prevent) %~itemtypes% from (destroying|breaking|mining|place:being placed on) %itemtypes%");
-			// should this require notnull? and can the patterns here be made any better?
+			// should this require notnull?
 		}
 	}
 
-	private boolean allow;
-	private boolean destroy;
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<ItemType> items;
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<ItemType> deltaKeys;
+	private boolean allow;
+	private boolean destroy;
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -83,26 +85,24 @@ public class EffAdventureRestrictions extends Effect {
 		Set<Namespaced> keys = new HashSet<>();
 
 		for (ItemType itemType : deltaKeys.getArray(event)) {
-			for (ItemStack item : itemType.getAll()) {
-				keys.add(item.getType().getKey());
-			}
+			Iterator<ItemStack> iter = itemType.containerIterator();
+            while (iter.hasNext()) {
+                ItemStack stack = iter.next();
+				keys.add(stack.getType().getKey());
+            }
 		}
 
 		if (!keys.isEmpty()) {
 			for (ItemType item : items) {
-
-				if (item.getRandom().hasItemMeta()) {
-					ItemMeta meta = item.getItemMeta();
-                    Set<Namespaced> existingKeys = new HashSet<>(destroy ? meta.getDestroyableKeys() : meta.getPlaceableKeys());
-					if (allow) {
-						existingKeys.addAll(keys);
-					} else {
-						existingKeys.removeAll(keys);
-					}
-					if (destroy) { meta.setDestroyableKeys(existingKeys); } else { meta.setPlaceableKeys(existingKeys); }
-					if (destroy ? meta.hasDestroyableKeys() : meta.hasPlaceableKeys())
-						item.setItemMeta(meta);
+				ItemMeta meta = item.getItemMeta();
+				Set<Namespaced> existingKeys = new HashSet<>(destroy ? meta.getDestroyableKeys() : meta.getPlaceableKeys());
+				if (allow) {
+					existingKeys.addAll(keys);
+				} else {
+					existingKeys.removeAll(keys);
 				}
+				if (destroy) { meta.setDestroyableKeys(existingKeys); } else { meta.setPlaceableKeys(existingKeys); }
+				item.setItemMeta(meta);
 			}
 		}
 	}
