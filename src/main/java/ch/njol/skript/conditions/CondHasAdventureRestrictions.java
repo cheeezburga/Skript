@@ -20,6 +20,7 @@ package ch.njol.skript.conditions;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.aliases.ItemType;
+import ch.njol.skript.bukkitutil.BukkitUnsafe;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
@@ -30,13 +31,13 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 import com.destroystokyo.paper.Namespaced;
+import org.bukkit.Material;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Name("Has Adventure Restrictions")
 @Description("Check if an item has any adventure restrictions.")
@@ -71,38 +72,44 @@ public class CondHasAdventureRestrictions extends Condition {
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		this.items = (Expression<ItemType>) exprs[0];
-		if (matchedPattern == 0 || matchedPattern == 1)
+		if (matchedPattern == 2 || matchedPattern == 3)
 			this.keysToCheck = (Expression<ItemType>) exprs[1];
 		this.place = parseResult.hasTag("place");
 		setNegated(matchedPattern == 1 || matchedPattern == 3);
 		return true;
 	}
 
-	@SuppressWarnings("ConstantValue")
+	@SuppressWarnings({"ConstantValue",""})
 	@Override
 	public boolean check(Event e) {
 		if (keysToCheck == null)
 			return items.check(e, item -> place ? item.getItemMeta().hasPlaceableKeys() : item.getItemMeta().hasDestroyableKeys(), isNegated());
-		Set<Namespaced> keys = new HashSet<>();
-		for (ItemType item : keysToCheck.getArray(e)) {
-			for (ItemStack stack : item.getAll()) {
-				keys.add(stack.getType().getKey());
-			}
-		}
 
 		for (ItemType item : items.getArray(e)) {
-			ItemStack stack = item.getRandom();
-			if (stack.hasItemMeta()) {
-				ItemMeta meta = stack.getItemMeta();
-				if (place ? meta.hasPlaceableKeys() : meta.hasDestroyableKeys()) {
-					Set<Namespaced> existingKeys = place ? meta.getPlaceableKeys() : meta.getDestroyableKeys();
-					for (Namespaced key : keys) {
-						if (!existingKeys.contains(key))
-							return false;
-					}
+			if (place ? !item.getItemMeta().hasPlaceableKeys() : !item.getItemMeta().hasDestroyableKeys())
+				return false;
+		}
+
+		List<ItemStack> providedItems = new ArrayList<>();
+		for (ItemType item : this.keysToCheck.getArray(e)) {
+			item.getAll().forEach(providedItems::add);
+		}
+
+		Set<ItemType> existingItems = new HashSet<>();
+		for (ItemType item : items.getArray(e)) {
+			for (Namespaced key : (place ? item.getItemMeta().getPlaceableKeys() : item.getItemMeta().getDestroyableKeys())) {
+				Material material = BukkitUnsafe.getMaterialFromMinecraftId(key.toString());
+				if (material != null) {
+					existingItems.add(new ItemType(material));
 				}
 			}
 		}
+
+		for (ItemType item : keysToCheck.getArray(e)) {
+			if (existingItems.stream().noneMatch(item::isSimilar))
+				return false;
+		}
+
 		return true;
     }
 
