@@ -36,6 +36,7 @@ import ch.njol.util.coll.CollectionUtils;
 import com.destroystokyo.paper.Namespaced;
 import org.bukkit.Material;
 import org.bukkit.event.Event;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -60,8 +61,10 @@ public class ExprAdventureRestrictions extends PropertyExpression<ItemType, Item
 	static {
 		if (Skript.methodExists(ItemMeta.class, "getDestroyableKeys")) {
 			Skript.registerExpression(ExprAdventureRestrictions.class, ItemType.class, ExpressionType.PROPERTY,
-				"[the] (break|destroy)able (key|block|item|restriction)s (of|on) %itemtypes%",
-				"[the] (placeable|build[able]) (key|block|item|restriction)s (of|on) %itemtypes%");
+				"[the] (:break|:destroy|:place|:build)able blocks of %itemtypes%",
+				"[the] (:break|:destroy|:place|:build)[able] restrictions of %itemtypes%",
+				"%itemtypes%'[s] (:break|:destroy|:place|:build)able blocks",
+				"%itemtypes%'[s] (:break|:destroy|:place|:build)[able] restrictions");
 		}
 	}
 
@@ -71,7 +74,7 @@ public class ExprAdventureRestrictions extends PropertyExpression<ItemType, Item
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		setExpr((Expression<ItemType>) exprs[0]);
-		this.destroy = matchedPattern == 0;
+		this.destroy = parseResult.hasTag("break") || parseResult.hasTag("destroy");
 		return true;
 	}
 
@@ -79,14 +82,12 @@ public class ExprAdventureRestrictions extends PropertyExpression<ItemType, Item
 	protected ItemType @NotNull [] get(Event event, ItemType [] source) {
 		Set<ItemType> existingKeys = new HashSet<>();
 		for (ItemType item : source) {
-			if (item.getRandom().hasItemMeta()) {
-				ItemMeta meta = item.getItemMeta();
-				if (destroy ? meta.hasDestroyableKeys() : meta.hasPlaceableKeys()) {
-					for (Namespaced key : destroy ? meta.getDestroyableKeys() : meta.getPlaceableKeys()) {
-						Material material = BukkitUnsafe.getMaterialFromMinecraftId(key.toString());
-						if (material != null) {
-							existingKeys.add(new ItemType(material));
-						}
+			ItemMeta meta = item.getItemMeta();
+			if (destroy ? meta.hasDestroyableKeys() : meta.hasPlaceableKeys()) {
+				for (Namespaced key : destroy ? meta.getDestroyableKeys() : meta.getPlaceableKeys()) {
+					Material material = BukkitUnsafe.getMaterialFromMinecraftId(key.toString());
+					if (material != null) {
+						existingKeys.add(new ItemType(material));
 					}
 				}
 			}
@@ -105,25 +106,21 @@ public class ExprAdventureRestrictions extends PropertyExpression<ItemType, Item
 		return null;
 	}
 
-	@SuppressWarnings("ConstantValue")
 	@Override
 	public void change(Event event, @Nullable Object[] delta, ChangeMode mode) {
 		ItemType[] source = getExpr().getArray(event);
 
 		Set<Namespaced> deltaKeys = new HashSet<>();
 		if (mode == ChangeMode.SET || mode == ChangeMode.ADD || mode == ChangeMode.REMOVE) {
-			if (delta != null) {
-				for (Object o : delta) {
-					if (o instanceof ItemType item) {
-						deltaKeys.add(item.getRandom().getType().getKey());
-					}
+			for (Object o : delta) {
+				if (o instanceof ItemType) {
+					for (ItemStack stack : ((ItemType) o).getAll())
+						deltaKeys.add(stack.getType().getKey());
 				}
 			}
 		}
 
 		for (ItemType item : source) {
-			if (!item.getRandom().hasItemMeta())
-				continue;
 
 			ItemMeta meta = item.getItemMeta();
 			Collection<Namespaced> newKeys = new ArrayList<>();
@@ -171,9 +168,9 @@ public class ExprAdventureRestrictions extends PropertyExpression<ItemType, Item
 	@Override
 	public @NotNull String toString(@Nullable Event event, boolean debug) {
 		if (destroy) {
-			return "destroyable keys of " + getExpr().toString(event, debug);
+			return "destroyable restrictions of " + getExpr().toString(event, debug);
 		} else {
-			return "placeable keys of " + getExpr().toString(event, debug);
+			return "placeable restrictions of " + getExpr().toString(event, debug);
 		}
 	}
 
