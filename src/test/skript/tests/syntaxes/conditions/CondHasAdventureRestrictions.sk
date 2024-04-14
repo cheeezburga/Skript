@@ -26,7 +26,7 @@ test "has adventure restrictions":
 	allow {_tool} to break any log
 	assert {_tool} can break oak log in adventure mode with "shovel should be able to break oak logs in adventure"
 	assert {_tool} can break spruce log in adventure mode with "shovel should be able to break spruce logs in adventure"
-	assert {_tool} can break mangrove log in adventure mode with "shovel should be able to break mangrove logs in adventure"
+	assert {_tool} can break birch log in adventure mode with "shovel should be able to break birch logs in adventure"
 	assert {_tool} can break any log in adventure mode with "shovel should be able to break any log in adventure"
 	assert {_tool} can break all logs in adventure mode with "shovel should be able to break all logs in adventure"
 
