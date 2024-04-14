@@ -61,9 +61,9 @@ public class ExprAdventureRestrictions extends PropertyExpression<ItemType, Item
 	static {
 		if (Skript.methodExists(ItemMeta.class, "getDestroyableKeys")) {
 			Skript.registerExpression(ExprAdventureRestrictions.class, ItemType.class, ExpressionType.PROPERTY,
-				"[the] (:break|:destroy|:place|:build)able blocks of %itemtypes%",
+				"[the] (:break|:destroy|:place|:build)able blocks of %itemtypes% [in adventure [mode]]",
 				"[the] (:break|:destroy|:place|:build)[able] restrictions of %itemtypes%",
-				"%itemtypes%'[s] (:break|:destroy|:place|:build)able blocks",
+				"%itemtypes%'[s] (:break|:destroy|:place|:build)able blocks [in adventure [mode]]",
 				"%itemtypes%'[s] (:break|:destroy|:place|:build)[able] restrictions");
 		}
 	}

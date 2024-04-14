@@ -19,6 +19,7 @@
 package ch.njol.skript.conditions;
 
 import ch.njol.skript.Skript;
+import ch.njol.skript.aliases.ItemData;
 import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.bukkitutil.BukkitUnsafe;
 import ch.njol.skript.doc.Description;
@@ -54,17 +55,16 @@ public class CondHasAdventureRestrictions extends Condition {
 	static {
 		if (Skript.methodExists(ItemMeta.class, "hasDestroyableKeys")) {
 			Skript.registerCondition(CondHasAdventureRestrictions.class,
-				"%itemtypes% (has|have) [a|any] (break|place:build) restriction[s]",
-				"%itemtypes% (doesn't|does not|do not|don't) have [a|any] (break|place:build) restriction[s]",
-				"%itemtypes% (can|is able to) (break|destroy|mine|place:be placed on) %itemtypes%",
-				"%itemtypes% (can't|can[ ]not|is unable to) (break|destroy|mine|place:be placed on) %itemtypes%"
+				"%itemtypes% (has|have) [a|any|:no] (break|place:(build|place)) restriction[s]",
+				"%itemtypes% (doesn't|does not|do not|don't) have [a|any] (break|place:(build|place)) restriction[s]",
+				"%itemtypes% (can|is able to) (break|destroy|mine|place:be placed on) %itemtypes% in adventure [mode]",
+				"%itemtypes% (can't|can[ ]not|is unable to) (break|destroy|mine|place:be placed on) %itemtypes% in adventure [mode]"
 			);
 		}
 	}
 
-	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<ItemType> items;
-	@SuppressWarnings("NotNullFieldNotInitialized")
+	@Nullable
 	private Expression<ItemType> keysToCheck;
 	private boolean place;
 
@@ -75,42 +75,39 @@ public class CondHasAdventureRestrictions extends Condition {
 		if (matchedPattern == 2 || matchedPattern == 3)
 			this.keysToCheck = (Expression<ItemType>) exprs[1];
 		this.place = parseResult.hasTag("place");
-		setNegated(matchedPattern == 1 || matchedPattern == 3);
+		setNegated(matchedPattern == 1 || matchedPattern == 3 || parseResult.hasTag("no"));
 		return true;
 	}
 
-	@SuppressWarnings({"ConstantValue",""})
 	@Override
 	public boolean check(Event e) {
 		if (keysToCheck == null)
 			return items.check(e, item -> place ? item.getItemMeta().hasPlaceableKeys() : item.getItemMeta().hasDestroyableKeys(), isNegated());
 
-		for (ItemType item : items.getArray(e)) {
-			if (place ? !item.getItemMeta().hasPlaceableKeys() : !item.getItemMeta().hasDestroyableKeys())
+		return items.check(e, (itemType) -> {
+			Set<Namespaced> itemKeys = (place ? itemType.getItemMeta().getPlaceableKeys(): itemType.getItemMeta().getDestroyableKeys());
+
+			// short circuit if no keys
+			if (itemKeys.isEmpty())
 				return false;
-		}
 
-		List<ItemStack> providedItems = new ArrayList<>();
-		for (ItemType item : this.keysToCheck.getArray(e)) {
-			item.getAll().forEach(providedItems::add);
-		}
-
-		Set<ItemType> existingItems = new HashSet<>();
-		for (ItemType item : items.getArray(e)) {
-			for (Namespaced key : (place ? item.getItemMeta().getPlaceableKeys() : item.getItemMeta().getDestroyableKeys())) {
-				Material material = BukkitUnsafe.getMaterialFromMinecraftId(key.toString());
-				if (material != null) {
-					existingItems.add(new ItemType(material));
+			// for each key itemtype, if it isAll, we need to ensure every Material is represented in the item's keys
+			// if it isn't isAll, we need to ensure at least one of the Materials is represented in the item's keys.
+			return keysToCheck.check(e, (keyItemType) -> {
+				boolean isAll = keyItemType.isAll();
+				for (ItemData keyData : keyItemType.getTypes()) {
+					if (!itemKeys.contains(keyData.getType().getKey())) {
+						// if we're isAll, we can exit out early. Not all keys matched.
+						if (isAll)
+							return false;
+					} else if (!isAll) {
+						// if we're not isAll, we can exit out early, since one matched.
+						return true;
+					}
 				}
-			}
-		}
-
-		for (ItemType item : keysToCheck.getArray(e)) {
-			if (existingItems.stream().noneMatch(item::isSimilar))
-				return false;
-		}
-
-		return true;
+				return isAll;
+			});
+		}, isNegated());
     }
 
 	@SuppressWarnings("ConstantValue")
