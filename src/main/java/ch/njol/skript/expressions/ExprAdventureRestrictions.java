@@ -50,9 +50,9 @@ import java.util.Set;
 @Description("Get or modify the adventure restrictions of an item.")
 @Examples({
 	"add dirt to destroyable restrictions of player's tool",
-	"add (stone, diamond ore) to breakable keys of {_item}",
-	"clear breakable restrictions of {_item}",
-	"remove sand from destroyable keys of {_item}"
+	"add (stone, diamond ore) to breakable blocks of {_item}",
+	"clear break restrictions of {_item}",
+	"remove sand from destroyable blocks of {_item} in adventure mode"
 })
 @Since("INSERT VERSION")
 @RequiredPlugins("Paper")
