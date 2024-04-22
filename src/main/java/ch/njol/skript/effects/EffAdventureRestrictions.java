@@ -53,8 +53,8 @@ public class EffAdventureRestrictions extends Effect {
 	static {
 		if (Skript.methodExists(ItemMeta.class, "setDestroyableKeys", Collection.class)) {
 			Skript.registerEffect(EffAdventureRestrictions.class,
-				"allow %~itemtypes% to (destroy|break|mine|place:be placed on) %itemtypes% [in adventure [mode]]",
-				"(disallow|prevent) %~itemtypes% from (destroying|breaking|mining|place:being placed on) %itemtypes% [in adventure [mode]]");
+				"allow %~itemtypes% to (destroy|break|mine|place:be placed on) %itemtypes% in adventure [mode]",
+				"(disallow|prevent) %~itemtypes% from (destroying|breaking|mining|place:being placed on) %itemtypes% in adventure [mode]");
 		}
 	}
 
