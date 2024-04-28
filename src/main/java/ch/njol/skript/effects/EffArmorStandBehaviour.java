@@ -39,10 +39,11 @@ import org.jetbrains.annotations.Nullable;
 public class EffArmorStandBehaviour extends Effect {
 
 	static {
-		Skript.registerEffect(EffArmorStandBehaviour.class,
-			"allow %livingentities% to (:tick|move)",
-			"prevent %livingentities% from being able to (:tick|move)"
-		);
+		if (Skript.methodExists(ArmorStand.class, "canTick"))
+			Skript.registerEffect(EffArmorStandBehaviour.class,
+				"allow %livingentities% to (:tick|move)",
+				"prevent %livingentities% from being able to (:tick|move)"
+			);
 	}
 
 	private boolean prevent;

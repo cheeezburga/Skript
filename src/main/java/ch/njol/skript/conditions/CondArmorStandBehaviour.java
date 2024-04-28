@@ -42,10 +42,11 @@ import org.jetbrains.annotations.Nullable;
 public class CondArmorStandBehaviour extends Condition {
 
 	static {
-		Skript.registerCondition(CondArmorStandBehaviour.class,
-			"%livingentities% (is|are) able to (:tick|move)",
-			"%livingentities% (isn't|is not|aren't|are not) able to (:tick|move)"
-		);
+		if (Skript.methodExists(ArmorStand.class, "canTick"))
+			Skript.registerCondition(CondArmorStandBehaviour.class,
+				"%livingentities% (is|are) able to (:tick|move)",
+				"%livingentities% (isn't|is not|aren't|are not) able to (:tick|move)"
+			);
 	}
 
 	@SuppressWarnings("NotNullFieldNotInitialized")
