@@ -43,7 +43,8 @@ public class CondArmorStandExtremities extends Condition {
 
 	static {
 		Skript.registerCondition(CondArmorStandExtremities.class,
-			"%livingentities% (has|have) [:no] (:arms|[a] base[ ]plate)"
+			"%livingentities% (has|have) (:arms|[a] base[ ]plate)",
+			"%livingentities% (doesn't|does not|do not|don't) have (:arms|[a] base[ ]plate)"
 		);
 	}
 
@@ -56,7 +57,7 @@ public class CondArmorStandExtremities extends Condition {
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
 		entities = (Expression<LivingEntity>) exprs[0];
 		arms = parseResult.hasTag("arms");
-		setNegated(parseResult.hasTag("no"));
+		setNegated(matchedPattern == 1);
 		return true;
 	}
 
