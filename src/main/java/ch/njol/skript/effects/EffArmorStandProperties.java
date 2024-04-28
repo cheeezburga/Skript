@@ -25,58 +25,47 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
 
 @Name("Armor Stand - Properties")
-@Description("Allows users to modify properties of an armor stand (i.e. whether its small, a marker, ticking, or moving).")
+@Description("Allows users to modify properties of an armor stand (i.e. whether its small or a marker).")
 @Examples({
 	"make {_armorstand} small",
-	"make {_armorstand} a marker",
-	"make {_armorstands::*} stop ticking",
-	"make {_armorstand} stop moving"
+	"make {_armorstands::*} a marker"
 })
 @Since("INSERT VERSION")
 public class EffArmorStandProperties extends Effect {
 
 	static {
 		Skript.registerEffect(EffArmorStandProperties.class,
-			"make %livingentities% [not:(not|stop)] (0:small|1:a marker|2:tick[ing]|3:mov[e|ing])"
+			"make %livingentities% [:not] (:small|a marker)"
 		);
 	}
 
-	private static final int SMALL = 0;
-	private static final int MARKER = 1;
-	private static final int TICKING = 2;
-	private static final int MOVING = 3;
-
 	private boolean not;
-	private int property;
+	private boolean small;
 	@SuppressWarnings("NotNullFieldNotInitialized")
-	private Expression<LivingEntity> entities;
+	private Expression<Entity> entities;
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		entities = (Expression<LivingEntity>) exprs[0];
+		entities = (Expression<Entity>) exprs[0];
 		not = parseResult.hasTag("not");
-		property = parseResult.mark;
+		small = parseResult.hasTag("small");
 		return true;
 	}
 
 	@Override
 	protected void execute(Event event) {
-		for (LivingEntity entity : entities.getArray(event)) {
+		for (Entity entity : entities.getArray(event)) {
 			if (entity instanceof ArmorStand) {
-				if (property == SMALL) {
+				if (small) {
 					((ArmorStand) entity).setSmall(!not);
-				} else if (property == MARKER) {
+				} else {
 					((ArmorStand) entity).setMarker(!not);
-				} else if (property == TICKING) {
-					((ArmorStand) entity).setCanTick(!not);
-				} else if (property == MOVING) {
-					((ArmorStand) entity).setCanMove(!not);
 				}
 			}
 		}
@@ -84,16 +73,6 @@ public class EffArmorStandProperties extends Effect {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		String prop = "unknown property";
-		if (property == SMALL) {
-			prop = "small";
-		} else if (property == MARKER) {
-			prop = "a marker";
-		} else if (property == TICKING) {
-			prop = "tick";
-		} else if (property == MOVING) {
-			prop = "move";
-		}
-		return "make " + entities.toString(event, debug) + (not ? " not " : " ") + prop;
+		return "make " + entities.toString(event, debug) + (not ? " not " : " ") + (small ? "small" : "a marker");
 	}
 }
