@@ -32,46 +32,46 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
 
-@Name("Armor Stand - Has Properties")
-@Description("Allows users to check the properties of an armor stand (i.e. whether its small, a marker, ticking, or moving).")
+@Name("Armor Stand - Has Behaviour")
+@Description("Allows users to check the behaviour of an armor stand (i.e. whether it is ticking or moving).")
 @Examples({
-	"send true if {_armorstand} is small",
-	"if {_armorstands::*} are not markers:",
+	"if {_armorstands::*} are not able to tick:",
+	"if {_armorstand} is able to move:"
 })
 @Since("INSERT VERSION")
-public class CondArmorStandProperties extends Condition {
+public class CondArmorStandBehaviour extends Condition {
 
 	static {
-		Skript.registerCondition(CondArmorStandProperties.class,
-			"%livingentities% (is|are) (:small|[a] marker[s])",
-			"%livingentities% (isn't|is not|aren't|are not) (:small|[a] marker[s])"
+		Skript.registerCondition(CondArmorStandBehaviour.class,
+			"%livingentities% (is|are) able to (:tick|move)",
+			"%livingentities% (isn't|is not|aren't|are not) able to (:tick|move)"
 		);
 	}
 
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<LivingEntity> entities;
-	private boolean small;
+	private boolean tick;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
 		entities = (Expression<LivingEntity>) exprs[0];
-		small = parseResult.hasTag("small");
+		tick = parseResult.hasTag("tick");
 		setNegated(matchedPattern == 1);
 		return true;
 	}
 
 	@Override
 	public boolean check(Event event) {
-		if (small) {
-			return entities.check(event, stand -> stand instanceof ArmorStand && ((ArmorStand) stand).isSmall(), isNegated());
+		if (tick) {
+			return entities.check(event, stand -> stand instanceof ArmorStand && ((ArmorStand) stand).canTick(), isNegated());
 		} else {
-			return entities.check(event, stand -> stand instanceof ArmorStand && ((ArmorStand) stand).isMarker(), isNegated());
+			return entities.check(event, stand -> stand instanceof ArmorStand && ((ArmorStand) stand).canMove(), isNegated());
 		}
 	}
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return entities.toString(event, debug) + " is " + (isNegated() ? "not " : "") + (small ? "small" : "a marker");
+		return entities.toString(event, debug) + " is " + (isNegated() ? "not " : "") + "able to " + (tick ? "tick" : "move");
 	}
 }
