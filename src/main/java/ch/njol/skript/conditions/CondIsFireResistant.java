@@ -47,6 +47,6 @@ public class CondIsFireResistant extends PropertyCondition<ItemType> {
 
 	@Override
 	public String getPropertyName() {
-		return "(fire resistant|resistant to fire)";
+		return "fire resistant";
 	}
 }
