@@ -18,6 +18,7 @@
  */
 package ch.njol.skript.conditions;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.conditions.base.PropertyCondition;
 import ch.njol.skript.doc.Description;
@@ -25,6 +26,7 @@ import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.RequiredPlugins;
 import ch.njol.skript.doc.Since;
+import org.bukkit.inventory.meta.ItemMeta;
 
 @Name("Is Fire Resistant")
 @Description("Checks whether an item is fire resistant.")
@@ -37,7 +39,8 @@ import ch.njol.skript.doc.Since;
 public class CondIsFireResistant extends PropertyCondition<ItemType> {
 
 	static {
-		PropertyCondition.register(CondIsFireResistant.class, "(fire resistant|resistant to fire)", "itemtypes");
+		if (Skript.methodExists(ItemMeta.class, "isFireResistant"))
+			PropertyCondition.register(CondIsFireResistant.class, "(fire resistant|resistant to fire)", "itemtypes");
 	}
 
 	@Override

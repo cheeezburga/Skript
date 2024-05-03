@@ -44,9 +44,8 @@ import org.jetbrains.annotations.Nullable;
 public class EffFireResistant extends Effect {
 
 	static {
-		Skript.registerEffect(EffFireResistant.class,
-			"make %itemtypes% [:not] (fire resistant|resistant to fire)"
-		);
+		if (Skript.methodExists(ItemMeta.class, "setFireResistant"))
+			Skript.registerEffect(EffFireResistant.class, "make %itemtypes% [:not] (fire resistant|resistant to fire)");
 	}
 
 	@SuppressWarnings("NotNullFieldNotInitialized")
