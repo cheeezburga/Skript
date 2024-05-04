@@ -85,4 +85,5 @@ public class ExprWithFireResistance extends PropertyExpression<ItemType, ItemTyp
 	public String toString(final @Nullable Event event, boolean debug) {
 		return getExpr().toString(event, debug) + " with fire resistance";
 	}
+
 }
