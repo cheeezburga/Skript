@@ -1,0 +1,10 @@
+test "item with fire resistance":
+
+	# single item
+	set {_item} to diamond with fire resistance
+	assert {_item} is fire resistant with "{_item} was not fire resistant"
+
+	# multiple items
+	set {_item} to fire resistant diamond
+	set {_item2} to paper with fire resistance
+	assert ({_item} and {_item2}) are not fire resistant with "{_item} and {_item2} were not fire resistant"
