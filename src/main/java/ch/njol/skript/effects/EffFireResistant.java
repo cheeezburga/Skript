@@ -73,4 +73,5 @@ public class EffFireResistant extends Effect {
 	public String toString(@Nullable Event event, boolean debug) {
 		return "make " + items.toString(event, debug) + (not ? " not" : "") + " fire resistant";
 	}
+
 }
