@@ -35,7 +35,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.eclipse.jdt.annotation.Nullable;
 
 @Name("With Fire Resistance")
-@Description("Creates a copy of an item with (or without) fire resistance.")
+@Description({
+	"Creates a copy of an item with (or without) fire resistance.",
+	"Note: items that already have fire resistant (e.g. netherite armour, tools, etc) currently can't have their fire resistance removed.",
+	"This was missed in 1.20.5 and .6, but should be fixed in 1.21."
+})
 @Examples({
 	"set {_x} to diamond sword with fire resistance",
 	"equip player with netherite helmet without fire resistance",
