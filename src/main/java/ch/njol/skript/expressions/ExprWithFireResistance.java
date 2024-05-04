@@ -65,7 +65,7 @@ public class ExprWithFireResistance extends PropertyExpression<ItemType, ItemTyp
 	}
 
 	@Override
-	protected ItemType[] get(Event e, ItemType[] source) {
+	protected ItemType[] get(Event event, ItemType[] source) {
 		return get(source.clone(), item -> {
 			ItemMeta meta = item.getItemMeta();
 			meta.setFireResistant(!out);
@@ -80,7 +80,7 @@ public class ExprWithFireResistance extends PropertyExpression<ItemType, ItemTyp
 	}
 
 	@Override
-	public String toString(final @Nullable Event event, boolean debug) {
+	public String toString(@Nullable Event event, boolean debug) {
 		return getExpr().toString(event, debug) + " with fire resistance";
 	}
 
