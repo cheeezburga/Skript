@@ -1,4 +1,4 @@
-test "apply fire resistance" while running minecraft "1.20.5":
+test "apply fire resistance" when running minecraft "1.20.5":
 
 	# single item
 	set {_item} to diamond

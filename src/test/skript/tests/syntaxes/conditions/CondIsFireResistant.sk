@@ -1,4 +1,4 @@
-test "is fire resistant" while running minecraft "1.20.5":
+test "is fire resistant" when running minecraft "1.20.5":
 
 	# single item: naturally not fire resistant
 	set {_item} to diamond
