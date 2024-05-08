@@ -30,7 +30,7 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
 
 @Name("Armor Stand - Properties")
-@Description("Allows users to modify properties of an armor stand (i.e. whether its small or a marker).")
+@Description("Allows users to modify properties of an armor stand (i.e. whether it's small or a marker).")
 @Examples({
 	"make {_armorstand} small",
 	"make {_armorstands::*} a marker"

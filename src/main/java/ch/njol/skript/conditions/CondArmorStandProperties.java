@@ -33,7 +33,7 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
 
 @Name("Armor Stand - Has Properties")
-@Description("Allows users to check the properties of an armor stand (i.e. whether its small, a marker, ticking, or moving).")
+@Description("Allows users to check the properties of an armor stand (i.e. whether it's small or a marker).")
 @Examples({
 	"send true if {_armorstand} is small",
 	"if {_armorstands::*} are not markers:",
@@ -63,11 +63,9 @@ public class CondArmorStandProperties extends Condition {
 
 	@Override
 	public boolean check(Event event) {
-		if (small) {
+		if (small)
 			return entities.check(event, stand -> stand instanceof ArmorStand && ((ArmorStand) stand).isSmall(), isNegated());
-		} else {
-			return entities.check(event, stand -> stand instanceof ArmorStand && ((ArmorStand) stand).isMarker(), isNegated());
-		}
+		return entities.check(event, stand -> stand instanceof ArmorStand && ((ArmorStand) stand).isMarker(), isNegated());
 	}
 
 	@Override
