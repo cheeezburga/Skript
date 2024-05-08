@@ -86,9 +86,8 @@ public class ExprAdventureRestrictions extends PropertyExpression<ItemType, Item
 			if (destroy ? meta.hasDestroyableKeys() : meta.hasPlaceableKeys()) {
 				for (Namespaced key : destroy ? meta.getDestroyableKeys() : meta.getPlaceableKeys()) {
 					Material material = BukkitUnsafe.getMaterialFromMinecraftId(key.toString());
-					if (material != null) {
+					if (material != null)
 						existingKeys.add(new ItemType(material));
-					}
 				}
 			}
 		}
