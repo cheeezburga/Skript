@@ -43,8 +43,8 @@ import java.util.Set;
 @Name("Apply Adventure Restrictions")
 @Description("Allow or prevent an item to destroy or be placed on certain types of blocks while in /gamemode adventure.")
 @Examples({
-	"allow player's tool to destroy (stone, oak wood planks)",
-	"prevent {_item} from being placed on (diamond ore, diamond block)"
+	"allow player's tool to destroy (stone, oak wood planks) in adventure mode",
+	"prevent {_item} from being placed on (diamond ore, diamond block) in adventure"
 })
 @Since("INSERT VERSION")
 @RequiredPlugins("Paper")
@@ -53,8 +53,8 @@ public class EffAdventureRestrictions extends Effect {
 	static {
 		if (Skript.methodExists(ItemMeta.class, "setDestroyableKeys", Collection.class)) {
 			Skript.registerEffect(EffAdventureRestrictions.class,
-				"allow %~itemtypes% to (destroy|break|mine|place:be placed on) %itemtypes% [in adventure [mode]]",
-				"(disallow|prevent) %~itemtypes% from (destroying|breaking|mining|place:being placed on) %itemtypes% [in adventure [mode]]");
+				"allow %~itemtypes% to (destroy|break|mine|place:be placed on) %itemtypes% in adventure [mode]",
+				"(disallow|prevent) %~itemtypes% from (destroying|breaking|mining|place:being placed on) %itemtypes% in adventure [mode]");
 		}
 	}
 

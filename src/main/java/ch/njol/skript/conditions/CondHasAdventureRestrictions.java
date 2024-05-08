@@ -21,7 +21,6 @@ package ch.njol.skript.conditions;
 import ch.njol.skript.Skript;
 import ch.njol.skript.aliases.ItemData;
 import ch.njol.skript.aliases.ItemType;
-import ch.njol.skript.bukkitutil.BukkitUnsafe;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
@@ -32,21 +31,19 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 import com.destroystokyo.paper.Namespaced;
-import org.bukkit.Material;
 import org.bukkit.event.Event;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Set;
 
 @Name("Has Adventure Restrictions")
 @Description("Check if an item has any adventure restrictions.")
 @Examples({
 	"player's tool has any build restrictions",
 	"{_item} doesn't have a break restriction",
-	"{_item} is able to break (stone and dirt)",
-	"{_item} can not be placed on diamond ore"
+	"{_item} is able to break (stone and dirt) in adventure mode",
+	"{_item} can not be placed on diamond ore in adventure"
 })
 @Since("INSERT VERSION")
 @RequiredPlugins("Paper")
@@ -63,6 +60,7 @@ public class CondHasAdventureRestrictions extends Condition {
 		}
 	}
 
+	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<ItemType> items;
 	@Nullable
 	private Expression<ItemType> keysToCheck;
@@ -110,7 +108,6 @@ public class CondHasAdventureRestrictions extends Condition {
 		}, isNegated());
     }
 
-	@SuppressWarnings("ConstantValue")
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
 		if (keysToCheck == null)
