@@ -21,6 +21,7 @@ package ch.njol.skript.conditions;
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Keywords;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Condition;
@@ -39,6 +40,7 @@ import org.jetbrains.annotations.Nullable;
 	"if {_armorstand} has no base plate"
 })
 @Since("INSERT VERSION")
+@Keywords({"arms", "base plate"})
 public class CondArmorStandExtremities extends Condition {
 
 	static {
@@ -64,10 +66,8 @@ public class CondArmorStandExtremities extends Condition {
 	@Override
 	public boolean check(Event event) {
 		if (arms)
-			return entities.check(event,
-				stand -> stand instanceof ArmorStand && ((ArmorStand) stand).hasArms(), isNegated());
-		return entities.check(event,
-			stand -> stand instanceof ArmorStand && ((ArmorStand) stand).hasBasePlate(), isNegated());
+			return entities.check(event, stand -> stand instanceof ArmorStand && ((ArmorStand) stand).hasArms(), isNegated());
+		return entities.check(event, stand -> stand instanceof ArmorStand && ((ArmorStand) stand).hasBasePlate(), isNegated());
 	}
 
 	@Override

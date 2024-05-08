@@ -21,6 +21,7 @@ package ch.njol.skript.effects;
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Keywords;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Effect;
@@ -39,6 +40,7 @@ import org.jetbrains.annotations.Nullable;
 	"hide the base plate of {_armorstands::*}"
 })
 @Since("INSERT VERSION")
+@Keywords({"arms", "base plate"})
 public class EffArmorStandExtremities extends Effect {
 
 	static {

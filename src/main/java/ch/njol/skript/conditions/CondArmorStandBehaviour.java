@@ -64,11 +64,9 @@ public class CondArmorStandBehaviour extends Condition {
 
 	@Override
 	public boolean check(Event event) {
-		if (tick) {
+		if (tick)
 			return entities.check(event, stand -> stand instanceof ArmorStand && ((ArmorStand) stand).canTick(), isNegated());
-		} else {
-			return entities.check(event, stand -> stand instanceof ArmorStand && ((ArmorStand) stand).canMove(), isNegated());
-		}
+		return entities.check(event, stand -> stand instanceof ArmorStand && ((ArmorStand) stand).canMove(), isNegated());
 	}
 
 	@Override
