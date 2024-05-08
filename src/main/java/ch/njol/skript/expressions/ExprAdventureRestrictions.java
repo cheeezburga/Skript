@@ -128,7 +128,7 @@ public class ExprAdventureRestrictions extends PropertyExpression<ItemType, Item
 			switch (mode) {
 				case RESET:
 				case DELETE:
-                    break;
+					break;
 				case SET:
 					newKeys = deltaKeys;
 					break;
