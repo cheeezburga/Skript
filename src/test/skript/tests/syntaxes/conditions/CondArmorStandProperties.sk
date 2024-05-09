@@ -1,0 +1,18 @@
+test "armour stand properties":
+	spawn an armour stand at (spawn of world "world")
+	set {_e} to last spawned armour stand
+
+	assert {_e} isn't small with "a normally spawned armour stand should not be small"
+	assert {_e} isn't a marker with "a normally spawned armour stand should not be a marker"
+
+	make {_e} small
+	make {_e} a marker
+	assert {_e} is small with "making an armour stand small should do exactly that"
+	assert {_e} isn't able to move with "making an armour stand a marker should do exactly that"
+
+	make {_e} not small
+	make {_e} not a marker
+	assert {_e} is not small with "making an armour stand not small should do exactly that"
+	assert {_e} is not a marker with "making an armour stand not a marker should do exactly that"
+
+	delete last spawned armour stand
