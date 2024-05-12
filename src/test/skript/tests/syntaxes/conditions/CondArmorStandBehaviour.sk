@@ -1,7 +1,7 @@
 test "armour stand behaviour":
 	parse if method "org.bukkit.entity.ArmorStand##canTick()" exists:
-		spawn an armour stand at (spawn of world "world")
-		set {_e} to last spawned armour stand
+		spawn an armor stand at (spawn of world "world")
+		set {_e} to last spawned armor stand
 
 		assert {_e} is able to tick with "a normally spawned armour stand should be able to tick"
 		assert {_e} is able to move with "a normally spawned armour stand should be able to move"
@@ -16,4 +16,4 @@ test "armour stand behaviour":
 		assert {_e} is able to tick with "allowing an armour stand to tick should do exactly that"
 		assert {_e} is able to move with "allowing an armour stand to move should do exactly that"
 
-		delete last spawned armour stand
+		delete last spawned armor stand

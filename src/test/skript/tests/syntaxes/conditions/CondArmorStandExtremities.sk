@@ -1,6 +1,6 @@
 test "armour stand extremities":
-	spawn an armour stand at (spawn of world "world")
-	set {_e} to last spawned armour stand
+	spawn an armor stand at (spawn of world "world")
+	set {_e} to last spawned armor stand
 
 	assert {_e} doesn't have arms with "a normally spawned armour stand shouldn't have arms"
 	assert {_e} has a base plate with "a normally spawned armour stand should have a base plate"
@@ -15,4 +15,4 @@ test "armour stand extremities":
 	assert {_e} doesn't have arms with "hiding the arms of an armour stand should do exactly that"
 	assert {_e} is able to move with "showing the base plate of an armour stand should do exactly that"
 
-	delete last spawned armour stand
+	delete last spawned armor stand
