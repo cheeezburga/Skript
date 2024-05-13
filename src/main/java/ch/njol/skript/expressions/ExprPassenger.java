@@ -51,14 +51,13 @@ import ch.njol.util.Kleenean;
 		"This returns a list of passengers and you can use all changers in it.",
 		"See also: <a href='#ExprVehicle'>vehicle</a>"})
 @Examples({
-		"#for 1.11.2+",
 		"passengers of the minecart contains a creeper or a cow",
 		"the boat's passenger contains a pig",
 		"add a cow and a zombie to passengers of last spawned boat",
 		"set passengers of player's vehicle to a pig and a horse",
 		"remove all pigs from player's vehicle",
 		"clear passengers of boat"})
-@Since("2.0, 2.2-dev26 (Multiple passengers for 1.11.2+)")
+@Since("2.0, 2.2-dev26 (Multiple passengers)")
 public class ExprPassenger extends PropertyExpression<Entity, Entity> { // TODO create 'vehicle' and 'passenger' expressions for vehicle enter/exit events?
 
 	static {
