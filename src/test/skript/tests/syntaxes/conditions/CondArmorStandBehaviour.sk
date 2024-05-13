@@ -16,4 +16,13 @@ test "armour stand behaviour":
 		assert {_e} is able to tick with "allowing an armour stand to tick should do exactly that"
 		assert {_e} is able to move with "allowing an armour stand to move should do exactly that"
 
-		delete last spawned armor stand
+		allow {_} to tick
+		assert {_} is not able to tick with "invalid entity should not do anything"
+
+		spawn a zombie at (spawn of world "world")
+		set {_z} to last spawned zombie
+		allow {_z} to tick
+		assert {_z} is not able to tick with "modifying the behaviour of a non-armour stand should do nothing"
+
+		kill value within {_e}
+		kill value within {_z}

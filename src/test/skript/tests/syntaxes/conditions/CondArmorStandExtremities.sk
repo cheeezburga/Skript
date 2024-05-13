@@ -15,4 +15,13 @@ test "armour stand extremities":
 	assert {_e} doesn't have arms with "hiding the arms of an armour stand should do exactly that"
 	assert {_e} is able to move with "showing the base plate of an armour stand should do exactly that"
 
-	delete last spawned armor stand
+	show arms of {_}
+	assert {_} doesn't have arms with "invalid entity should not do anything"
+
+	spawn a zombie at (spawn of world "world")
+	set {_z} to last spawned zombie
+	hide arms of {_z}
+	assert {_z} does not have arms with "modifying the extremities of a non-armour stand should do nothing"
+
+	kill value within {_e}
+	kill value within {_z}
