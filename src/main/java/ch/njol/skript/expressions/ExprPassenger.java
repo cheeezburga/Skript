@@ -78,14 +78,13 @@ public class ExprPassenger extends PropertyExpression<Entity, Entity> { // TODO 
 			@Override
 			@Nullable
 			public Entity[] convert(Entity vehicle) {
-				if (getTime() >= 0 && event instanceof VehicleEnterEvent && vehicle.equals(((VehicleEnterEvent) event).getVehicle()) && !Delay.isDelayed(event)) {
+				if (getTime() >= 0 && event instanceof VehicleEnterEvent && vehicle.equals(((VehicleEnterEvent) event).getVehicle()) && !Delay.isDelayed(event))
 					return new Entity[]{((VehicleEnterEvent) event).getEntered()};
-				}
-				if (getTime() >= 0 && event instanceof VehicleExitEvent && vehicle.equals(((VehicleExitEvent) event).getVehicle()) && !Delay.isDelayed(event)) {
+				if (getTime() >= 0 && event instanceof VehicleExitEvent && vehicle.equals(((VehicleExitEvent) event).getVehicle()) && !Delay.isDelayed(event))
 					return new Entity[]{((VehicleExitEvent) event).getExited()};
-				}
 				return vehicle.getPassengers().toArray(new Entity[0]);
-			}};
+			}
+		};
 
 		List<Entity> totalPassengers = new ArrayList<>();
 		for (Entity vehicle : source) {
@@ -108,9 +107,9 @@ public class ExprPassenger extends PropertyExpression<Entity, Entity> { // TODO 
 	@Override
 	public void change(Event event, @Nullable Object[] delta, ChangeMode mode) {
 		for (Entity vehicle : getExpr().getArray(event)) {
-			if (vehicle == null) {
+			if (vehicle == null)
 				continue;
-			}
+
 			switch (mode) {
 				case SET:
 					vehicle.eject();
@@ -136,9 +135,8 @@ public class ExprPassenger extends PropertyExpression<Entity, Entity> { // TODO 
 							vehicle.removePassenger((Entity) object);
 						} else {
 							for (Entity passenger : vehicle.getPassengers()) {
-								if (passenger != null && ((EntityData<?>) object).isInstance((passenger))) {
+								if (passenger != null && ((EntityData<?>) object).isInstance((passenger)))
 									vehicle.removePassenger(passenger);
-								}
 							}
 						}
 					}
