@@ -29,12 +29,13 @@ import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
-import com.destroystokyo.paper.Namespaced;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -50,11 +51,25 @@ import java.util.Set;
 @RequiredPlugins("Paper")
 public class EffAdventureRestrictions extends Effect {
 
+	@SuppressWarnings("NotNullFieldNotInitialized")
+	private static Method DESTROY_SET, PLACE_SET, DESTROY_GET, PLACE_GET;
+
 	static {
 		if (Skript.methodExists(ItemMeta.class, "setDestroyableKeys", Collection.class)) {
 			Skript.registerEffect(EffAdventureRestrictions.class,
 				"allow %~itemtypes% to (destroy|break|mine|place:be placed on) %itemtypes% in adventure [mode]",
 				"(disallow|prevent) %~itemtypes% from (destroying|breaking|mining|place:being placed on) %itemtypes% in adventure [mode]");
+
+			try {
+				Class<?> META_CLASS = Class.forName("org.bukkit.inventory.meta.ItemMeta");
+
+				DESTROY_GET = META_CLASS.getDeclaredMethod("getDestroyableKeys");
+				PLACE_GET = META_CLASS.getDeclaredMethod("getPlaceableKeys");
+				DESTROY_SET = META_CLASS.getDeclaredMethod("setDestroyableKeys");
+				PLACE_SET = META_CLASS.getDeclaredMethod("setPlaceableKeys");
+			} catch (ClassNotFoundException | NoSuchMethodException e) {
+				assert false: e.getMessage();
+			}
 		}
 	}
 
@@ -75,13 +90,14 @@ public class EffAdventureRestrictions extends Effect {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void execute(Event event) {
 		ItemType[] items = this.items.getArray(event);
 		if (items.length == 0)
 			return;
 
-		Set<Namespaced> keys = new HashSet<>();
+		Set<Object> keys = new HashSet<>();
 
 		for (ItemType itemType : deltaKeys.getArray(event)) {
 			Iterator<ItemStack> iter = itemType.containerIterator();
@@ -93,15 +109,19 @@ public class EffAdventureRestrictions extends Effect {
 
 		if (!keys.isEmpty()) {
 			for (ItemType item : items) {
-				ItemMeta meta = item.getItemMeta();
-				Set<Namespaced> existingKeys = new HashSet<>(destroy ? meta.getDestroyableKeys() : meta.getPlaceableKeys());
-				if (allow) {
-					existingKeys.addAll(keys);
-				} else {
-					existingKeys.removeAll(keys);
+				try {
+					ItemMeta meta = item.getItemMeta();
+					Set<Object> existingKeys = new HashSet<>((Set<Object>) (destroy ? DESTROY_GET.invoke(meta) : PLACE_GET.invoke(meta)));
+					if (allow) {
+						existingKeys.addAll(keys);
+					} else {
+						existingKeys.removeAll(keys);
+					}
+					if (destroy) { DESTROY_SET.invoke(meta, existingKeys); } else { PLACE_SET.invoke(meta, existingKeys); }
+					item.setItemMeta(meta);
+				} catch (IllegalAccessException | InvocationTargetException e) {
+					assert false: e.getMessage();
 				}
-				if (destroy) { meta.setDestroyableKeys(existingKeys); } else { meta.setPlaceableKeys(existingKeys); }
-				item.setItemMeta(meta);
 			}
 		}
 	}

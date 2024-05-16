@@ -33,7 +33,6 @@ import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 import ch.njol.util.coll.CollectionUtils;
-import com.destroystokyo.paper.Namespaced;
 import org.bukkit.Material;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -41,6 +40,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -58,6 +59,9 @@ import java.util.Set;
 @RequiredPlugins("Paper")
 public class ExprAdventureRestrictions extends PropertyExpression<ItemType, ItemType> {
 
+	@SuppressWarnings("NotNullFieldNotInitialized")
+    private static Method DESTROY_HAS, PLACE_HAS, DESTROY_GET, PLACE_GET, DESTROY_SET, PLACE_SET;
+
 	static {
 		if (Skript.methodExists(ItemMeta.class, "getDestroyableKeys")) {
 			Skript.registerExpression(ExprAdventureRestrictions.class, ItemType.class, ExpressionType.PROPERTY,
@@ -65,6 +69,19 @@ public class ExprAdventureRestrictions extends PropertyExpression<ItemType, Item
 				"[the] (:break|:destroy|:place|:build)[able] restrictions of %itemtypes%",
 				"%itemtypes%'[s] (:break|:destroy|:place|:build)able blocks [in adventure [mode]]",
 				"%itemtypes%'[s] (:break|:destroy|:place|:build)[able] restrictions");
+
+			try {
+                Class<?> META_CLASS = Class.forName("org.bukkit.inventory.meta.ItemMeta");
+
+				DESTROY_HAS = META_CLASS.getDeclaredMethod("hasDestroyableKeys");
+				PLACE_HAS = META_CLASS.getDeclaredMethod("hasPlaceableKeys");
+				DESTROY_GET = META_CLASS.getDeclaredMethod("getDestroyableKeys");
+				PLACE_GET = META_CLASS.getDeclaredMethod("getPlaceableKeys");
+				DESTROY_SET = META_CLASS.getDeclaredMethod("setDestroyableKeys");
+				PLACE_SET = META_CLASS.getDeclaredMethod("setPlaceableKeys");
+			} catch (ClassNotFoundException | NoSuchMethodException e) {
+				assert false: e.getMessage();
+			}
 		}
 	}
 
@@ -78,17 +95,22 @@ public class ExprAdventureRestrictions extends PropertyExpression<ItemType, Item
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected ItemType @NotNull [] get(Event event, ItemType [] source) {
 		Set<ItemType> existingKeys = new HashSet<>();
 		for (ItemType item : source) {
 			ItemMeta meta = item.getItemMeta();
-			if (destroy ? meta.hasDestroyableKeys() : meta.hasPlaceableKeys()) {
-				for (Namespaced key : destroy ? meta.getDestroyableKeys() : meta.getPlaceableKeys()) {
-					Material material = BukkitUnsafe.getMaterialFromMinecraftId(key.toString());
-					if (material != null)
-						existingKeys.add(new ItemType(material));
+			try {
+				if (destroy ? (boolean) DESTROY_HAS.invoke(meta) : (boolean) PLACE_HAS.invoke(meta)) {
+					for (Object key : (Set<Object>) (destroy ? DESTROY_GET.invoke(meta) : PLACE_GET.invoke(meta))) {
+						Material material = BukkitUnsafe.getMaterialFromMinecraftId(key.toString());
+						if (material != null)
+							existingKeys.add(new ItemType(material));
+					}
 				}
+			} catch (IllegalAccessException | InvocationTargetException e) {
+				assert false: e.getMessage();
 			}
 		}
 		return existingKeys.toArray(new ItemType[0]);
@@ -105,11 +127,12 @@ public class ExprAdventureRestrictions extends PropertyExpression<ItemType, Item
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void change(Event event, @Nullable Object[] delta, ChangeMode mode) {
 		ItemType[] source = getExpr().getArray(event);
 
-		Set<Namespaced> deltaKeys = new HashSet<>();
+		Set<Object> deltaKeys = new HashSet<>();
 		if (mode == ChangeMode.SET || mode == ChangeMode.ADD || mode == ChangeMode.REMOVE) {
 			for (Object o : delta) {
 				if (o instanceof ItemType) {
@@ -119,39 +142,44 @@ public class ExprAdventureRestrictions extends PropertyExpression<ItemType, Item
 			}
 		}
 
-		for (ItemType item : source) {
+		try {
+			for (ItemType item : source) {
 
-			ItemMeta meta = item.getItemMeta();
-			Collection<Namespaced> newKeys = new ArrayList<>();
+				ItemMeta meta = item.getItemMeta();
+				Collection<Object> newKeys = new ArrayList<>();
 
-			switch (mode) {
-				case RESET:
-				case DELETE:
-					break;
-				case SET:
-					newKeys = deltaKeys;
-					break;
-				case ADD:
-				case REMOVE:
-					newKeys = new HashSet<>(destroy ? meta.getDestroyableKeys() : meta.getPlaceableKeys());
-					if (mode == ChangeMode.ADD) {
-						newKeys.addAll(deltaKeys);
-					} else {
-						newKeys.removeAll(deltaKeys);
-					}
-					break;
-				case REMOVE_ALL:
-					assert false;
+				switch (mode) {
+					case RESET:
+					case DELETE:
+						break;
+					case SET:
+						newKeys = deltaKeys;
+						break;
+					case ADD:
+					case REMOVE:
+						newKeys = new HashSet<>((Set<Object>) (destroy ? DESTROY_GET.invoke(meta) : PLACE_GET.invoke(meta)));
+						if (mode == ChangeMode.ADD) {
+							newKeys.addAll(deltaKeys);
+						} else {
+							newKeys.removeAll(deltaKeys);
+						}
+						break;
+					case REMOVE_ALL:
+						assert false;
+				}
+
+				if (destroy) {
+					DESTROY_SET.invoke(meta, newKeys);
+				} else {
+					PLACE_SET.invoke(meta, newKeys);
+				}
+
+				item.setItemMeta(meta);
 			}
-
-			if (destroy) {
-				meta.setDestroyableKeys(newKeys);
-			} else {
-				meta.setPlaceableKeys(newKeys);
-			}
-
-			item.setItemMeta(meta);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			assert false: e.getMessage();
 		}
+
 	}
 
 	@Override

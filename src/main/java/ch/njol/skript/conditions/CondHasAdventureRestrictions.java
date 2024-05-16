@@ -49,6 +49,9 @@ import java.util.Set;
 @RequiredPlugins("Paper")
 public class CondHasAdventureRestrictions extends Condition {
 
+	@SuppressWarnings("NotNullFieldNotInitialized")
+	private static Method DESTROY_HAS, PLACE_HAS, DESTROY_GET, PLACE_GET;
+
 	static {
 		if (Skript.methodExists(ItemMeta.class, "hasDestroyableKeys")) {
 			Skript.registerCondition(CondHasAdventureRestrictions.class,
@@ -57,7 +60,19 @@ public class CondHasAdventureRestrictions extends Condition {
 				"%itemtypes% (can|is able to) (break|destroy|mine|place:be placed on) %itemtypes% in adventure [mode]",
 				"%itemtypes% (can't|can[ ]not|is unable to) (break|destroy|mine|place:be placed on) %itemtypes% in adventure [mode]"
 			);
+
+			try {
+				Class<?> META_CLASS = Class.forName("org.bukkit.inventory.meta.ItemMeta");
+
+				DESTROY_HAS = META_CLASS.getDeclaredMethod("hasDestroyableKeys");
+				PLACE_HAS = META_CLASS.getDeclaredMethod("hasPlaceableKeys");
+				DESTROY_GET = META_CLASS.getDeclaredMethod("getDestroyableKeys");
+				PLACE_GET = META_CLASS.getDeclaredMethod("getPlaceableKeys");
+			} catch (ClassNotFoundException | NoSuchMethodException e) {
+				assert false: e.getMessage();
+			}
 		}
+
 	}
 
 	@SuppressWarnings("NotNullFieldNotInitialized")
@@ -77,10 +92,18 @@ public class CondHasAdventureRestrictions extends Condition {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public boolean check(Event e) {
-		if (keysToCheck == null)
-			return items.check(e, item -> place ? item.getItemMeta().hasPlaceableKeys() : item.getItemMeta().hasDestroyableKeys(), isNegated());
+	public boolean check(Event event) {
+		if (keysToCheck == null) {
+			return items.check(event, item -> {
+				try {
+					return place ? ((boolean) PLACE_HAS.invoke(item.getItemMeta())) : ((boolean) DESTROY_HAS.invoke(item.getItemMeta()));
+				} catch (IllegalAccessException | InvocationTargetException e) {
+					return false;
+				}
+			}, isNegated());
+		}
 
 		return items.check(e, (itemType) -> {
 			Set<Namespaced> itemKeys = (place ? itemType.getItemMeta().getPlaceableKeys(): itemType.getItemMeta().getDestroyableKeys());
@@ -91,10 +114,11 @@ public class CondHasAdventureRestrictions extends Condition {
 
 			// for each key itemtype, if it isAll, we need to ensure every Material is represented in the item's keys
 			// if it isn't isAll, we need to ensure at least one of the Materials is represented in the item's keys.
-			return keysToCheck.check(e, (keyItemType) -> {
+			Set<Object> finalItemKeys = itemKeys;
+			return keysToCheck.check(event, (keyItemType) -> {
 				boolean isAll = keyItemType.isAll();
 				for (ItemData keyData : keyItemType.getTypes()) {
-					if (!itemKeys.contains(keyData.getType().getKey())) {
+					if (!finalItemKeys.contains(keyData.getType().getKey())) {
 						// if we're isAll, we can exit out early. Not all keys matched.
 						if (isAll)
 							return false;
@@ -108,10 +132,11 @@ public class CondHasAdventureRestrictions extends Condition {
 		}, isNegated());
     }
 
+	@SuppressWarnings("ConstantConditions")
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
 		if (keysToCheck == null)
 			return items.toString(event, debug) + " has" + (isNegated() ? " no" : "") + (place ? " placeable" : " destroyable") + " keys";
-		return "the" + (place ? " placeable" : " destroyable") + " keys of" + items.toString(event, debug) + (isNegated() ? " do not" : "") + " contain" + keysToCheck.toString(event, debug);
+        return "the" + (place ? " placeable" : " destroyable") + " keys of" + items.toString(event, debug) + (isNegated() ? " do not" : "") + " contain" + keysToCheck.toString(event, debug);
 	}
 }
