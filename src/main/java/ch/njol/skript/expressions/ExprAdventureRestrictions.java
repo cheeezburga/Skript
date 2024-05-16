@@ -77,8 +77,8 @@ public class ExprAdventureRestrictions extends PropertyExpression<ItemType, Item
 				PLACE_HAS = META_CLASS.getDeclaredMethod("hasPlaceableKeys");
 				DESTROY_GET = META_CLASS.getDeclaredMethod("getDestroyableKeys");
 				PLACE_GET = META_CLASS.getDeclaredMethod("getPlaceableKeys");
-				DESTROY_SET = META_CLASS.getDeclaredMethod("setDestroyableKeys");
-				PLACE_SET = META_CLASS.getDeclaredMethod("setPlaceableKeys");
+				DESTROY_SET = META_CLASS.getDeclaredMethod("setDestroyableKeys", Collection.class);
+				PLACE_SET = META_CLASS.getDeclaredMethod("setPlaceableKeys", Collection.class);
 			} catch (ClassNotFoundException | NoSuchMethodException e) {
 				assert false: e.getMessage();
 			}
