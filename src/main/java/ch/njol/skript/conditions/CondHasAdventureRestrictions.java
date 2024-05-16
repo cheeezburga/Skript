@@ -30,11 +30,13 @@ import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
-import com.destroystokyo.paper.Namespaced;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Set;
 
 @Name("Has Adventure Restrictions")
@@ -53,6 +55,7 @@ public class CondHasAdventureRestrictions extends Condition {
 	private static Method DESTROY_HAS, PLACE_HAS, DESTROY_GET, PLACE_GET;
 
 	static {
+
 		if (Skript.methodExists(ItemMeta.class, "hasDestroyableKeys")) {
 			Skript.registerCondition(CondHasAdventureRestrictions.class,
 				"%itemtypes% (has|have) [a|any|:no] (break|place:(build|place)) restriction[s]",
@@ -105,8 +108,13 @@ public class CondHasAdventureRestrictions extends Condition {
 			}, isNegated());
 		}
 
-		return items.check(e, (itemType) -> {
-			Set<Namespaced> itemKeys = (place ? itemType.getItemMeta().getPlaceableKeys(): itemType.getItemMeta().getDestroyableKeys());
+		return items.check(event, (itemType) -> {
+			Set<Object> itemKeys = Collections.EMPTY_SET;
+			try {
+				itemKeys = (Set<Object>) (place ? PLACE_GET.invoke(itemType.getItemMeta()) : DESTROY_GET.invoke(itemType.getItemMeta()));
+			} catch (IllegalAccessException | InvocationTargetException e) {
+				assert false: e.getMessage();
+			}
 
 			// short circuit if no keys
 			if (itemKeys.isEmpty())
