@@ -38,24 +38,26 @@ import org.bukkit.util.Vector;
 @Description("The yaw or pitch of a location or vector.")
 @Examples({"log \"%player%: %location of player%, %player's yaw%, %player's pitch%\" to \"playerlocs.log\"",
 	"set {_yaw} to yaw of player",
-	"set {_p} to pitch of target entity"})
+	"set {_p} to pitch of target entity",
+	"add 10 to yaw of {_location}",
+	"reset pitch of {_location}"})
 @Since("2.0, 2.2-dev28 (vector yaw/pitch)")
 public class ExprYawPitch extends SimplePropertyExpression<Object, Number> {
 
 	static {
-		register(ExprYawPitch.class, Number.class, "(0¦yaw|1¦pitch)", "locations/vectors");
+		register(ExprYawPitch.class, Number.class, "(0:yaw|1:pitch)", "locations/vectors");
 	}
 
 	private boolean usesYaw;
 
 	@Override
-	public boolean init(final Expression<?>[] exprs, final int matchedPattern, final Kleenean isDelayed, final ParseResult parseResult) {
+	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		usesYaw = parseResult.mark == 0;
 		return super.init(exprs, matchedPattern, isDelayed, parseResult);
 	}
 
 	@Override
-	public Number convert(final Object object) {
+	public Number convert(Object object) {
 		if (object instanceof Location) {
 			Location l = ((Location) object);
 			return usesYaw ? convertToPositive(l.getYaw()) : l.getPitch();
@@ -68,21 +70,17 @@ public class ExprYawPitch extends SimplePropertyExpression<Object, Number> {
 		return null;
 	}
 
-	@SuppressWarnings({"null"})
+	@SuppressWarnings("null")
 	@Override
-	public Class<?>[] acceptChange(final ChangeMode mode) {
-		if (mode == ChangeMode.SET || mode == ChangeMode.ADD || mode == ChangeMode.REMOVE)
-			return CollectionUtils.array(Number.class);
-		return null;
+	public Class<?>[] acceptChange(ChangeMode mode) {
+		return (mode == ChangeMode.REMOVE_ALL) ? null : CollectionUtils.array(Number.class);
 	}
 
 	@SuppressWarnings("null")
 	@Override
-	public void change(Event e, Object[] delta, ChangeMode mode) {
-		if (delta == null)
-			return;
-		float value = ((Number) delta[0]).floatValue();
-		for (Object single : getExpr().getArray(e)) {
+	public void change(Event event, Object[] delta, ChangeMode mode) {
+		float value = delta == null ? 0 : ((Number) delta[0]).floatValue();
+		for (Object single : getExpr().getArray(event)) {
 			if (single instanceof Location) {
 				changeLocation(((Location) single), value, mode);
 			} else if (single instanceof Vector) {
@@ -92,7 +90,12 @@ public class ExprYawPitch extends SimplePropertyExpression<Object, Number> {
 	}
 
 	private void changeLocation(Location l, float value, ChangeMode mode) {
+		if (value == 0 && (mode == ChangeMode.REMOVE || mode == ChangeMode.ADD))
+			return;
+
 		switch (mode) {
+			case RESET:
+			case DELETE:
 			case SET:
 				if (usesYaw)
 					l.setYaw(convertToPositive(value));
@@ -116,31 +119,42 @@ public class ExprYawPitch extends SimplePropertyExpression<Object, Number> {
 		}
 	}
 
-	private void changeVector(Vector vector, float n, ChangeMode mode) {
+	private void changeVector(Vector vector, float value, ChangeMode mode) {
+		if (value == 0 && (mode == ChangeMode.REMOVE || mode == ChangeMode.ADD))
+			return;
+
 		float yaw = VectorMath.getYaw(vector);
 		float pitch = VectorMath.getPitch(vector);
+
 		switch (mode) {
 			case REMOVE:
-				n = -n;
-				//$FALL-THROUGH$
+				value = -value;
+				// fall through to ADD
 			case ADD:
 				if (usesYaw)
-					yaw += n;
+					yaw += value;
 				else
-					pitch -= n; // Negative because of Minecraft's / Skript's upside down pitch
-				Vector newVector = VectorMath.fromYawAndPitch(yaw, pitch).multiply(vector.length());
-				VectorMath.copyVector(vector, newVector);
+					pitch -= value; // Negative because of Minecraft's / Skript's upside down pitch
 				break;
 			case SET:
 				if (usesYaw)
-					yaw = VectorMath.fromSkriptYaw(n);
+					yaw = VectorMath.fromSkriptYaw(value);
 				else
-					pitch = VectorMath.fromSkriptPitch(n);
-				newVector = VectorMath.fromYawAndPitch(yaw, pitch).multiply(vector.length());
-				VectorMath.copyVector(vector, newVector);
+					pitch = VectorMath.fromSkriptPitch(value);
+				break;
+			case RESET:
+			case DELETE:
+				if (usesYaw)
+					yaw = VectorMath.fromSkriptYaw(0);
+				else
+					pitch = VectorMath.fromSkriptPitch(0);
+				break;
+			default:
+				assert false;
 		}
+		Vector newVector = VectorMath.fromYawAndPitch(yaw, pitch).multiply(vector.length());
+		VectorMath.copyVector(vector, newVector);
 	}
-
 
 	//Some random method decided to use for converting to positive values.
 	public float convertToPositive(float f) {
