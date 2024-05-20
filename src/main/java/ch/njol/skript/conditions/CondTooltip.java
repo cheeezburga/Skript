@@ -35,7 +35,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.eclipse.jdt.annotation.Nullable;
 
 @Name("Has Item Tooltips")
-@Description("Whether or not the entire or additional tooltip of an item is shown or hidden.")
+@Description("Whether the entire or additional tooltip of an item is shown or hidden.")
 @Examples({
 	"send true if entire tooltip of player's tool is shown",
 	"if additional tooltip of {_item} is hidden:"
@@ -53,8 +53,7 @@ public class CondTooltip extends Condition {
 
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<ItemType> items;
-	private boolean show;
-	private boolean entire;
+	private boolean show, entire;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -69,13 +68,12 @@ public class CondTooltip extends Condition {
 	public boolean check(Event event) {
 		if (entire)
 			return items.check(event, item -> item.getItemMeta().isHideTooltip(), show);
-		else
-			return items.check(event, item -> item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ADDITIONAL_TOOLTIP), show);
+		return items.check(event, item -> item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ADDITIONAL_TOOLTIP), show);
 	}
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return "the " + (entire ? "entire " : "additional ") + "tooltip of " + items.toString(event, debug) + (show ? " shown" : " hidden");
+		return "the " + (entire ? "entire" : "additional") + " tooltip of " + items.toString(event, debug) + " is " + (show ? " shown" : " hidden");
 	}
 
 }

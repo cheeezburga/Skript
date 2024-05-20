@@ -56,8 +56,7 @@ public class EffTooltip extends Effect {
 
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<ItemType> items;
-	private boolean show;
-	private boolean entire;
+	private boolean show, entire;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -75,10 +74,11 @@ public class EffTooltip extends Effect {
 			if (entire) {
 				meta.setHideTooltip(!show);
 			} else {
-				if (show)
+				if (show) {
 					meta.removeItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
-				else
+				} else {
 					meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+				}
 			}
 			item.setItemMeta(meta);
 		}
@@ -86,7 +86,7 @@ public class EffTooltip extends Effect {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return (show ? "show " : "hide ") + "the " + (entire ? "entire " : "additional ") + "tooltip of " + items.toString(event, debug);
+		return (show ? "show" : "hide") + " the " + (entire ? "entire" : "additional") + " tooltip of " + items.toString(event, debug);
 	}
 
 }
