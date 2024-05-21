@@ -50,8 +50,8 @@ public class EffTooltip extends Effect {
 	static {
 		if (Skript.methodExists(ItemMeta.class, "isHideTooltip")) // this method was added in the same version as the additional tooltip item flag
 			Skript.registerEffect(EffTooltip.class,
-				"(:show|:hide) %itemtypes%'[s] (0:entire|1:additional) tool[ ]tip",
-				"(:show|:hide) [the] (0:entire|1:additional) tool[ ]tip of %itemtypes%");
+				"(:show|hide) %itemtypes%'[s] (:entire|additional) tool[ ]tip",
+				"(:show|hide) [the] (:entire|additional) tool[ ]tip of %itemtypes%");
 	}
 
 	@SuppressWarnings("NotNullFieldNotInitialized")
@@ -63,7 +63,7 @@ public class EffTooltip extends Effect {
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		items = (Expression<ItemType>) exprs[0];
 		show = parseResult.hasTag("show");
-		entire = parseResult.mark == 0;
+		entire = parseResult.hasTag("entire");
 		return true;
 	}
 

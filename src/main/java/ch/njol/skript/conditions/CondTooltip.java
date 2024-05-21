@@ -35,7 +35,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.eclipse.jdt.annotation.Nullable;
 
 @Name("Has Item Tooltips")
-@Description("Whether the entire or additional tooltip of an item is shown or hidden.")
+@Description({
+	"Whether the entire or additional tooltip of an item is shown or hidden.",
+	"The 'entire tooltip' is what shows to the player when they hover an item (i.e. name, lore, etc.).",
+	"The 'additional tooltip' hides certain information from certain items (potions, maps, books, fireworks, and banners)."
+})
 @Examples({
 	"send true if entire tooltip of player's tool is shown",
 	"if additional tooltip of {_item} is hidden:"
@@ -47,13 +51,15 @@ public class CondTooltip extends Condition {
 	static {
 		if (Skript.methodExists(ItemMeta.class, "isHideTooltip")) // this method was added in the same version as the additional tooltip item flag
 			Skript.registerCondition(CondTooltip.class,
-				"[the] (:entire|additional) tool[ ]tip of %itemtypes% is (:shown|hidden)",
-				"%itemtypes%'[s] (:entire|additional) tool[ ]tip is (:shown|hidden)");
+				"[the] (:entire|additional) tool[ ]tip of %itemtypes% (is|are) (:shown|hidden)",
+				"[the] (:entire|additional) tool[ ]tip of %itemtypes% (isn't|is not|aren't|are not) (:shown|hidden)",
+				"%itemtypes%'[s] (:entire|additional) tool[ ]tip (is|are) (:shown|hidden)",
+				"%itemtypes%'[s] (:entire|additional) tool[ ]tip (isn't|is not|aren't|are not) (:shown|hidden)");
 	}
 
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<ItemType> items;
-	private boolean show, entire;
+	private boolean show, entire, not;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -61,19 +67,20 @@ public class CondTooltip extends Condition {
 		items = (Expression<ItemType>) exprs[0];
 		show = parseResult.hasTag("shown");
 		entire = parseResult.hasTag("entire");
+		not = (matchedPattern == 1 || matchedPattern == 3);
 		return true;
 	}
 
 	@Override
 	public boolean check(Event event) {
 		if (entire)
-			return items.check(event, item -> item.getItemMeta().isHideTooltip(), show);
-		return items.check(event, item -> item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ADDITIONAL_TOOLTIP), show);
+			return items.check(event, item -> item.getItemMeta().isHideTooltip(), (show ^ not));
+		return items.check(event, item -> item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ADDITIONAL_TOOLTIP), (show ^ not));
 	}
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return "the " + (entire ? "entire" : "additional") + " tooltip of " + items.toString(event, debug) + " is " + (show ? " shown" : " hidden");
+		return "the " + (entire ? "entire" : "additional") + " tooltip of " + items.toString(event, debug) + " is " + (not ? "not " : "") + (show ? "shown" : "hidden");
 	}
 
 }
