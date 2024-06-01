@@ -51,36 +51,35 @@ public class CondTooltip extends Condition {
 	static {
 		if (Skript.methodExists(ItemMeta.class, "isHideTooltip")) // this method was added in the same version as the additional tooltip item flag
 			Skript.registerCondition(CondTooltip.class,
-				"[the] [:entire|additional] tool[ ]tip[s] of %itemtypes% (is|are) (:shown|hidden)",
-				"[the] [:entire|additional] tool[ ]tip[s] of %itemtypes% (isn't|is not|aren't|are not) (:shown|hidden)",
-				"%itemtypes%'[s] [:entire|additional] tool[ ]tip[s] (is|are) (:shown|hidden)",
-				"%itemtypes%'[s] [:entire|additional] tool[ ]tip[s] (isn't|is not|aren't|are not) (:shown|hidden)");
+				"[the] [entire|:additional] tool[ ]tip[s] of %itemtypes% (is|are) (:shown|hidden)",
+				"[the] [entire|:additional] tool[ ]tip[s] of %itemtypes% (isn't|is not|aren't|are not) (:shown|hidden)",
+				"%itemtypes%'[s] [entire|:additional] tool[ ]tip[s] (is|are) (:shown|hidden)",
+				"%itemtypes%'[s] [entire|:additional] tool[ ]tip[s] (isn't|is not|aren't|are not) (:shown|hidden)");
 	}
 
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<ItemType> items;
-	private boolean show, entire, not;
+	private boolean entire;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		items = (Expression<ItemType>) exprs[0];
-		show = parseResult.hasTag("shown");
-		entire = parseResult.hasTag("entire");
-		not = (matchedPattern == 1 || matchedPattern == 3);
+		entire = !parseResult.hasTag("additional");
+		setNegated(parseResult.hasTag("shown") ^ (matchedPattern == 1 || matchedPattern == 3));
 		return true;
 	}
 
 	@Override
 	public boolean check(Event event) {
 		if (entire)
-			return items.check(event, item -> item.getItemMeta().isHideTooltip(), (show ^ not));
-		return items.check(event, item -> item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ADDITIONAL_TOOLTIP), (show ^ not));
+			return items.check(event, item -> item.getItemMeta().isHideTooltip(), isNegated());
+		return items.check(event, item -> item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ADDITIONAL_TOOLTIP), isNegated());
 	}
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return "the " + (entire ? "entire" : "additional") + " tooltip of " + items.toString(event, debug) + " is " + (not ? "not " : "") + (show ? "shown" : "hidden");
+		return "the " + (entire ? "entire" : "additional") + " tooltip of " + items.toString(event, debug) + " is " + (isNegated() ? "hidden" : "shown");
 	}
 
 }

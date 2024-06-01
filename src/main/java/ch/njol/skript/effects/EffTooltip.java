@@ -37,7 +37,8 @@ import org.eclipse.jdt.annotation.Nullable;
 @Name("Item Tooltips")
 @Description({
 	"Show or hide the tooltip of an item.",
-	"If changing the 'entire' tooltip of an item, nothing will show up when a player hovers over it."
+	"If changing the 'entire' tooltip of an item, nothing will show up when a player hovers over it.",
+	"If changing the 'additional' tooltip, only specific parts (which change per item) will be hidden."
 })
 @Examples({
 	"hide the entire tooltip of player's tool",
@@ -50,8 +51,8 @@ public class EffTooltip extends Effect {
 	static {
 		if (Skript.methodExists(ItemMeta.class, "isHideTooltip")) // this method was added in the same version as the additional tooltip item flag
 			Skript.registerEffect(EffTooltip.class,
-				"(:show|hide) %itemtypes%'[s] [:entire|additional] tool[ ]tip",
-				"(:show|hide) [the] [:entire|additional] tool[ ]tip of %itemtypes%");
+				"(:show|hide) %itemtypes%'[s] [entire|:additional] tool[ ]tip",
+				"(:show|hide) [the] [entire|:additional] tool[ ]tip of %itemtypes%");
 	}
 
 	@SuppressWarnings("NotNullFieldNotInitialized")
@@ -63,7 +64,7 @@ public class EffTooltip extends Effect {
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		items = (Expression<ItemType>) exprs[0];
 		show = parseResult.hasTag("show");
-		entire = parseResult.hasTag("entire");
+		entire = !parseResult.hasTag("additional");
 		return true;
 	}
 
