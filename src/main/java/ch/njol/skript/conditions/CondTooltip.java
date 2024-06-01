@@ -51,10 +51,10 @@ public class CondTooltip extends Condition {
 	static {
 		if (Skript.methodExists(ItemMeta.class, "isHideTooltip")) // this method was added in the same version as the additional tooltip item flag
 			Skript.registerCondition(CondTooltip.class,
-				"[the] (:entire|additional) tool[ ]tip of %itemtypes% (is|are) (:shown|hidden)",
-				"[the] (:entire|additional) tool[ ]tip of %itemtypes% (isn't|is not|aren't|are not) (:shown|hidden)",
-				"%itemtypes%'[s] (:entire|additional) tool[ ]tip (is|are) (:shown|hidden)",
-				"%itemtypes%'[s] (:entire|additional) tool[ ]tip (isn't|is not|aren't|are not) (:shown|hidden)");
+				"[the] [:entire|additional] tool[ ]tip[s] of %itemtypes% (is|are) (:shown|hidden)",
+				"[the] [:entire|additional] tool[ ]tip[s] of %itemtypes% (isn't|is not|aren't|are not) (:shown|hidden)",
+				"%itemtypes%'[s] [:entire|additional] tool[ ]tip[s] (is|are) (:shown|hidden)",
+				"%itemtypes%'[s] [:entire|additional] tool[ ]tip[s] (isn't|is not|aren't|are not) (:shown|hidden)");
 	}
 
 	@SuppressWarnings("NotNullFieldNotInitialized")
