@@ -49,7 +49,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class EffTooltip extends Effect {
 
 	static {
-		if (Skript.methodExists(ItemMeta.class, "isHideTooltip")) // this method was added in the same version as the additional tooltip item flag
+		if (Skript.methodExists(ItemMeta.class, "setHideTooltip", boolean.class)) // this method was added in the same version as the additional tooltip item flag
 			Skript.registerEffect(EffTooltip.class,
 				"(:show|hide) %itemtypes%'[s] [entire|:additional] tool[ ]tip",
 				"(:show|hide) [the] [entire|:additional] tool[ ]tip of %itemtypes%");
