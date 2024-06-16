@@ -44,8 +44,8 @@ import org.eclipse.jdt.annotation.Nullable;
 	"hide the entire tooltip of player's tool",
 	"hide {_item}'s additional tool tip"
 })
+@RequiredPlugins("Spigot 1.20.5+")
 @Since("INSERT VERSION")
-@RequiredPlugins("MC 1.20.5+")
 public class EffTooltip extends Effect {
 
 	static {
@@ -59,8 +59,8 @@ public class EffTooltip extends Effect {
 	private Expression<ItemType> items;
 	private boolean show, entire;
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		items = (Expression<ItemType>) exprs[0];
 		show = parseResult.hasTag("show");

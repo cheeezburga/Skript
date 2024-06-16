@@ -44,8 +44,8 @@ import org.eclipse.jdt.annotation.Nullable;
 	"send true if entire tooltip of player's tool is shown",
 	"if additional tooltip of {_item} is hidden:"
 })
+@RequiredPlugins("Spigot 1.20.5+")
 @Since("INSERT VERSION")
-@RequiredPlugins("MC 1.20.5+")
 public class CondTooltip extends Condition {
 
 	static {
@@ -61,8 +61,8 @@ public class CondTooltip extends Condition {
 	private Expression<ItemType> items;
 	private boolean entire;
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		items = (Expression<ItemType>) exprs[0];
 		entire = !parseResult.hasTag("additional");
@@ -79,7 +79,7 @@ public class CondTooltip extends Condition {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return "the " + (entire ? "entire" : "additional") + " tooltip of " + items.toString(event, debug) + " is " + (isNegated() ? "hidden" : "shown");
+		return (entire ? "entire" : "additional") + " tooltip of " + items.toString(event, debug) + " is " + (isNegated() ? "hidden" : "shown");
 	}
 
 }
