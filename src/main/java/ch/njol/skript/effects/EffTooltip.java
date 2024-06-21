@@ -51,21 +51,21 @@ public class EffTooltip extends Effect {
 	static {
 		if (Skript.methodExists(ItemMeta.class, "setHideTooltip", boolean.class)) { // this method was added in the same version as the additional tooltip item flag
 			Skript.registerEffect(EffTooltip.class,
-				"(:show|hide) %itemtypes%'[s] [entire|:additional] tool[ ]tip",
-				"(:show|hide) [the] [entire|:additional] tool[ ]tip of %itemtypes%"
+				"(show|reveal|:hide) %itemtypes%'[s] [entire|:additional] tool[ ]tip",
+				"(show|reveal|:hide) [the] [entire|:additional] tool[ ]tip of %itemtypes%"
 			);
 		}
 	}
 
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<ItemType> items;
-	private boolean show, entire;
+	private boolean hide, entire;
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		items = (Expression<ItemType>) exprs[0];
-		show = parseResult.hasTag("show");
+		hide = parseResult.hasTag("hide");
 		entire = !parseResult.hasTag("additional");
 		return true;
 	}
@@ -75,12 +75,12 @@ public class EffTooltip extends Effect {
 		for (ItemType item : items.getArray(event)) {
 			ItemMeta meta = item.getItemMeta();
 			if (entire) {
-				meta.setHideTooltip(!show);
+				meta.setHideTooltip(hide);
 			} else {
-				if (show) {
-					meta.removeItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
-				} else {
+				if (hide) {
 					meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+				} else {
+					meta.removeItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
 				}
 			}
 			item.setItemMeta(meta);
@@ -89,7 +89,7 @@ public class EffTooltip extends Effect {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return (show ? "show" : "hide") + " the " + (entire ? "entire" : "additional") + " tooltip of " + items.toString(event, debug);
+		return (hide ? "hide" : "show") + " the " + (entire ? "entire" : "additional") + " tooltip of " + items.toString(event, debug);
 	}
 
 }
