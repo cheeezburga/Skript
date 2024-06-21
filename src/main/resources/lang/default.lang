@@ -2225,6 +2225,13 @@ transform reasons:
 	unknown: unknown
 	infection: infection, villager infection
 
+# -- Item Rarities --
+item rarities:
+	common: common
+	uncommon: uncommon
+	rare: rare
+	epic: epic
+
 # -- Boolean --
 boolean:
 	true:
@@ -2304,6 +2311,7 @@ types:
 	quitreason: quit reason¦s @a
 	inventoryclosereason: inventory close reason¦s @an
 	transformreason: transform reason¦s @a
+	itemrarity: item rarit¦y¦ies @an
 
 	# Skript
 	weathertype: weather type¦s @a
