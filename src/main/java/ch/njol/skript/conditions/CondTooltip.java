@@ -81,7 +81,7 @@ public class CondTooltip extends Condition {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return (entire ? "entire" : "additional") + " tooltip of " + items.toString(event, debug) + " is " + (isNegated() ? "hidden" : "shown");
+		return "the " + (entire ? "entire" : "additional") + " tooltip of " + items.toString(event, debug) + " is " + (isNegated() ? "hidden" : "shown");
 	}
 
 }
