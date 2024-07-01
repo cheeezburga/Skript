@@ -74,4 +74,5 @@ public class CondArmorStandExtremities extends Condition {
 	public String toString(@Nullable Event event, boolean debug) {
 		return entities.toString(event, debug) + " has " + (isNegated() ? "no " : "") + (arms ? "arms" : "base plate");
 	}
+
 }

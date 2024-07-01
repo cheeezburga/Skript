@@ -72,4 +72,5 @@ public class CondArmorStandProperties extends Condition {
 	public String toString(@Nullable Event event, boolean debug) {
 		return entities.toString(event, debug) + " is " + (isNegated() ? "not " : "") + (small ? "small" : "a marker");
 	}
+
 }

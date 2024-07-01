@@ -45,7 +45,7 @@ public class EffArmorStandBehaviour extends Effect {
 		if (Skript.methodExists(ArmorStand.class, "canTick"))
 			Skript.registerEffect(EffArmorStandBehaviour.class,
 				"allow %livingentities% to (:tick|move)",
-				"prevent %livingentities% from being able to (:tick|move)"
+				"prevent %livingentities% from (being able to (:tick|move)|tick:ticking|moving)"
 			);
 	}
 
@@ -80,4 +80,5 @@ public class EffArmorStandBehaviour extends Effect {
 	public String toString(@Nullable Event event, boolean debug) {
 		return (prevent ? "prevent " : "allow ") + entities.toString(event, debug) + (prevent ? " from being able to " : " to ") + (ticking ? "tick" : "move");
 	}
+
 }
