@@ -18,19 +18,11 @@
  */
 package ch.njol.skript.effects;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.AbstractHorse;
-import org.bukkit.entity.ChestedHorse;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Llama;
-import org.bukkit.entity.Pig;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Steerable;
+import org.bukkit.entity.*;
 import org.bukkit.event.Event;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.LlamaInventory;
+import org.bukkit.inventory.*;
 import org.eclipse.jdt.annotation.Nullable;
 
 import ch.njol.skript.Skript;
@@ -92,6 +84,7 @@ public class EffEquip extends Effect {
 	}
 
 	private static final boolean SUPPORTS_STEERABLE = Skript.classExists("org.bukkit.entity.Steerable");
+	private static final boolean SUPPORTS_WOLF_ARMOR = Skript.fieldExists(Material.class, "WOLF_ARMOR");
 
 	private static final ItemType CHESTPLATE = Aliases.javaItemType("chestplate");
 	private static final ItemType LEGGINGS = Aliases.javaItemType("leggings");
@@ -100,8 +93,14 @@ public class EffEquip extends Effect {
 	private static final ItemType SADDLE = Aliases.javaItemType("saddle");
 	private static final ItemType CHEST = Aliases.javaItemType("chest");
 	private static final ItemType CARPET = Aliases.javaItemType("carpet");
+	private static ItemType WOLF_ARMOR = new ItemType();
 
-	private static final ItemType[] ALL_EQUIPMENT = new ItemType[] {CHESTPLATE, LEGGINGS, BOOTS, HORSE_ARMOR, SADDLE, CHEST, CARPET};
+	static {
+		if (SUPPORTS_WOLF_ARMOR)
+			WOLF_ARMOR = Aliases.javaItemType("wolf armor");
+	}
+
+	private static final ItemType[] ALL_EQUIPMENT = new ItemType[] {CHESTPLATE, LEGGINGS, BOOTS, HORSE_ARMOR, SADDLE, CHEST, CARPET, WOLF_ARMOR};
 
 	@Override
 	protected void execute(Event event) {
@@ -139,16 +138,24 @@ public class EffEquip extends Effect {
 					}
 				}
 			} else if (entity instanceof AbstractHorse) {
-				// Spigot's API is bad, just bad... Abstract horse doesn't have horse inventory!
-				Inventory inv = ((AbstractHorse) entity).getInventory();
+				AbstractHorseInventory inv = ((AbstractHorse) entity).getInventory();
 				for (ItemType itemType : itemTypes) {
 					for (ItemStack item : itemType.getAll()) {
 						if (SADDLE.isOfType(item)) {
-							inv.setItem(0, equip ? item : null); // Slot 0=saddle
-						} else if (HORSE_ARMOR.isOfType(item)) {
-							inv.setItem(1, equip ? item : null); // Slot 1=armor
-						} else if (CHEST.isOfType(item) && entity instanceof ChestedHorse) {
+							inv.setSaddle(equip ? item : null);
+						} else if (HORSE_ARMOR.isOfType(item) && entity instanceof Horse) {
+							((HorseInventory) inv).setArmor(equip ? item : null);
+						} else if (CHEST.isOfType(item) && entity instanceof ChestedHorse) { // a Donkey, Mule, Llama or TraderLlama. NOT a Horse
 							((ChestedHorse) entity).setCarryingChest(equip);
+						}
+					}
+				}
+			} else if (entity instanceof Wolf) {
+				EntityEquipment equipment = ((Wolf) entity).getEquipment();
+				for (ItemType itemType : itemTypes) {
+					for (ItemStack item : itemType.getAll()) {
+						if (WOLF_ARMOR.isOfType(item)) {
+							equipment.setItem(EquipmentSlot.BODY, equip ? item : null);
 						}
 					}
 				}
