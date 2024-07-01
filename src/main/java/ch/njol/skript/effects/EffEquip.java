@@ -18,9 +18,16 @@
  */
 package ch.njol.skript.effects;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.*;
+import org.bukkit.entity.AbstractHorse;
+import org.bukkit.entity.ChestedHorse;
+import org.bukkit.entity.Horse;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Llama;
+import org.bukkit.entity.Pig;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Steerable;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.*;
 import org.eclipse.jdt.annotation.Nullable;
