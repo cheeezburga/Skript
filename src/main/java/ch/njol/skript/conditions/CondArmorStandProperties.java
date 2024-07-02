@@ -18,19 +18,16 @@
  */
 package ch.njol.skript.conditions;
 
-import ch.njol.skript.Skript;
+import ch.njol.skript.conditions.base.PropertyCondition;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
-import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.Event;
-import org.jetbrains.annotations.Nullable;
 
 @Name("Armor Stand - Has Properties")
 @Description("Allows users to check the properties of an armor stand (i.e. whether it's small or a marker).")
@@ -39,38 +36,34 @@ import org.jetbrains.annotations.Nullable;
 	"if {_armorstands::*} are not markers:",
 })
 @Since("INSERT VERSION")
-public class CondArmorStandProperties extends Condition {
+public class CondArmorStandProperties extends PropertyCondition<LivingEntity> {
 
 	static {
-		Skript.registerCondition(CondArmorStandProperties.class,
-			"%livingentities% (is|are) (:small|[a] marker[s])",
-			"%livingentities% (isn't|is not|aren't|are not) (:small|[a] marker[s])"
-		);
+		register(CondArmorStandProperties.class, "(:small|[a] marker[s])", "livingentities");
 	}
 
-	@SuppressWarnings("NotNullFieldNotInitialized")
-	private Expression<LivingEntity> entities;
 	private boolean small;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		entities = (Expression<LivingEntity>) exprs[0];
 		small = parseResult.hasTag("small");
-		setNegated(matchedPattern == 1);
-		return true;
+		return super.init(exprs, matchedPattern, isDelayed, parseResult);
 	}
 
 	@Override
-	public boolean check(Event event) {
+	public boolean check(LivingEntity livingEntity) {
+		if (livingEntity instanceof ArmorStand) {
+			boolean result = small ? ((ArmorStand) livingEntity).isSmall() : ((ArmorStand) livingEntity).isMarker();
+			return (result ^ isNegated());
+		}
+		return false;
+	}
+
+	@Override
+	public String getPropertyName() {
 		if (small)
-			return entities.check(event, stand -> stand instanceof ArmorStand && ((ArmorStand) stand).isSmall(), isNegated());
-		return entities.check(event, stand -> stand instanceof ArmorStand && ((ArmorStand) stand).isMarker(), isNegated());
-	}
-
-	@Override
-	public String toString(@Nullable Event event, boolean debug) {
-		return entities.toString(event, debug) + " is " + (isNegated() ? "not " : "") + (small ? "small" : "a marker");
+			return "small";
+		return "a marker";
 	}
 
 }

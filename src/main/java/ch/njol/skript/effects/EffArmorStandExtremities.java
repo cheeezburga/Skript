@@ -45,8 +45,8 @@ public class EffArmorStandExtremities extends Effect {
 
 	static {
 		Skript.registerEffect(EffArmorStandExtremities.class,
-			"(:show|hide) %livingentities%'[s] (base[ ]plate|:arms)",
-			"(:show|hide) [the] (base[ ]plate|:arms) of %livingentities%"
+			"(show|reveal|:hide) %livingentities%'[s] (base[ ]plate|:arms)",
+			"(show|reveal|:hide) [the] (base[ ]plate|:arms) of %livingentities%"
 		);
 	}
 
@@ -59,7 +59,7 @@ public class EffArmorStandExtremities extends Effect {
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		entities = (Expression<LivingEntity>) exprs[0];
-		show = parseResult.hasTag("show");
+		show = !parseResult.hasTag("hide");
 		arms = parseResult.hasTag("arms");
 		return true;
 	}

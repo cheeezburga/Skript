@@ -18,20 +18,17 @@
  */
 package ch.njol.skript.conditions;
 
-import ch.njol.skript.Skript;
+import ch.njol.skript.conditions.base.PropertyCondition;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Keywords;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
-import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.Event;
-import org.jetbrains.annotations.Nullable;
 
 @Name("Armor Stand - Has Extremities")
 @Description("Allows users to check the extremities of an armor stand (i.e. whether it has arms or a base plate).")
@@ -41,38 +38,34 @@ import org.jetbrains.annotations.Nullable;
 })
 @Since("INSERT VERSION")
 @Keywords({"arms", "base plate"})
-public class CondArmorStandExtremities extends Condition {
+public class CondArmorStandExtremities extends PropertyCondition<LivingEntity> {
 
 	static {
-		Skript.registerCondition(CondArmorStandExtremities.class,
-			"%livingentities% (has|have) (:arms|[a] base[ ]plate)",
-			"%livingentities% (doesn't|does not|do not|don't) have (:arms|[a] base[ ]plate)"
-		);
+		register(CondArmorStandExtremities.class, PropertyType.HAVE, "(:arms|[a] base[ ]plate)", "livingentities");
 	}
 
-	@SuppressWarnings("NotNullFieldNotInitialized")
-	private Expression<LivingEntity> entities;
 	private boolean arms;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		entities = (Expression<LivingEntity>) exprs[0];
 		arms = parseResult.hasTag("arms");
-		setNegated(matchedPattern == 1);
-		return true;
+		return super.init(exprs, matchedPattern, isDelayed, parseResult);
 	}
 
 	@Override
-	public boolean check(Event event) {
+	public boolean check(LivingEntity livingEntity) {
+		if (livingEntity instanceof ArmorStand) {
+			boolean result = arms ? ((ArmorStand) livingEntity).hasArms() : ((ArmorStand) livingEntity).hasBasePlate();
+			return isNegated() ^ result;
+		}
+		return false;
+	}
+
+	@Override
+	public String getPropertyName() {
 		if (arms)
-			return entities.check(event, stand -> stand instanceof ArmorStand && ((ArmorStand) stand).hasArms(), isNegated());
-		return entities.check(event, stand -> stand instanceof ArmorStand && ((ArmorStand) stand).hasBasePlate(), isNegated());
-	}
-
-	@Override
-	public String toString(@Nullable Event event, boolean debug) {
-		return entities.toString(event, debug) + " has " + (isNegated() ? "no " : "") + (arms ? "arms" : "base plate");
+			return "arms";
+		return "a base plate";
 	}
 
 }

@@ -19,18 +19,16 @@
 package ch.njol.skript.conditions;
 
 import ch.njol.skript.Skript;
+import ch.njol.skript.conditions.base.PropertyCondition;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
-import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.Event;
-import org.jetbrains.annotations.Nullable;
 
 @Name("Armor Stand - Has Behaviour")
 @Description("Allows users to check the behaviour of an armor stand (i.e. whether it is ticking or moving).")
@@ -39,39 +37,34 @@ import org.jetbrains.annotations.Nullable;
 	"if {_armorstand} is able to move:"
 })
 @Since("INSERT VERSION")
-public class CondArmorStandBehaviour extends Condition {
+public class CondArmorStandBehaviour extends PropertyCondition<LivingEntity> {
 
 	static {
 		if (Skript.methodExists(ArmorStand.class, "canTick"))
-			Skript.registerCondition(CondArmorStandBehaviour.class,
-				"%livingentities% (is|are) able to (:tick|move)",
-				"%livingentities% (isn't|is not|aren't|are not) able to (:tick|move)"
-			);
+			register(CondArmorStandBehaviour.class, "able to (:tick|move)", "livingentities");
 	}
 
-	@SuppressWarnings("NotNullFieldNotInitialized")
-	private Expression<LivingEntity> entities;
 	private boolean tick;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		entities = (Expression<LivingEntity>) exprs[0];
 		tick = parseResult.hasTag("tick");
-		setNegated(matchedPattern == 1);
-		return true;
+		return super.init(exprs, matchedPattern, isDelayed, parseResult);
 	}
 
 	@Override
-	public boolean check(Event event) {
+	public boolean check (LivingEntity livingEntity) {
+		if (livingEntity instanceof ArmorStand) {
+			boolean result = tick ? ((ArmorStand) livingEntity).canTick() : ((ArmorStand) livingEntity).canMove();
+			return (result ^ isNegated());
+		}
+		return false;
+	}
+
+	@Override
+	public String getPropertyName() {
 		if (tick)
-			return entities.check(event, stand -> stand instanceof ArmorStand && ((ArmorStand) stand).canTick(), isNegated());
-		return entities.check(event, stand -> stand instanceof ArmorStand && ((ArmorStand) stand).canMove(), isNegated());
+			return "able to tick";
+		return "able to move";
 	}
-
-	@Override
-	public String toString(@Nullable Event event, boolean debug) {
-		return entities.toString(event, debug) + " is " + (isNegated() ? "not " : "") + "able to " + (tick ? "tick" : "move");
-	}
-
 }
