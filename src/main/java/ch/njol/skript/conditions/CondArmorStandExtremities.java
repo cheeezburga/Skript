@@ -54,10 +54,8 @@ public class CondArmorStandExtremities extends PropertyCondition<LivingEntity> {
 
 	@Override
 	public boolean check(LivingEntity livingEntity) {
-		if (livingEntity instanceof ArmorStand) {
-			boolean result = arms ? ((ArmorStand) livingEntity).hasArms() : ((ArmorStand) livingEntity).hasBasePlate();
-			return (result ^ isNegated());
-		}
+		if (livingEntity instanceof ArmorStand)
+			return arms ? ((ArmorStand) livingEntity).hasArms() : ((ArmorStand) livingEntity).hasBasePlate();
 		return false;
 	}
 

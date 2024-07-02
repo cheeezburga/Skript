@@ -52,10 +52,8 @@ public class CondArmorStandProperties extends PropertyCondition<LivingEntity> {
 
 	@Override
 	public boolean check(LivingEntity livingEntity) {
-		if (livingEntity instanceof ArmorStand) {
-			boolean result = small ? ((ArmorStand) livingEntity).isSmall() : ((ArmorStand) livingEntity).isMarker();
-			return (result ^ isNegated());
-		}
+		if (livingEntity instanceof ArmorStand)
+			return small ? ((ArmorStand) livingEntity).isSmall() : ((ArmorStand) livingEntity).isMarker();
 		return false;
 	}
 

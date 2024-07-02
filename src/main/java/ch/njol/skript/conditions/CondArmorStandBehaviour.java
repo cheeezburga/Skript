@@ -53,11 +53,9 @@ public class CondArmorStandBehaviour extends PropertyCondition<LivingEntity> {
 	}
 
 	@Override
-	public boolean check (LivingEntity livingEntity) {
-		if (livingEntity instanceof ArmorStand) {
-			boolean result = tick ? ((ArmorStand) livingEntity).canTick() : ((ArmorStand) livingEntity).canMove();
-			return (result ^ isNegated());
-		}
+	public boolean check(LivingEntity livingEntity) {
+		if (livingEntity instanceof ArmorStand)
+			return tick ? ((ArmorStand) livingEntity).canTick() : ((ArmorStand) livingEntity).canMove();
 		return false;
 	}
 
