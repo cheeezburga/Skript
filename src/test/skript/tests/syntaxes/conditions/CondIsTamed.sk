@@ -18,5 +18,5 @@ test "is tamed":
 	tame {_z}
 	assert {_z} is not tamed with "taming an invalid entity should do nothing"
 
-	delete value within {_e}
-	delete value within {_z}
+	kill value within {_e}
+	kill value within {_z}
