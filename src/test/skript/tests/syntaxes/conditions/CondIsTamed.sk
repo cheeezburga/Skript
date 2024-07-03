@@ -7,6 +7,9 @@ test "is tamed":
 	tame {_e}
 	assert {_e} is tamed with "taming a horse should do exactly that"
 
+	untame {_e}
+	assert {_e} is not tamed with "untaming a horse should do exactly that"
+
 	tame {_}
 	assert {_} is not tamed with "taming null should do nothing"
 
@@ -15,6 +18,5 @@ test "is tamed":
 	tame {_z}
 	assert {_z} is not tamed with "taming an invalid entity should do nothing"
 
-	kill value within {_e}
-	kill value within {_z}
-
+	delete value within {_e}
+	delete value within {_z}

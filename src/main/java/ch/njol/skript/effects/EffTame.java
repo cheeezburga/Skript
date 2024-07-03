@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public class EffTame extends Effect {
 
 	static {
-		Skript.registerEffect(EffTame.class, "([un:(un|de)]tame|domesticate) %entities%");
+		Skript.registerEffect(EffTame.class, "[:un](tame|domesticate) %entities%");
 	}
 
 	private boolean tame;
