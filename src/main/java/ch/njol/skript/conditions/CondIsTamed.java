@@ -8,10 +8,12 @@ import ch.njol.skript.doc.Since;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Tameable;
 
-@Name("Is tamed")
+@Name("Is Tamed")
 @Description("Check if a tameable entity is tamed (horse, parrot, cat, etc.).")
-@Examples({"send true if {_horse} is tamed",
-	"tame {_horse} if {_horse} is untamed"})
+@Examples({
+    "send true if {_horse} is tamed",
+    "tame {_horse} if {_horse} is untamed"
+})
 @Since("INSERT VERSION")
 public class CondIsTamed extends PropertyCondition<Entity> {
 
@@ -30,4 +32,5 @@ public class CondIsTamed extends PropertyCondition<Entity> {
 	protected String getPropertyName() {
 		return "tamed";
 	}
+
 }

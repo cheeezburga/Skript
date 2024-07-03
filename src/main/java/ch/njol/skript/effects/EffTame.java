@@ -16,8 +16,10 @@ import org.eclipse.jdt.annotation.Nullable;
 
 @Name("Tame / Untame")
 @Description("Tame a tameable entity (horse, parrot, cat, etc.).")
-@Examples({"tame {_horse}",
-	"untame {_horse}"})
+@Examples({
+    "tame {_horse}",
+    "untame {_horse}"
+})
 @Since("INSERT VERSION")
 public class EffTame extends Effect {
 
@@ -28,8 +30,8 @@ public class EffTame extends Effect {
 	private boolean tame;
 	private Expression<Entity> entities;
 
-	@SuppressWarnings("unchecked")
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		tame = !parseResult.hasTag("un");
 		entities = (Expression<Entity>) exprs[0];
