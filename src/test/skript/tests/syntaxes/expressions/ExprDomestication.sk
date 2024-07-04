@@ -1,0 +1,39 @@
+test "domestication":
+	spawn a horse at (spawn of world "world"):
+		set {_e} to entity
+	spawn a zombie at (spawn of world "world"):
+		set {_z} to entity
+
+	set max domestication level of {_e} to 100
+	set domestication level of {_e} to 50
+	assert max domestication level of {_e} is 100 with "setting the max domestication of a horse should do exactly that"
+	assert domestication level of {_e} is 50 with "setting the domestication of a horse should do exactly that"
+
+	add 10 to max domestication level of {_e}
+	add 10 to domestication level of {_e}
+	assert max domestication level of {_e} is 110 with "adding to the max domestication of a horse should do exactly that"
+	assert domestication level of {_e} is 60 with "adding to the domestication of a horse should do exactly that"
+
+	subtract 10 from max domestication level of {_e}
+	subtract 10 from domestication level of {_e}
+	assert max domestication level of {_e} is 100 with "removing from the max domestication of a horse should do exactly that"
+	assert domestication level of {_e} is 50 with "removing from the domestication of a horse should do exactly that"
+
+	clear max domestication level of {_e}
+	clear domestication level of {_e}
+	assert max domestication level of {_e} is 1 with "clearing the max domestication of a horse should do exactly that"
+	assert domestication level of {_e} is 1 with "clearing the domestication of a horse should do exactly that"
+
+	assert max domestication level of {_z} is not set with "the max domestication of a non-horse should be null"
+	assert domestication level of {_z} is not set with "the domestication of a non-horse should be null"
+	set max domestication level of {_z} to 1
+	set domestication level of {_z} to 1
+	add 1 to max domestication level of {_z}
+	add 1 to domestication level of {_z}
+	subtract 1 from max domestication level of {_z}
+	subtract 1 from domestication level of {_z}
+	assert max domestication level of {_z} is not set with "changing the max domestication of a non-horse should do nothing"
+	assert domestication level of {_z} is not set with "changing the domestication of a non-horse should do nothing"
+
+	delete entity within {_e}
+	delete entity within {_z}
