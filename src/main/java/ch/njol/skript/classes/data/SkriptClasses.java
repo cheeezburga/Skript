@@ -558,7 +558,7 @@ public class SkriptClasses {
 
 					@Override
 					public String toVariableNameString(Color color) {
-						return "" + color.getName().toLowerCase(Locale.ENGLISH).replace('_', ' ');
+						return color.getName().toLowerCase(Locale.ENGLISH).replace('_', ' ');
 					}
 				}));
 
