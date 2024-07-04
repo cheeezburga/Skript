@@ -1,6 +1,10 @@
 package ch.njol.skript.effects;
 
 import ch.njol.skript.Skript;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
@@ -10,6 +14,15 @@ import org.bukkit.block.data.type.CommandBlock;
 import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
 
+@Name("Conditional / Unconditional")
+@Description(
+	"Sets whether the provided command blocks are conditional or not."
+)
+@Examples({
+	"make {_block} conditional",
+	"make {_block} unconditional if {_block} is conditional"
+})
+@Since("INSERT VERSION")
 public class EffConditional extends Effect {
 
 	static {
