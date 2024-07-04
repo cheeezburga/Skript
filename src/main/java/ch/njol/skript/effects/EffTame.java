@@ -50,4 +50,5 @@ public class EffTame extends Effect {
 	public String toString(@Nullable Event event, boolean debug) {
 		return (tame ? "tame " : "untame ") + entities.toString(event, debug);
 	}
+
 }
