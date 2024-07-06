@@ -1,8 +1,8 @@
 test "is charged":
 	spawn a creeper at (spawn of world "world"):
 		set {_e} to entity
-	spawn a wither skull at (spawn of world "world") ~ vector(0,10,0):
-		set {_w} to entity
+	shoot a wither skull from {_e}
+	set {_w} to last shot entity
 
 	assert {_e} is not charged with "a normally spawned creeper should not be charged"
 	assert {_w} is not charged with "a normally spawned wither skull should not be charged"
