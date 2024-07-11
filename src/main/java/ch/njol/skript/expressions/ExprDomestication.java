@@ -9,6 +9,7 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
+import ch.njol.util.Math2;
 import ch.njol.util.coll.CollectionUtils;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.LivingEntity;
@@ -89,7 +90,7 @@ public class ExprDomestication extends SimplePropertyExpression<LivingEntity, Nu
 						assert false;
 						return;
 				}
-				level = max ? Math.max(level, 1) : Math.clamp(level, 1, horse.getMaxDomestication());
+				level = max ? Math.max(level, 1) : Math2.fit(1, level, horse.getMaxDomestication());
 				if (max) {
 					horse.setMaxDomestication(level);
 				} else {
