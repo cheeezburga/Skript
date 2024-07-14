@@ -14,7 +14,7 @@ import ch.njol.util.coll.CollectionUtils;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 @Name("Domestication")
 @Description({
@@ -54,17 +54,21 @@ public class ExprDomestication extends SimplePropertyExpression<LivingEntity, Nu
 	}
 
 	@Override
-	@SuppressWarnings("ConstantConditions")
 	public @Nullable Class<?>[] acceptChange(ChangeMode mode) {
-		if (mode == ChangeMode.REMOVE_ALL)
-			return null;
-		return CollectionUtils.array(Number.class);
+		switch (mode) {
+			case SET:
+			case ADD:
+			case REMOVE:
+			case RESET:
+				return CollectionUtils.array(Number.class);
+			default:
+				return null;
+		}
 	}
 
 	@Override
-	@SuppressWarnings("ConstantConditions")
 	public void change(Event event, @Nullable Object[] delta, ChangeMode mode) {
-		assert mode != ChangeMode.REMOVE_ALL;
+		assert mode != ChangeMode.REMOVE_ALL && mode != ChangeMode.DELETE;
 
 		int change = delta == null ? 0 : ((Number) delta[0]).intValue();
 		for (LivingEntity entity : getExpr().getArray(event)) {
@@ -82,9 +86,9 @@ public class ExprDomestication extends SimplePropertyExpression<LivingEntity, Nu
 						level -= change;
 						break;
 					case RESET:
-					case DELETE:
-						level = 0;
+						level = 1;
 						break;
+					case DELETE:
 					case REMOVE_ALL:
 					default:
 						assert false;
