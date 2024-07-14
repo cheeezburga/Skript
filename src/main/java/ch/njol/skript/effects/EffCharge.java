@@ -33,11 +33,11 @@ import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.Event;
 import org.eclipse.jdt.annotation.Nullable;
 
-@Name("Charge")
+@Name("Charge Entity")
 @Description("Charges or uncharges a creeper or wither skull. A creeper is charged when it has been struck by lightning.")
 @Examples({
 	"on spawn of creeper:",
-	"\tcharge the event-entity"
+		"\tcharge the event-entity"
 })
 @Since("2.5")
 public class EffCharge extends Effect {
