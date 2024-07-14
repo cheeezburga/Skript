@@ -24,16 +24,16 @@ import org.eclipse.jdt.annotation.Nullable;
 })
 @Examples({
 	"function domesticateAndTame(horse: entity, p: offline player, i: int = 10):",
-	"\tadd {_i} to domestication level of {_horse}",
-	"\tif domestication level of {_horse} >= max domestication level of {_horse}:",
-	"\t\ttame {_horse}",
-	"\t\tset tamer of {_horse} to {_p}"
+		"\tadd {_i} to domestication level of {_horse}",
+		"\tif domestication level of {_horse} >= max domestication level of {_horse}:",
+			"\t\ttame {_horse}",
+			"\t\tset tamer of {_horse} to {_p}"
 })
 @Since("INSERT VERSION")
 public class ExprDomestication extends SimplePropertyExpression<LivingEntity, Number> {
 
 	static {
-		register(ExprDomestication.class, Number.class, "[:max[imum]] domestication [level]", "livingentities");
+		register(ExprDomestication.class, Number.class, "[:max[imum]] domestication level", "livingentities");
 	}
 
 	private boolean max;
@@ -102,7 +102,7 @@ public class ExprDomestication extends SimplePropertyExpression<LivingEntity, Nu
 
 	@Override
 	protected String getPropertyName() {
-		return (max ? "max " : "") + "domestication";
+		return (max ? "max " : "") + "domestication level";
 	}
 
 	@Override
