@@ -59,7 +59,6 @@ public class ExprDomestication extends SimplePropertyExpression<LivingEntity, Nu
 			case SET:
 			case ADD:
 			case REMOVE:
-			case RESET:
 				return CollectionUtils.array(Number.class);
 			default:
 				return null;
@@ -68,7 +67,7 @@ public class ExprDomestication extends SimplePropertyExpression<LivingEntity, Nu
 
 	@Override
 	public void change(Event event, @Nullable Object[] delta, ChangeMode mode) {
-		assert mode != ChangeMode.REMOVE_ALL && mode != ChangeMode.DELETE;
+		assert mode != ChangeMode.REMOVE_ALL && mode != ChangeMode.DELETE && mode != ChangeMode.RESET;
 
 		int change = delta == null ? 0 : ((Number) delta[0]).intValue();
 		for (LivingEntity entity : getExpr().getArray(event)) {
@@ -85,11 +84,6 @@ public class ExprDomestication extends SimplePropertyExpression<LivingEntity, Nu
 					case REMOVE:
 						level -= change;
 						break;
-					case RESET:
-						level = 1;
-						break;
-					case DELETE:
-					case REMOVE_ALL:
 					default:
 						assert false;
 						return;
