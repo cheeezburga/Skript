@@ -24,6 +24,19 @@ test "domestication":
 	assert max domestication level of {_e} is 1 with "clearing the max domestication of a horse should do exactly that"
 	assert domestication level of {_e} is 1 with "clearing the domestication of a horse should do exactly that"
 
+	set {_max} to max domestication level of {_e}
+	set domestication level of {_e} to {_max} + 1
+	add 100 to domestication level of {_e}
+	assert domestication level of {_e} is not greater than {_max} with "the domestication level of a horse should never exceed it's max domestication level"
+
+	set domestication level of {_e} to 0
+	subtract 100 from domestication level of {_e}
+	assert domestication level of {_e} is 1 with "the domestication level of a horse should never be less than 1"
+
+	set max domestication level of {_e} to 0
+	subtract 100 from max domestication level of {_e}
+	assert max domestication level of {_e} is 1 with "the domestication level of a horse should never be less than 1"
+
 	assert max domestication level of {_z} is not set with "the max domestication of a non-horse should be null"
 	assert domestication level of {_z} is not set with "the domestication of a non-horse should be null"
 	set max domestication level of {_z} to 1
