@@ -78,4 +78,5 @@ public class EffArmorStandProperties extends Effect {
 	public String toString(@Nullable Event event, boolean debug) {
 		return "make " + entities.toString(event, debug) + (not ? " not " : " ") + (small ? "small" : "a marker");
 	}
+
 }
