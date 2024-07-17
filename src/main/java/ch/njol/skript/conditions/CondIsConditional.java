@@ -26,16 +26,18 @@ public class CondIsConditional extends PropertyCondition<Block> {
 		register(CondIsConditional.class, "[:un]conditional", "blocks");
 	}
 
+	private boolean un;
+
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		setNegated(parseResult.hasTag("un"));
+		this.un = parseResult.hasTag("un");
 		return super.init(exprs, matchedPattern, isDelayed, parseResult);
 	}
 
 	@Override
 	public boolean check(Block block) {
 		if (block.getBlockData() instanceof CommandBlock)
-			return ((CommandBlock) block.getBlockData()).isConditional();
+			return ((CommandBlock) block.getBlockData()).isConditional() ^ this.un;
 		return false;
 	}
 
