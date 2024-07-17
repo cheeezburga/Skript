@@ -19,6 +19,9 @@ test "command block command":
 	assert command block command of {_b} is not set with "clearing/deleting/resetting the command of a command block should return null"
 	assert command block command of {_e} is not set with "clearing/deleting/resetting the command of a minecart with command block should return null"
 
+	assert command of {_b} is not set with "testing for possible future conflicts (block)"
+	assert command of {_e} is not set with "testing for possible future conflicts (entity)"
+
 	set block at {_b} to stone
 	assert command block command of {_b} is not set with "the command of a non-command block should return null"
 	assert command block command of {_z} is not set with "the command of a non-minecart with command block should return null"

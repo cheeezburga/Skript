@@ -23,10 +23,10 @@ import org.eclipse.jdt.annotation.Nullable;
 	"make {_block} unconditional if {_block} is conditional"
 })
 @Since("INSERT VERSION")
-public class EffConditional extends Effect {
+public class EffCommandBlockConditional extends Effect {
 
 	static {
-		Skript.registerEffect(EffConditional.class, "make %blocks% [not:(un|not )]conditional");
+		Skript.registerEffect(EffCommandBlockConditional.class, "make %blocks% [not:(un|not )]conditional");
 	}
 
 	private Expression<Block> blocks;
