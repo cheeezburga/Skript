@@ -34,14 +34,18 @@ import org.bukkit.entity.LivingEntity;
 @Description("Allows users to check the behaviour of an armor stand (i.e. whether it is ticking or moving).")
 @Examples({
 	"if {_armorstands::*} are not able to tick:",
-	"if {_armorstand} is able to move:"
+	"if {_armorstand} is able to move:",
+	"if {_armorstand} can tick",
+	"if {_armorstand} cannot move"
 })
 @Since("INSERT VERSION")
 public class CondArmorStandBehaviour extends PropertyCondition<LivingEntity> {
 
 	static {
-		if (Skript.methodExists(ArmorStand.class, "canTick"))
+		if (Skript.methodExists(ArmorStand.class, "canTick")) {
 			register(CondArmorStandBehaviour.class, "able to (:tick|move)", "livingentities");
+			register(CondArmorStandBehaviour.class, PropertyType.CAN, "(:tick|move)", "livingentities");
+		}
 	}
 
 	private boolean tick;

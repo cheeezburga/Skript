@@ -47,7 +47,7 @@ public class EffArmorStandProperties extends Effect {
 		);
 	}
 
-	private boolean not;
+	private boolean set;
 	private boolean small;
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<Entity> entities;
@@ -56,7 +56,7 @@ public class EffArmorStandProperties extends Effect {
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		entities = (Expression<Entity>) exprs[0];
-		not = parseResult.hasTag("not");
+		set = !parseResult.hasTag("not");
 		small = parseResult.hasTag("small");
 		return true;
 	}
@@ -66,9 +66,9 @@ public class EffArmorStandProperties extends Effect {
 		for (Entity entity : entities.getArray(event)) {
 			if (entity instanceof ArmorStand) {
 				if (small) {
-					((ArmorStand) entity).setSmall(!not);
+					((ArmorStand) entity).setSmall(set);
 				} else {
-					((ArmorStand) entity).setMarker(!not);
+					((ArmorStand) entity).setMarker(set);
 				}
 			}
 		}
@@ -76,7 +76,7 @@ public class EffArmorStandProperties extends Effect {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return "make " + entities.toString(event, debug) + (not ? " not " : " ") + (small ? "small" : "a marker");
+		return "make " + entities.toString(event, debug) + (set ? " " : " not ") + (small ? "small" : "a marker");
 	}
 
 }

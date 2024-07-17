@@ -49,7 +49,7 @@ public class EffArmorStandBehaviour extends Effect {
 			);
 	}
 
-	private boolean prevent;
+	private boolean allow;
 	private boolean ticking;
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<Entity> entities;
@@ -58,7 +58,7 @@ public class EffArmorStandBehaviour extends Effect {
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		entities = (Expression<Entity>) exprs[0];
-		prevent = matchedPattern == 1;
+		allow = matchedPattern == 0;
 		ticking = parseResult.hasTag("tick");
 		return true;
 	}
@@ -68,9 +68,9 @@ public class EffArmorStandBehaviour extends Effect {
 		for (Entity entity : entities.getArray(event)) {
 			if (entity instanceof ArmorStand) {
 				if (ticking) {
-					((ArmorStand) entity).setCanTick(!prevent);
+					((ArmorStand) entity).setCanTick(allow);
 				} else {
-					((ArmorStand) entity).setCanMove(!prevent);
+					((ArmorStand) entity).setCanMove(allow);
 				}
 			}
 		}
@@ -78,7 +78,7 @@ public class EffArmorStandBehaviour extends Effect {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return (prevent ? "prevent " : "allow ") + entities.toString(event, debug) + (prevent ? " from being able to " : " to ") + (ticking ? "tick" : "move");
+		return (allow ? "allow " : "prevent ") + entities.toString(event, debug) + (allow ? " to " : " from being able to ") + (ticking ? "tick" : "move");
 	}
 
 }
