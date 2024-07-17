@@ -35,7 +35,7 @@ public class CondIsConditional extends PropertyCondition<Block> {
 	@Override
 	public boolean check(Block block) {
 		if (block.getBlockData() instanceof CommandBlock)
-			return ((CommandBlock) block.getBlockData()).isConditional() ^ isNegated();
+			return ((CommandBlock) block.getBlockData()).isConditional();
 		return false;
 	}
 
