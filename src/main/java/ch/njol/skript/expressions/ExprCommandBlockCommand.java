@@ -11,7 +11,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.entity.minecart.CommandMinecart;
 import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 @Name("Command Block Command")
 @Description(
@@ -40,16 +40,14 @@ public class ExprCommandBlockCommand extends SimplePropertyExpression<Object, St
 	}
 
 	@Override
-	@SuppressWarnings("ConstantConditions")
-	public @Nullable Class<?>[] acceptChange(ChangeMode mode) {
+	public Class<?> @Nullable [] acceptChange(ChangeMode mode) {
 		if (mode == ChangeMode.SET || mode == ChangeMode.DELETE || mode == ChangeMode.RESET)
 			return CollectionUtils.array(String.class);
 		return null;
 	}
 
 	@Override
-	@SuppressWarnings("ConstantConditions")
-	public void change(Event event, @Nullable Object[] delta, ChangeMode mode) {
+	public void change(Event event, Object @Nullable [] delta, ChangeMode mode) {
 		String newCommand = delta == null ? null : ((String) delta[0]);
 		for (Object holder : getExpr().getArray(event)) {
 			switch (mode) {
@@ -71,13 +69,13 @@ public class ExprCommandBlockCommand extends SimplePropertyExpression<Object, St
 	}
 
 	@Override
-	protected String getPropertyName() {
-		return "command block command";
+	public Class<? extends String> getReturnType() {
+		return String.class;
 	}
 
 	@Override
-	public Class<? extends String> getReturnType() {
-		return String.class;
+	protected String getPropertyName() {
+		return "command block command";
 	}
 
 }

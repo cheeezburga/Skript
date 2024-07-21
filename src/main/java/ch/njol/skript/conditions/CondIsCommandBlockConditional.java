@@ -20,10 +20,10 @@ import org.bukkit.block.data.type.CommandBlock;
 		"\tmake {_block} unconditional"
 })
 @Since("INSERT VERSION")
-public class CondIsConditional extends PropertyCondition<Block> {
+public class CondIsCommandBlockConditional extends PropertyCondition<Block> {
 
 	static {
-		register(CondIsConditional.class, "[:un]conditional", "blocks");
+		register(CondIsCommandBlockConditional.class, "[:un]conditional", "blocks");
 	}
 
 	@Override

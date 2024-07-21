@@ -1,6 +1,9 @@
 test "is conditional":
-	set block at location(0,0,0,world) to command block
-	set {_b} to block at location(0,0,0,world)
+
+	set {_l} to location(0,0,0,world)
+	set {_original} to blockdata of block at {_l}
+	set block at {_l} to command block
+	set {_b} to block at {_l}
 
 	assert {_b} is not conditional with "a new command block shouldn't be conditional"
 
@@ -15,3 +18,5 @@ test "is conditional":
 
 	make {_b} conditional
 	assert {_b} is not conditional with "making a non-command block conditional shouldn't do anything"
+
+	set block at {_l} to {_original}
