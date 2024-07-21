@@ -59,6 +59,7 @@ public class ExprDomestication extends SimplePropertyExpression<LivingEntity, Nu
 			case SET:
 			case ADD:
 			case REMOVE:
+			case RESET:
 				return CollectionUtils.array(Number.class);
 			default:
 				return null;
@@ -66,10 +67,11 @@ public class ExprDomestication extends SimplePropertyExpression<LivingEntity, Nu
 	}
 
 	@Override
-	public void change(Event event, @Nullable Object[] delta, ChangeMode mode) {
-		assert mode != ChangeMode.REMOVE_ALL && mode != ChangeMode.DELETE && mode != ChangeMode.RESET;
+	public void change(Event event, Object @Nullable [] delta, ChangeMode mode) {
+		assert mode != ChangeMode.REMOVE_ALL && mode != ChangeMode.DELETE;
 
 		int change = delta == null ? 0 : ((Number) delta[0]).intValue();
+
 		for (LivingEntity entity : getExpr().getArray(event)) {
 			if (entity instanceof AbstractHorse) {
 				AbstractHorse horse = (AbstractHorse) entity;
@@ -84,6 +86,9 @@ public class ExprDomestication extends SimplePropertyExpression<LivingEntity, Nu
 					case REMOVE:
 						level -= change;
 						break;
+					case RESET:
+						level = 1;
+						break;
 					default:
 						assert false;
 						return;
@@ -91,6 +96,8 @@ public class ExprDomestication extends SimplePropertyExpression<LivingEntity, Nu
 				level = max ? Math.max(level, 1) : Math2.fit(1, level, horse.getMaxDomestication());
 				if (max) {
 					horse.setMaxDomestication(level);
+					if (horse.getDomestication() > level)
+						horse.setDomestication(level);
 				} else {
 					horse.setDomestication(level);
 				}
@@ -99,13 +106,13 @@ public class ExprDomestication extends SimplePropertyExpression<LivingEntity, Nu
 	}
 
 	@Override
-	protected String getPropertyName() {
-		return (max ? "max " : "") + "domestication level";
+	public Class<? extends Number> getReturnType() {
+		return Number.class;
 	}
 
 	@Override
-	public Class<? extends Number> getReturnType() {
-		return Number.class;
+	protected String getPropertyName() {
+		return (max ? "max " : "") + "domestication level";
 	}
 
 }

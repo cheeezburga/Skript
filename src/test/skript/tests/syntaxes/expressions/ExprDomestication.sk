@@ -19,10 +19,17 @@ test "domestication":
 	assert max domestication level of {_e} is 100 with "removing from the max domestication of a horse should do exactly that"
 	assert domestication level of {_e} is 50 with "removing from the domestication of a horse should do exactly that"
 
-	set {_max} to max domestication level of {_e}
-	set domestication level of {_e} to {_max} + 1
+	subtract 60 from max domestication level of {_e}
+	assert domestication level of {_e} is 40 with "removing from the max domestication level of a horse should also clamp the domestication level if need be"
+
+	reset max domestication level of {_e}
+	reset domestication level of {_e}
+	assert max domestication level of {_e} is 1 with "resetting the max domestication of a horse should do exactly that"
+	assert domestication level of {_e} is 1 with "resetting the domestication of a horse should do exactly that"
+
+	set domestication level of {_e} to (max domestication level of {_e}) + 1
 	add 100 to domestication level of {_e}
-	assert domestication level of {_e} is not greater than {_max} with "the domestication level of a horse should never exceed it's max domestication level"
+	assert domestication level of {_e} is (max domestication level of {_e}) with "the domestication level of a horse should never exceed it's max domestication level"
 
 	set domestication level of {_e} to 0
 	subtract 100 from domestication level of {_e}
@@ -30,7 +37,19 @@ test "domestication":
 
 	set max domestication level of {_e} to 0
 	subtract 100 from max domestication level of {_e}
-	assert max domestication level of {_e} is 1 with "the domestication level of a horse should never be less than 1"
+	assert max domestication level of {_e} is 1 with "the max domestication level of a horse should never be less than 1"
+
+	add infinity value to max domestication level of {_e}
+	set max domestication level of {_e} to infinity value
+	add NaN value to max domestication level of {_e}
+	set max domestication level of {_e} to NaN value
+	assert max domestication level of {_e} is 1 with "infinity and NaN values affected the max domestication level of a horse, but shouldn't have"
+
+	add infinity value to domestication level of {_e}
+	set domestication level of {_e} to infinity value
+	add NaN value to domestication level of {_e}
+	set domestication level of {_e} to NaN value
+	assert domestication level of {_e} is 1 with "infinity and NaN values affected the domestication level of a horse, but shouldn't have"
 
 	assert max domestication level of {_z} is not set with "the max domestication of a non-horse should be null"
 	assert domestication level of {_z} is not set with "the domestication of a non-horse should be null"
