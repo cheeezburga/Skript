@@ -31,7 +31,7 @@ import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 @Name("Charge Entity")
 @Description("Charges or uncharges a creeper or wither skull. A creeper is charged when it has been struck by lightning.")
@@ -73,8 +73,8 @@ public class EffCharge extends Effect {
 	}
 
 	@Override
-	public String toString(@Nullable Event e, boolean debug) {
-		return "make " + entities.toString(e, debug) + (charge ? " charged" : " not charged");
+	public String toString(@Nullable Event event, boolean debug) {
+		return "make " + entities.toString(event, debug) + (charge ? " charged" : " not charged");
 	}
 
 }
