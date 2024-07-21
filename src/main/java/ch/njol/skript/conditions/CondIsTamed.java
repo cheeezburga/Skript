@@ -23,9 +23,7 @@ public class CondIsTamed extends PropertyCondition<Entity> {
 
 	@Override
 	public boolean check(Entity entity) {
-		if (entity instanceof Tameable)
-			return ((Tameable) entity).isTamed();
-		return false;
+		return (entity instanceof Tameable) && ((Tameable) entity).isTamed();
 	}
 
 	@Override
