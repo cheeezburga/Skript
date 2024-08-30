@@ -45,10 +45,10 @@ public class EffCharge extends Effect {
 	@Override
 	protected void execute(Event event) {
 		for (Entity entity : entities.getArray(event)) {
-			switch (entity) {
-				case Creeper creeper -> creeper.setPowered(charge);
-				case WitherSkull witherSkull -> witherSkull.setCharged(charge);
-                default -> {}
+			if (entity instanceof Creeper creeper) {
+				creeper.setPowered(charge);
+			} else if (entity instanceof WitherSkull witherSkull) {
+				witherSkull.setCharged(charge);
             }
 		}
 	}
