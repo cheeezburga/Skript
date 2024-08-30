@@ -1,21 +1,3 @@
-/**
- *   This file is part of Skript.
- *
- *  Skript is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Skript is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Skript.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Copyright Peter Güttinger, SkriptLang team and contributors
- */
 package ch.njol.skript.effects;
 
 import ch.njol.skript.aliases.ItemData;
@@ -60,7 +42,7 @@ import ch.njol.util.Kleenean;
 		"unequip all armor from player",
 		"unequip player's armor"
 })
-@Since("1.0, 2.7 (multiple entities, unequip)")
+@Since("1.0, 2.7 (multiple entities, unequip), INSERT VERSION (wolves)")
 public class EffEquip extends Effect {
 
 	static {
@@ -68,7 +50,7 @@ public class EffEquip extends Effect {
 				"equip [%livingentities%] with %itemtypes%",
 				"make %livingentities% wear %itemtypes%",
 				"unequip %itemtypes% [from %livingentities%]",
-				"unequip %livingentities%'[s] (armor|equipment)"
+				"unequip %livingentities%'[s] (armo[u]r|equipment)"
 			);
 	}
 
@@ -167,45 +149,45 @@ public class EffEquip extends Effect {
 			unequipHelmet = true;
 		}
 		for (LivingEntity entity : entities.getArray(event)) {
-			if (SUPPORTS_STEERABLE && entity instanceof Steerable) {
+			if (SUPPORTS_STEERABLE && entity instanceof Steerable steerable) {
 				for (ItemType itemType : itemTypes) {
 					if (SADDLE.isOfType(itemType.getMaterial())) {
-						((Steerable) entity).setSaddle(equip);
+						steerable.setSaddle(equip);
 					}
 				}
-			} else if (entity instanceof Pig) {
+			} else if (entity instanceof Pig pig) {
 				for (ItemType itemType : itemTypes) {
 					if (itemType.isOfType(Material.SADDLE)) {
-						((Pig) entity).setSaddle(equip);
+						pig.setSaddle(equip);
 						break;
 					}
 				}
-			} else if (entity instanceof Llama) {
-				LlamaInventory inv = ((Llama) entity).getInventory();
+			} else if (entity instanceof Llama llama) {
+				LlamaInventory inv = llama.getInventory();
 				for (ItemType itemType : itemTypes) {
 					for (ItemStack item : itemType.getAll()) {
 						if (CARPET.isOfType(item)) {
 							inv.setDecor(equip ? item : null);
 						} else if (CHEST.isOfType(item)) {
-							((Llama) entity).setCarryingChest(equip);
+							llama.setCarryingChest(equip);
 						}
 					}
 				}
-			} else if (entity instanceof AbstractHorse) {
-				AbstractHorseInventory inv = ((AbstractHorse) entity).getInventory();
+			} else if (entity instanceof AbstractHorse horse) {
+				AbstractHorseInventory inv = horse.getInventory();
 				for (ItemType itemType : itemTypes) {
 					for (ItemStack item : itemType.getAll()) {
 						if (SADDLE.isOfType(item)) {
 							inv.setSaddle(equip ? item : null);
 						} else if (HORSE_ARMOR.isOfType(item) && entity instanceof Horse) {
 							((HorseInventory) inv).setArmor(equip ? item : null);
-						} else if (CHEST.isOfType(item) && entity instanceof ChestedHorse) { // a Donkey, Mule, Llama or TraderLlama. NOT a Horse
-							((ChestedHorse) entity).setCarryingChest(equip);
+						} else if (CHEST.isOfType(item) && entity instanceof ChestedHorse chestedHorse) { // a Donkey, Mule, Llama or TraderLlama. NOT a Horse
+							chestedHorse.setCarryingChest(equip);
 						}
 					}
 				}
-			} else if (entity instanceof Wolf) {
-				EntityEquipment equipment = ((Wolf) entity).getEquipment();
+			} else if (entity instanceof Wolf wolf) {
+				EntityEquipment equipment = wolf.getEquipment();
 				for (ItemType itemType : itemTypes) {
 					for (ItemStack item : itemType.getAll()) {
 						if (WOLF_ARMOR.isOfType(item))
@@ -233,8 +215,8 @@ public class EffEquip extends Effect {
 						equipment.setHelmet(null);
 					}
 				}
-				if (entity instanceof Player)
-					PlayerUtils.updateInventory((Player) entity);
+				if (entity instanceof Player player)
+					PlayerUtils.updateInventory(player);
 			}
 		}
 	}

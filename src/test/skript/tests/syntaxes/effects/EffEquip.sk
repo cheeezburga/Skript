@@ -1,12 +1,42 @@
 test "equip effect":
-	spawn a zombie at spawn of "world":
-		set {_entity} to event-entity
+	spawn a zombie at (spawn of world "world"):
+		set {_z} to entity
 
-	equip {_entity} with a diamond chestplate
-	assert chestplate of {_entity} is a diamond chestplate with "entity was not wearing a diamond chestplate"
-	set chestplate of {_entity} to air
+	assert helmet of {_z} is air with "a normally spawned zombie shouldn't be wearing a helmet"
+	assert chestplate of {_z} is air with "a normally spawned zombie shouldn't be wearing a chestplate"
+	assert leggings of {_z} is air with "a normally spawned zombie shouldn't be wearing leggings"
+	assert boots of {_z} is air with "a normally spawned zombie shouldn't be wearing boots"
 
-	equip {_entity} with a diamond chestplate named "Test"
-	assert chestplate of {_entity} is a diamond chestplate named "Test" with "entity was not wearing a named diamond chestplate"
+	equip {_z} with iron helmet
+	equip {_z} with diamond chestplate
+	equip {_z} with diamond leggings
+	equip {_z} with any boots
+	assert helmet of {_z} is iron helmet with "equipping a zombie with a helmet should do exactly that"
+	assert chestplate of {_z} is diamond chestplate with "equipping a zombie with a chestplate should do exactly that"
+	assert leggings of {_z} is diamond leggings with "equipping a zombie with leggings should do exactly that"
+	assert boots of {_z} is any boots with "equipping a zombie with boots should do exactly that"
 
-	delete the entity within {_entity}
+	unequip {_z}'s armour
+	assert helmet of {_z} is air with "unequipping an entity should remove its armour"
+	assert chestplate of {_z} is air with "unequipping an entity should remove its armour"
+	assert leggings of {_z} is air with "unequipping an entity should remove its armour"
+	assert boots of {_z} is air with "unequipping an entity should remove its armour"
+
+	spawn a horse at (spawn of world "world"):
+		set {_h} to entity
+	spawn a pig at (spawn of world "world"):
+		set {_p} to entity
+
+	equip {_h} and {_p} with saddle
+	# not sure how to assert here that the horse and pig are equipped with a saddle, or that they didnt spawn with one
+
+	parse if running minecraft "1.20.5":
+		spawn a wolf at (spawn of world "world"):
+			set {_w} to entity
+
+		equip {_w} with wolf armor
+
+	delete entity within {_z}
+	delete entity within {_h}
+	delete entity within {_p}
+	delete entity within {_w}
