@@ -14,8 +14,7 @@ import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Objects;
 
 public class ExprEntitySound extends SimpleExpression<String> {
 
@@ -55,7 +54,7 @@ public class ExprEntitySound extends SimpleExpression<String> {
 	private static final int DRINK_WITH_ITEM = 12;
 	private static final int DRINK = 13;
 
-	private int sound;
+	private int soundPattern;
 	private boolean big;
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<Number> height;
@@ -67,7 +66,7 @@ public class ExprEntitySound extends SimpleExpression<String> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		sound = matchedPattern;
+		soundPattern = matchedPattern;
 		big = parseResult.hasTag("high") || parseResult.hasTag("fast");
 		if (matchedPattern == FALL || matchedPattern == FALL + 1)
 			height = (Expression<Number>) exprs[0];
@@ -78,45 +77,37 @@ public class ExprEntitySound extends SimpleExpression<String> {
 	}
 
 	@Override
+	@SuppressWarnings("ConstantValue")
 	protected String @Nullable [] get(Event event) {
-		Set<String> sounds = new HashSet<>();
-		for (LivingEntity entity : entities.getArray(event)) {
-			Sound sound = getEntitySound(entity, event);
-			if (sound != null)
-				sounds.add(sound.name());
-		}
-		return sounds.toArray(new String[0]);
-	}
-
-	private @Nullable Sound getEntitySound(LivingEntity entity, Event event) {
-		Sound sound = null;
-		switch (this.sound) {
-			case DAMAGE, DAMAGE + 1 -> sound = entity.getHurtSound();
-			case DEATH, DEATH + 1 -> sound = entity.getDeathSound();
-			case FALL, FALL + 1 -> sound = getFallSound(entity, event);
-			case SWIM, SWIM + 1 -> sound = entity.getSwimSound();
-			case SPLASH, SPLASH + 1 -> sound = big ? entity.getSwimHighSpeedSplashSound() : entity.getSwimSplashSound();
-			case EAT_WITH_ITEM, DRINK_WITH_ITEM -> sound = getConsumeSound(entity, event);
-			case EAT -> sound = entity.getEatingSound(new ItemStack(Material.COOKED_BEEF));
-			case DRINK -> sound = entity.getDrinkingSound(new ItemStack(Material.POTION));
-		}
-		return sound;
-	}
-
-	private Sound getFallSound(LivingEntity entity, Event event) {
-		//noinspection ConstantValue
 		int height = this.height == null ? -1 : this.height.getOptionalSingle(event).orElse(-1).intValue();
-		return height != -1 ? entity.getFallDamageSound(height) :
-			(big ? entity.getFallDamageSoundBig() : entity.getFallDamageSoundSmall());
+
+		ItemStack defaultItem = new ItemStack(soundPattern == EAT_WITH_ITEM ? Material.COOKED_BEEF : Material.POTION);
+		ItemStack item = this.item == null ? defaultItem : this.item.getOptionalSingle(event).map(ItemType::getRandom).orElse(defaultItem);
+
+		return entities.stream(event)
+			.map(entity -> getEntitySound(entity, height, item))
+			.filter(Objects::nonNull)
+			.distinct()
+			.map(Sound::name)
+			.toArray(String[]::new);
 	}
 
-	private Sound getConsumeSound(LivingEntity entity, Event event) {
-		ItemStack defaultItem = new ItemStack(sound == EAT_WITH_ITEM ? Material.COOKED_BEEF : Material.POTION);
-		//noinspection ConstantValue
-		ItemStack item = this.item == null ? defaultItem : this.item.getOptionalSingle(event).map(ItemType::getRandom).orElse(defaultItem);
-		if (item == null)
-			item = defaultItem;
-		return sound == EAT_WITH_ITEM ? entity.getEatingSound(item) : entity.getDrinkingSound(item);
+	private @Nullable Sound getEntitySound(LivingEntity entity, int height, ItemStack item) {
+		return switch (this.soundPattern) {
+			case DAMAGE, DAMAGE + 1 -> entity.getHurtSound();
+			case DEATH, DEATH + 1 -> entity.getDeathSound();
+			case FALL, FALL + 1 -> {
+				if (height != -1)
+					yield entity.getFallDamageSound(height);
+				else
+					yield big ? entity.getFallDamageSoundBig() : entity.getFallDamageSoundSmall();
+			}
+			case SWIM, SWIM + 1 -> entity.getSwimSound();
+			case SPLASH, SPLASH + 1 -> big ? entity.getSwimHighSpeedSplashSound() : entity.getSwimSplashSound();
+			case EAT, EAT_WITH_ITEM -> entity.getEatingSound(item);
+			case DRINK, DRINK_WITH_ITEM -> entity.getDrinkingSound(item);
+			default -> null;
+		};
 	}
 
 	@Override
@@ -132,23 +123,23 @@ public class ExprEntitySound extends SimpleExpression<String> {
 	@Override
 	@SuppressWarnings("ConstantValue")
 	public String toString(@Nullable Event event, boolean debug) {
-		String name = "unknown";
-		switch (sound) {
-			case DAMAGE, DAMAGE + 1 -> name = "damage";
-			case DEATH, DEATH + 1 -> name = "death";
+		return switch (soundPattern) {
+			case DAMAGE, DAMAGE + 1 -> "damage";
+			case DEATH, DEATH + 1 -> "death";
 			case FALL, FALL + 1 -> {
 				if (this.height == null) {
-					name = big ? "high fall damage" : "normal fall damage";
+					yield big ? "high fall damage" : "normal fall damage";
 				} else {
-					name = "fall damage from a height of " + this.height.toString(event, debug);
+					yield "fall damage from a height of " + this.height.toString(event, debug);
 				}
 			}
-			case SWIM, SWIM + 1 -> name = "swim";
-			case SPLASH, SPLASH + 1 -> name = big ? "speedy splash" : "splash";
-			case EAT_WITH_ITEM, DRINK_WITH_ITEM -> name = (sound == EAT_WITH_ITEM ? "eating" : "drinking") + (this.item == null ? " with default item" : " " + this.item.toString(event, debug));
-			case EAT, DRINK -> name = sound == EAT ? "eating" : "drinking";
-		}
-		return name + " sound of " + entities.toString(event, debug);
+			case SWIM, SWIM + 1 -> "swim";
+			case SPLASH, SPLASH + 1 -> big ? "speedy splash" : "splash";
+			case EAT_WITH_ITEM, DRINK_WITH_ITEM -> (soundPattern == EAT_WITH_ITEM ? "eating" : "drinking") +
+				(this.item == null ? " with default item" : " " + this.item.toString(event, debug));
+			case EAT, DRINK -> soundPattern == EAT ? "eating" : "drinking";
+			default -> "unknown";
+		} + " sound of " + entities.toString(event, debug);
 	}
 
 }
