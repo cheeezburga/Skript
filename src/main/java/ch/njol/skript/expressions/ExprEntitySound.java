@@ -85,7 +85,7 @@ public class ExprEntitySound extends SimpleExpression<String> {
 			if (sound != null)
 				sounds.add(sound.name());
 		}
-		return sounds.toArray(String[]::new);
+		return sounds.toArray(new String[0]);
 	}
 
 	private @Nullable Sound getEntitySound(LivingEntity entity, Event event) {
@@ -113,7 +113,7 @@ public class ExprEntitySound extends SimpleExpression<String> {
 	private Sound getConsumeSound(LivingEntity entity, Event event) {
 		ItemStack defaultItem = new ItemStack(sound == EAT_WITH_ITEM ? Material.COOKED_BEEF : Material.POTION);
 		//noinspection ConstantValue
-		ItemStack item = this.item == null ? defaultItem : this.item.getOptionalSingle(event).orElse(new ItemType(defaultItem)).getRandom();
+		ItemStack item = this.item == null ? defaultItem : this.item.getOptionalSingle(event).map(ItemType::getRandom).orElse(defaultItem);
 		if (item == null)
 			item = defaultItem;
 		return sound == EAT_WITH_ITEM ? entity.getEatingSound(item) : entity.getDrinkingSound(item);
