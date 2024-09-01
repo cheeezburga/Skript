@@ -1,34 +1,4 @@
-/**
- *   This file is part of Skript.
- *
- *  Skript is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Skript is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Skript.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Copyright Peter Güttinger, SkriptLang team and contributors
- */
 package ch.njol.skript.effects;
-
-import java.util.List;
-import java.util.UUID;
-
-import ch.njol.skript.registrations.Classes;
-import ch.njol.skript.util.LiteralUtils;
-import ch.njol.skript.util.chat.MessageComponent;
-import ch.njol.util.coll.CollectionUtils;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
@@ -42,10 +12,20 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionList;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.VariableString;
+import ch.njol.skript.registrations.Classes;
+import ch.njol.skript.util.LiteralUtils;
 import ch.njol.skript.util.chat.BungeeConverter;
 import ch.njol.skript.util.chat.ChatMessages;
+import ch.njol.skript.util.chat.MessageComponent;
 import ch.njol.util.Kleenean;
+import ch.njol.util.coll.CollectionUtils;
 import net.md_5.bungee.api.chat.BaseComponent;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.eclipse.jdt.annotation.Nullable;
+
+import java.util.List;
 
 @Name("Message")
 @Description({"Sends a message to the given player. Only styles written",
@@ -64,15 +44,9 @@ import net.md_5.bungee.api.chat.BaseComponent;
 @RequiredPlugins("Minecraft 1.16.4+ for optional sender")
 @Since("1.0, 2.2-dev26 (advanced features), 2.5.2 (optional sender), 2.6 (sending objects)")
 public class EffMessage extends Effect {
-	
-	private static final boolean SUPPORTS_SENDER = Skript.classExists("org.bukkit.command.CommandSender$Spigot") &&
-		Skript.methodExists(CommandSender.Spigot.class, "sendMessage", UUID.class, BaseComponent.class);
-	
+
 	static {
-		if (SUPPORTS_SENDER)
-			Skript.registerEffect(EffMessage.class, "(message|send [message[s]]) %objects% [to %commandsenders%] [from %-player%]");
-		else
-			Skript.registerEffect(EffMessage.class, "(message|send [message[s]]) %objects% [to %commandsenders%]");
+		Skript.registerEffect(EffMessage.class, "(message|send [message[s]]) %objects% [to %commandsenders%] [from %-player%]");
 	}
 
 	@SuppressWarnings("NotNullFieldNotInitialized")
@@ -98,8 +72,7 @@ public class EffMessage extends Effect {
 		messages = messageExpr instanceof ExpressionList ?
 			((ExpressionList<?>) messageExpr).getExpressions() : new Expression[] {messageExpr};
 		recipients = (Expression<CommandSender>) exprs[1];
-		if (SUPPORTS_SENDER)
-			sender = (Expression<Player>) exprs[2];
+		sender = (Expression<Player>) exprs[2];
 		return LiteralUtils.canInitSafely(messageExpr);
 	}
 
@@ -115,27 +88,25 @@ public class EffMessage extends Effect {
 			List<MessageComponent> messageComponents = null;
 
 			for (CommandSender receiver : commandSenders) {
-				if (receiver instanceof Player && message instanceof VariableString) {
+				if (receiver instanceof Player && message instanceof VariableString varString) {
 					if (messageComponents == null)
-						messageComponents = ((VariableString) message).getMessageComponents(e);
+						messageComponents = varString.getMessageComponents(e);
 				} else {
 					if (messageArray == null)
 						messageArray = message.getArray(e);
 				}
 
-				if (receiver instanceof Player) { // Can use JSON formatting
+				if (receiver instanceof Player player) { // Can use JSON formatting
 					if (message instanceof VariableString) { // Process formatting that is safe
-						sendMessage((Player) receiver, sender,
-							BungeeConverter.convert(messageComponents)
-						);
-					} else if (message instanceof ExprColoured && ((ExprColoured) message).isUnsafeFormat()) { // Manually marked as trusted
+						sendMessage(player, sender, BungeeConverter.convert(messageComponents));
+					} else if (message instanceof ExprColoured coloured && coloured.isUnsafeFormat()) { // Manually marked as trusted
 						for (Object object : messageArray) {
-							sendMessage((Player) receiver, sender, BungeeConverter.convert(ChatMessages.parse((String) object)));
+							sendMessage(player, sender, BungeeConverter.convert(ChatMessages.parse((String) object)));
 						}
 					} else { // It is just a string, no idea if it comes from a trusted source -> don't parse anything
 						for (Object object : messageArray) {
 							List<MessageComponent> components = ChatMessages.fromParsedString(toString(object));
-							sendMessage((Player) receiver, sender, BungeeConverter.convert(components));
+							sendMessage(player, sender, BungeeConverter.convert(components));
 						}
 					}
 				} else { // Not a player, send plain text with legacy formatting
@@ -148,7 +119,7 @@ public class EffMessage extends Effect {
 	}
 	
 	private void sendMessage(Player receiver, @Nullable Player sender, BaseComponent... components) {
-		if (SUPPORTS_SENDER && sender != null)
+		if (sender != null)
 			receiver.spigot().sendMessage(sender.getUniqueId(), components);
 		else
 			receiver.spigot().sendMessage(components);
@@ -162,7 +133,7 @@ public class EffMessage extends Effect {
 	}
 
 	private String toString(Object object) {
-		return object instanceof String ? (String) object : Classes.toString(object);
+		return object instanceof String string ? string : Classes.toString(object);
 	}
 
 	@Override

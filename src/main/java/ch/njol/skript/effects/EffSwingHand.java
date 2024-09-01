@@ -1,26 +1,4 @@
-/**
- *   This file is part of Skript.
- *
- *  Skript is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Skript is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Skript.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Copyright Peter Güttinger, SkriptLang team and contributors
- */
 package ch.njol.skript.effects;
-
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
@@ -32,12 +10,15 @@ import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.Event;
+import org.eclipse.jdt.annotation.Nullable;
 
 @Name("Swing Hand")
 @Description("Makes an entity swing their hand. This does nothing if the entity does not have an animation for swinging their hand.")
 @Examples("make player swing their main hand")
 @Since("2.5.1")
-@RequiredPlugins("Minecraft 1.15.2+")
+@RequiredPlugins("Spigot 1.15.2+")
 public class EffSwingHand extends Effect {
 	
 	static {
@@ -45,10 +26,10 @@ public class EffSwingHand extends Effect {
 			"make %livingentities% swing [their] [main] hand",
 			"make %livingentities% swing [their] off[ ]hand");
 	}
-	
+
 	public static final boolean SWINGING_IS_SUPPORTED = Skript.methodExists(LivingEntity.class, "swingMainHand");
-	
-	@SuppressWarnings("null")
+
+	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<LivingEntity> entities;
 	private boolean isMainHand;
 	
@@ -65,13 +46,11 @@ public class EffSwingHand extends Effect {
 	}
 	
 	@Override
-	protected void execute(Event e) {
-		if (isMainHand) {
-			for (LivingEntity entity : entities.getArray(e)) {
+	protected void execute(Event event) {
+		for (LivingEntity entity : entities.getArray(event)) {
+			if (isMainHand) {
 				entity.swingMainHand();
-			}
-		} else {
-			for (LivingEntity entity : entities.getArray(e)) {
+			} else {
 				entity.swingOffHand();
 			}
 		}

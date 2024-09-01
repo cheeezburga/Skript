@@ -1,21 +1,3 @@
-/**
- *   This file is part of Skript.
- *
- *  Skript is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Skript is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Skript.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Copyright Peter Güttinger, SkriptLang team and contributors
- */
 package ch.njol.skript.conditions;
 
 import ch.njol.skript.Skript;
@@ -32,7 +14,6 @@ import ch.njol.util.Kleenean;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.event.Event;
-import org.bukkit.inventory.ItemStack;
 import org.eclipse.jdt.annotation.Nullable;
 
 @Name("Is Preferred Tool")
@@ -49,19 +30,15 @@ import org.eclipse.jdt.annotation.Nullable;
 			"\t\tcancel event"
 })
 @Since("2.7")
-@RequiredPlugins("1.16.5+, Paper 1.19.2+ (blockdata)")
+@RequiredPlugins("1.16.5+, Paper 1.19.2+/Spigot 1.19.4+ (blockdata)")
 public class CondIsPreferredTool extends Condition {
 
 	static {
-		String types = "blocks";
-		if (Skript.methodExists(BlockData.class, "isPreferredTool", ItemStack.class))
-			types += "/blockdatas";
-
 		Skript.registerCondition(CondIsPreferredTool.class,
-				"%itemtypes% (is|are) %" + types + "%'s preferred tool[s]",
-				"%itemtypes% (is|are) [the|a] preferred tool[s] (for|of) %" + types + "%",
-				"%itemtypes% (is|are)(n't| not) %" + types + "%'s preferred tool[s]",
-				"%itemtypes% (is|are)(n't| not) [the|a] preferred tool[s] (for|of) %" + types + "%"
+				"%itemtypes% (is|are) %blocks/blockdatas%'s preferred tool[s]",
+				"%itemtypes% (is|are) [the|a] preferred tool[s] (for|of) %blocks/blockdatas%",
+				"%itemtypes% (is|are)(n't| not) %blocks/blockdatas%'s preferred tool[s]",
+				"%itemtypes% (is|are)(n't| not) [the|a] preferred tool[s] (for|of) %blocks/blockdatas%"
 		);
 	}
 
@@ -69,6 +46,7 @@ public class CondIsPreferredTool extends Condition {
 	private Expression<?> blocks;
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		setNegated(matchedPattern >= 2);
 		items = (Expression<ItemType>) exprs[0];
@@ -80,10 +58,10 @@ public class CondIsPreferredTool extends Condition {
 	public boolean check(Event event) {
 		return blocks.check(event, block ->
 			items.check(event, item -> {
-				if (block instanceof Block) {
-					return ((Block) block).isPreferredTool(item.getRandom());
-				} else if (block instanceof BlockData) {
-					return ((BlockData) block).isPreferredTool(item.getRandom());
+				if (block instanceof Block b) {
+					return b.isPreferredTool(item.getRandom());
+				} else if (block instanceof BlockData bd) {
+					return bd.isPreferredTool(item.getRandom());
 				} else {
 					return false;
 				}

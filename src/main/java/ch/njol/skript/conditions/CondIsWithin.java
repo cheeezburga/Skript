@@ -1,21 +1,3 @@
-/**
- *   This file is part of Skript.
- *
- *  Skript is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Skript is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Skript.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Copyright Peter Güttinger, SkriptLang team and contributors
- */
 package ch.njol.skript.conditions;
 
 import ch.njol.skript.Skript;
@@ -58,19 +40,15 @@ import org.eclipse.jdt.annotation.Nullable;
 		"\tsend \"Back up!\" to attacker and victim",
 })
 @Since("2.7")
-@RequiredPlugins("MC 1.17+ (within block)")
+@RequiredPlugins("Spigot 1.17+ (within block)")
 public class CondIsWithin extends Condition {
 
 	static {
-		String validTypes = "entity/chunk/world";
-		if (Skript.methodExists(Block.class, "getCollisionShape"))
-			validTypes += "/block";
-
 		Skript.registerCondition(CondIsWithin.class,
 				"%locations% (is|are) within %location% and %location%",
 				"%locations% (isn't|is not|aren't|are not) within %location% and %location%",
-				"%locations% (is|are) (within|in[side [of]]) %" + validTypes + "%",
-				"%locations% (isn't|is not|aren't|are not) (within|in[side [of]]) %" + validTypes + "%"
+				"%locations% (is|are) (within|in[side [of]]) %entity/chunk/world/block%",
+				"%locations% (isn't|is not|aren't|are not) (within|in[side [of]]) %entity/chunk/world/block%"
 		);
 	}
 
@@ -114,14 +92,14 @@ public class CondIsWithin extends Condition {
 			return false;
 
 		// Entities
-		if (area instanceof Entity) {
-			BoundingBox box = ((Entity) area).getBoundingBox();
+		if (area instanceof Entity entity) {
+			BoundingBox box = entity.getBoundingBox();
 			return locsToCheck.check(event, (loc) -> box.contains(loc.toVector()), isNegated());
 		}
 
 		// Blocks
-		if (area instanceof Block) {
-			for (BoundingBox box : ((Block) area).getCollisionShape().getBoundingBoxes()) {
+		if (area instanceof Block block) {
+			for (BoundingBox box : block.getCollisionShape().getBoundingBoxes()) {
 				// getCollisionShape().getBoundingBoxes() returns a list of bounding boxes relative to the block's position,
 				// so we need to subtract the block position from each location
 				Vector blockVector = ((Block) area).getLocation().toVector();
@@ -149,13 +127,10 @@ public class CondIsWithin extends Condition {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		String str = locsToCheck.toString(event, debug) + " is within ";
-		if (withinLocations) {
-			str += loc1.toString(event, debug) + " and " + loc2.toString(event, debug);
-		} else {
-			str += area.toString(event, debug);
-		}
-		return str;
+		String within = withinLocations
+			? loc1.toString(event, debug) + " and " + loc2.toString(event, debug)
+			: area.toString(event, debug);
+		return locsToCheck.toString(event, debug) + " is within " + within;
 	}
 
 }
