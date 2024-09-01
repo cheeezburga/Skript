@@ -106,12 +106,14 @@ public class EffLook extends Effect {
 		Object object = target.getSingle(event);
 		if (object == null)
 			return;
-		Float speed = this.speed == null ? null : this.speed.getSingle(event).floatValue();
-		Float maxPitch = this.maxPitch == null ? null : this.maxPitch.getSingle(event).floatValue();
+
+		Number speed = this.speed == null ? null : this.speed.getOptionalSingle(event).orElse(null);
+		Number maxPitch = this.maxPitch == null ? null : this.maxPitch.getOptionalSingle(event).orElse(null);
+
 		if (LOOK_ANCHORS) {
-			PaperEntityUtils.lookAt(anchor, object, speed, maxPitch, entities.getArray(event));
+			PaperEntityUtils.lookAt(anchor, object, (Float) speed, (Float) maxPitch, entities.getArray(event));
 		} else {
-			PaperEntityUtils.lookAt(object, speed, maxPitch, entities.getArray(event));
+			PaperEntityUtils.lookAt(object, (Float) speed, (Float) maxPitch, entities.getArray(event));
 		}
 	}
 
