@@ -43,10 +43,9 @@ public class EffCommandBlockConditional extends Effect {
 	@Override
 	protected void execute(Event event) {
 		for (Block block : blocks.getArray(event)) {
-			if (block.getBlockData() instanceof CommandBlock) {
-				CommandBlock data = (CommandBlock) block.getBlockData();
-				data.setConditional(conditional);
-				block.setBlockData(data);
+			if (block.getBlockData() instanceof CommandBlock cmdBlock) {
+				cmdBlock.setConditional(conditional);
+				block.setBlockData(cmdBlock);
 			}
 		}
 	}

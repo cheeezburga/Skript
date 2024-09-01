@@ -31,10 +31,10 @@ public class ExprCommandBlockCommand extends SimplePropertyExpression<Object, St
 	@Override
 	public @Nullable String convert(Object holder) {
 		String command = "";
-		if (holder instanceof Block && ((Block) holder).getState() instanceof CommandBlock) {
-			command = ((CommandBlock) ((Block) holder).getState()).getCommand();
-		} else if (holder instanceof CommandMinecart) {
-			command = ((CommandMinecart) holder).getCommand();
+		if (holder instanceof Block block && block.getState() instanceof CommandBlock cmdBlock) {
+			command = cmdBlock.getCommand();
+		} else if (holder instanceof CommandMinecart cmdMinecart) {
+			command = cmdMinecart.getCommand();
 		}
 		return (command.isEmpty()) ? null : command;
 	}
@@ -54,12 +54,11 @@ public class ExprCommandBlockCommand extends SimplePropertyExpression<Object, St
 				case RESET:
 				case DELETE:
 				case SET:
-					if (holder instanceof Block && ((Block) holder).getState() instanceof CommandBlock) {
-						CommandBlock state = ((CommandBlock) ((Block) holder).getState());
-						state.setCommand(newCommand);
-						state.update();
-					} else if (holder instanceof CommandMinecart) {
-						((CommandMinecart) holder).setCommand(newCommand);
+					if (holder instanceof Block block && block.getState() instanceof CommandBlock cmdBlock) {
+						cmdBlock.setCommand(newCommand);
+						cmdBlock.update();
+					} else if (holder instanceof CommandMinecart cmdMinecart) {
+						cmdMinecart.setCommand(newCommand);
 					}
 					break;
 				default:
