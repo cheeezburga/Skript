@@ -1,6 +1,17 @@
 package ch.njol.skript.effects;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.aliases.ItemData;
+import ch.njol.skript.aliases.ItemType;
+import ch.njol.skript.bukkitutil.PlayerUtils;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
+import ch.njol.skript.lang.Effect;
+import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.util.Kleenean;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.entity.AbstractHorse;
@@ -20,21 +31,13 @@ import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.LlamaInventory;
 import org.eclipse.jdt.annotation.Nullable;
-
-import ch.njol.skript.Skript;
-import ch.njol.skript.aliases.ItemType;
-import ch.njol.skript.bukkitutil.PlayerUtils;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.Since;
-import ch.njol.skript.lang.Effect;
-import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.SkriptParser.ParseResult;
-import ch.njol.util.Kleenean;
+import org.jetbrains.annotations.UnknownNullability;
 
 @Name("Equip")
-@Description("Equips or unequips an entity with some given armor. This will replace any armor that the entity is wearing.")
+@Description({
+	"Equips or unequips an entity with the given itemtypes (usually armor).",
+	"This effect will replace any armor that the entity is already wearing."
+})
 @Examples({
 		"equip player with diamond helmet",
 		"equip player with all diamond armor",
@@ -56,7 +59,7 @@ public class EffEquip extends Effect {
 
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<LivingEntity> entities;
-	@Nullable
+	@UnknownNullability
 	private Expression<ItemType> itemTypes;
 
 	private boolean equip = true;
