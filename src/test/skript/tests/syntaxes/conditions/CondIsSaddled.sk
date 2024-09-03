@@ -1,12 +1,15 @@
 test "is saddled":
 	spawn a horse at (spawn of world "world"):
-		set {_h} to event-entity
+		set {_horse} to event-entity
 
 	spawn a pig at (spawn of world "world"):
-		set {_p} to event-entity
+		set {_pig} to event-entity
 
-	equip {_h} and {_p} with saddle
-	assert {_h} and {_p} are saddled with "equipping a horse or steerable with a saddle should do exactly that"
+	equip {_horse} and {_pig} with saddle
+	assert {_horse} and {_pig} are saddled with "equipping a horse or steerable with a saddle should do exactly that"
 
-	unequip saddle from {_h} and {_p}
-	assert {_h} and {_p} aren't saddled with "unequipping a saddle from a horse or steerable should do exactly that"
+	unequip saddle from {_horse} and {_pig}
+	assert {_horse} and {_pig} aren't saddled with "unequipping a saddle from a horse or steerable should do exactly that"
+
+	delete entity within {_horse}
+	delete entity within {_pig}

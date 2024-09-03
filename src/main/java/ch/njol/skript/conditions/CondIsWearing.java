@@ -19,7 +19,6 @@ import org.bukkit.inventory.ItemStack;
 import org.eclipse.jdt.annotation.Nullable;
 
 import java.util.Arrays;
-import java.util.stream.Stream;
 
 @Name("Is Wearing")
 @Description("Checks whether an entity is wearing some items (usually armor).")
@@ -35,9 +34,9 @@ public class CondIsWearing extends Condition {
 		PropertyCondition.register(CondIsWearing.class, "wearing %itemtypes%", "livingentities");
 	}
 	
-	@SuppressWarnings("null")
+	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<LivingEntity> entities;
-	@SuppressWarnings("null")
+	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<ItemType> types;
 	
 	@SuppressWarnings({"unchecked", "null"})
@@ -54,12 +53,13 @@ public class CondIsWearing extends Condition {
 		return entities.check(event,
 				entity -> types.check(event,
 						type -> {
-							EntityEquipment equip = entity.getEquipment();
-							if (equip == null)
-								return false; // No equipment -> not wearing anything
+							EntityEquipment equipment = entity.getEquipment();
+							if (equipment == null)
+								return false; // spigot nullability, no identifier as to why this occurs
 
-							ItemStack[] contents = Arrays.copyOf(equip.getArmorContents(), equip.getArmorContents().length + 1);
-							contents[contents.length - 1] = equip.getItem(EquipmentSlot.BODY);
+							ItemStack[] contents = Arrays.stream(EquipmentSlot.values())
+								.map(equipment::getItem)
+								.toArray(ItemStack[]::new);
 
 							for (ItemStack content : contents) {
 								if (type.isOfType(content) ^ type.isAll())
@@ -71,9 +71,9 @@ public class CondIsWearing extends Condition {
 	}
 	
 	@Override
-	public String toString(@Nullable Event e, boolean debug) {
-		return PropertyCondition.toString(this, PropertyType.BE, e, debug, entities,
-				"wearing " + types.toString(e, debug));
+	public String toString(@Nullable Event event, boolean debug) {
+		return PropertyCondition.toString(this, PropertyType.BE, event, debug, entities,
+				"wearing " + types.toString(event, debug));
 	}
 	
 }

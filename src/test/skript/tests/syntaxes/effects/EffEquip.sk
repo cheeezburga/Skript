@@ -3,63 +3,63 @@ test "equip effect":
 	# === ARMOUR ===
 
 	spawn a zombie at (spawn of world "world"):
-		set {_z} to entity
+		set {_zombie} to entity
 
-	clear helmet of {_z}
-	clear chestplate of {_z}
-	clear leggings of {_z}
-	clear boots of {_z}
+	clear helmet of {_zombie}
+	clear chestplate of {_zombie}
+	clear leggings of {_zombie}
+	clear boots of {_zombie}
 
-	assert helmet of {_z} is air with "the modified zombie shouldn't be wearing a helmet"
-	assert chestplate of {_z} is air with "the modified zombie shouldn't be wearing a chestplate"
-	assert leggings of {_z} is air with "the modified zombie shouldn't be wearing leggings"
-	assert boots of {_z} is air with "the modified zombie shouldn't be wearing boots"
+	assert helmet of {_zombie} is air with "the modified zombie shouldn't be wearing a helmet"
+	assert chestplate of {_zombie} is air with "the modified zombie shouldn't be wearing a chestplate"
+	assert leggings of {_zombie} is air with "the modified zombie shouldn't be wearing leggings"
+	assert boots of {_zombie} is air with "the modified zombie shouldn't be wearing boots"
 
-	equip {_z} with iron helmet
-	equip {_z} with diamond chestplate
-	equip {_z} with diamond leggings
-	equip {_z} with any boots
-	assert helmet of {_z} is iron helmet with "equipping a zombie with a helmet should do exactly that"
-	assert chestplate of {_z} is diamond chestplate with "equipping a zombie with a chestplate should do exactly that"
-	assert leggings of {_z} is diamond leggings with "equipping a zombie with leggings should do exactly that"
-	assert boots of {_z} is any boots with "equipping a zombie with boots should do exactly that"
+	equip {_zombie} with iron helmet
+	equip {_zombie} with diamond chestplate
+	equip {_zombie} with diamond leggings
+	equip {_zombie} with any boots
+	assert helmet of {_zombie} is iron helmet with "equipping a zombie with a helmet should do exactly that"
+	assert chestplate of {_zombie} is diamond chestplate with "equipping a zombie with a chestplate should do exactly that"
+	assert leggings of {_zombie} is diamond leggings with "equipping a zombie with leggings should do exactly that"
+	assert boots of {_zombie} is any boots with "equipping a zombie with boots should do exactly that"
 
-	unequip {_z}'s armour
-	assert helmet of {_z} is air with "unequipping an entity should remove its armour"
-	assert chestplate of {_z} is air with "unequipping an entity should remove its armour"
-	assert leggings of {_z} is air with "unequipping an entity should remove its armour"
-	assert boots of {_z} is air with "unequipping an entity should remove its armour"
+	unequip {_zombie}'s armour
+	assert helmet of {_zombie} is air with "unequipping an entity should remove its armour"
+	assert chestplate of {_zombie} is air with "unequipping an entity should remove its armour"
+	assert leggings of {_zombie} is air with "unequipping an entity should remove its armour"
+	assert boots of {_zombie} is air with "unequipping an entity should remove its armour"
 
 	# === SADDLES ===
 
 	spawn a horse at (spawn of world "world"):
-		set {_h} to entity
+		set {_horse} to entity
 	spawn a pig at (spawn of world "world"):
-		set {_p} to entity
+		set {_pig} to entity
 
-	assert {_h} and {_p} don't have saddles with "normally spawned horses and pigs should not have saddles"
+	assert {_horse} and {_pig} don't have saddles with "normally spawned horses and pigs should not have saddles"
 
-	equip {_h} and {_p} with saddle
-	assert {_h} and {_p} have saddles with "equipping a horse or pig with a saddle should do exactly that"
+	equip {_horse} and {_pig} with saddle
+	assert {_horse} and {_pig} have saddles with "equipping a horse or pig with a saddle should do exactly that"
 
-	unequip saddle from {_h} and {_p}
-	assert {_h} and {_p} don't have saddles with "unequipping a saddle from a horse or pig should do exactly that"
+	unequip saddle from {_horse} and {_pig}
+	assert {_horse} and {_pig} don't have saddles with "unequipping a saddle from a horse or pig should do exactly that"
 
 	# === CLEANUP ===
 
-	delete entity within {_z}
-	delete entity within {_h}
-	delete entity within {_p}
+	delete entity within {_zombie}
+	delete entity within {_horse}
+	delete entity within {_pig}
 
 test "equip - wolf armor" when running minecraft "1.20.5":
 
 	spawn a wolf at (spawn of world "world"):
-		set {_w} to entity
+		set {_wolf} to entity
 
-	equip {_w} with wolf armor
-	assert {_w} is wearing wolf armor with "equipping a wolf with wolf armor should do exactly that"
+	equip {_wolf} with wolf armor
+	assert {_wolf} is wearing wolf armor with "equipping a wolf with wolf armor should do exactly that"
 
-	unequip wolf armor from {_w}
-	assert {_w} is not wearing wolf armor with "unequipping wolf armor from a wolf should do exactly that"
+	unequip wolf armor from {_wolf}
+	assert {_wolf} is not wearing wolf armor with "unequipping wolf armor from a wolf should do exactly that"
 
-	delete entity within {_w}
+	delete entity within {_wolf}

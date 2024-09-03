@@ -1,6 +1,10 @@
 package ch.njol.skript.conditions;
 
 import ch.njol.skript.conditions.base.PropertyCondition;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
@@ -10,6 +14,10 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Steerable;
 import org.bukkit.inventory.ItemStack;
 
+@Name("Is Saddled")
+@Description("Checks whether a given entity (horse or steerable) is wearing a saddle.")
+@Examples("send whether {_horse} is saddled")
+@Since("INSERT VERSION")
 public class CondIsSaddled extends PropertyCondition<LivingEntity> {
 
 	static {
@@ -39,4 +47,5 @@ public class CondIsSaddled extends PropertyCondition<LivingEntity> {
 	protected String getPropertyName() {
 		return exact ? "properly saddled" : "saddled";
 	}
+
 }
