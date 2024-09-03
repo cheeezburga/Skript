@@ -37,6 +37,6 @@ public class CondIsSaddled extends PropertyCondition<LivingEntity> {
 
 	@Override
 	protected String getPropertyName() {
-		return exact ? "an exact saddle" : "a saddle";
+		return exact ? "properly saddled" : "saddled";
 	}
 }

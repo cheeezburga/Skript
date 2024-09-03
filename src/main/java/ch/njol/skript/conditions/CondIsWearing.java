@@ -21,9 +21,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-/**
- * @author Peter Güttinger
- */
 @Name("Is Wearing")
 @Description("Checks whether an entity is wearing some items (usually armor).")
 @Examples({
