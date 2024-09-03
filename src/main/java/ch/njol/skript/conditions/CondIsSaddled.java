@@ -10,10 +10,10 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Steerable;
 import org.bukkit.inventory.ItemStack;
 
-public class CondHasSaddle extends PropertyCondition<LivingEntity> {
+public class CondIsSaddled extends PropertyCondition<LivingEntity> {
 
 	static {
-		register(CondHasSaddle.class, PropertyType.HAVE, "[a[exact:(n exact)]] saddle", "livingentities");
+		register(CondIsSaddled.class, "[exact:(exactly|properly)] saddled", "livingentities");
 	}
 
 	private boolean exact;
@@ -26,9 +26,9 @@ public class CondHasSaddle extends PropertyCondition<LivingEntity> {
 
 	@Override
 	public boolean check(LivingEntity entity) {
-		if (entity instanceof Steerable steerable)
+		if (entity instanceof Steerable steerable) {
 			return steerable.hasSaddle();
-		else if (entity instanceof AbstractHorse horse) {
+		} else if (entity instanceof AbstractHorse horse) {
 			ItemStack saddle = horse.getInventory().getSaddle();
 			return exact ? (saddle != null && saddle.equals(new ItemStack(Material.SADDLE))) : (saddle != null);
 		}
