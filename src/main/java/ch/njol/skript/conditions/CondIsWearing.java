@@ -14,8 +14,12 @@ import ch.njol.util.Kleenean;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.eclipse.jdt.annotation.Nullable;
+
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 /**
  * @author Peter Güttinger
@@ -56,8 +60,12 @@ public class CondIsWearing extends Condition {
 							EntityEquipment equip = entity.getEquipment();
 							if (equip == null)
 								return false; // No equipment -> not wearing anything
-							for (ItemStack armorContent : equip.getArmorContents()) {
-								if (type.isOfType(armorContent) ^ type.isAll())
+
+							ItemStack[] contents = Arrays.copyOf(equip.getArmorContents(), equip.getArmorContents().length + 1);
+							contents[contents.length - 1] = equip.getItem(EquipmentSlot.BODY);
+
+							for (ItemStack content : contents) {
+								if (type.isOfType(content) ^ type.isAll())
 									return !type.isAll();
 							}
 							return type.isAll();

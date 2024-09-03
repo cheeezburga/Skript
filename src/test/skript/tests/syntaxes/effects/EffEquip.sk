@@ -45,19 +45,21 @@ test "equip effect":
 	unequip saddle from {_h} and {_p}
 	assert {_h} and {_p} don't have saddles with "unequipping a saddle from a horse or pig should do exactly that"
 
-	# === WOLF ARMOUR ===
-
-	parse if running minecraft "1.20.5":
-		spawn a wolf at (spawn of world "world"):
-			set {_w} to entity
-
-		equip {_w} with wolf armor
-		assert {_w} is wearing wolf armor with "equipping a wolf with wolf armor should do exactly that"
-
-		unequip wolf armor from {_w}
-		assert {_w} is not wearing wolf armor with "unequipping wolf armor from a wolf should do exactly that"
+	# === CLEANUP ===
 
 	delete entity within {_z}
 	delete entity within {_h}
 	delete entity within {_p}
+
+test "equip - wolf armor" when running minecraft "1.20.5":
+
+	spawn a wolf at (spawn of world "world"):
+		set {_w} to entity
+
+	equip {_w} with wolf armor
+	assert {_w} is wearing wolf armor with "equipping a wolf with wolf armor should do exactly that"
+
+	unequip wolf armor from {_w}
+	assert {_w} is not wearing wolf armor with "unequipping wolf armor from a wolf should do exactly that"
+
 	delete entity within {_w}
