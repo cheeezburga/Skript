@@ -12,6 +12,7 @@ import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.entity.AbstractHorse;
@@ -19,7 +20,6 @@ import org.bukkit.entity.ChestedHorse;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Llama;
-import org.bukkit.entity.Pig;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Steerable;
 import org.bukkit.entity.Wolf;
@@ -80,8 +80,6 @@ public class EffEquip extends Effect {
 		}
 		return true;
 	}
-
-	private static final boolean SUPPORTS_STEERABLE = Skript.classExists("org.bukkit.entity.Steerable");
 
 	private static ItemType CHESTPLATE;
 	private static ItemType LEGGINGS;
@@ -152,17 +150,10 @@ public class EffEquip extends Effect {
 			unequipHelmet = true;
 		}
 		for (LivingEntity entity : entities.getArray(event)) {
-			if (SUPPORTS_STEERABLE && entity instanceof Steerable steerable) {
+			if (entity instanceof Steerable steerable) {
 				for (ItemType itemType : itemTypes) {
 					if (SADDLE.isOfType(itemType.getMaterial())) {
 						steerable.setSaddle(equip);
-					}
-				}
-			} else if (entity instanceof Pig pig) {
-				for (ItemType itemType : itemTypes) {
-					if (itemType.isOfType(Material.SADDLE)) {
-						pig.setSaddle(equip);
-						break;
 					}
 				}
 			} else if (entity instanceof Llama llama) {
