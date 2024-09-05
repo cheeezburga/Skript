@@ -1,0 +1,22 @@
+test "block sounds":
+
+	# === SETUP ===
+
+	set {_block} to block at (spawn of world "world")
+	set {_before} to blockdata of {_block}
+	set blockdata of {_block} to stone[]
+	set {_data} to blockdata of {_block}
+
+	set {_itemtype} to stone
+
+	# === TESTS ===
+
+	assert break sound of {_block}, {_data} and {_itemtype} is "BLOCK_STONE_BREAK" with "break sound of stone wasn't BLOCK_STONE_BREAK"
+	assert fall sound of {_block}, {_data} and {_itemtype} is "BLOCK_STONE_FALL" with "fall sound of stone wasn't BLOCK_STONE_FALL"
+	assert hit sound of {_block}, {_data} and {_itemtype} is "BLOCK_STONE_HIT" with "hit sound of stone wasn't BLOCK_STONE_HIT"
+	assert place sound of {_block}, {_data} and {_itemtype} is "BLOCK_STONE_PLACE" with "place sound of stone wasn't BLOCK_STONE_PLACE"
+	assert step sound of {_block}, {_data} and {_itemtype} is "BLOCK_STONE_STEP" with "step sound of stone wasn't BLOCK_STONE_STEP"
+
+	# === CLEANUP ===
+
+	set blockdata of {_block} to {_before}
