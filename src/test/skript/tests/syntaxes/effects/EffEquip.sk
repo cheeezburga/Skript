@@ -30,10 +30,19 @@ test "equip effect":
 	assert leggings of {_zombie} is air with "unequipping an entity should remove its armour"
 	assert boots of {_zombie} is air with "unequipping an entity should remove its armour"
 
-	# === SADDLES ===
+	# === HORSE ARMOUR ===
 
 	spawn a horse at (spawn of world "world"):
 		set {_horse} to entity
+
+	equip {_horse} with diamond horse armour
+	assert {_horse} is wearing diamond horse armour with "equipping a horse with horse armour should do exactly that"
+
+	unequip diamond horse armour from {_horse}
+	assert {_horse} is not wearing diamond horse armour with "unequipping horse armour from a horse should do exactly that"
+
+	# === SADDLES ===
+
 	spawn a pig at (spawn of world "world"):
 		set {_pig} to entity
 

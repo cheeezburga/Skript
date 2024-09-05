@@ -58,8 +58,7 @@ public class EffEquip extends Effect {
 
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<LivingEntity> entities;
-	@UnknownNullability
-	private Expression<ItemType> itemTypes;
+	private @UnknownNullability Expression<ItemType> itemTypes;
 
 	private boolean equip = true;
 

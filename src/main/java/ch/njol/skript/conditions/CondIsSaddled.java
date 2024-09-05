@@ -21,14 +21,14 @@ import org.bukkit.inventory.ItemStack;
 public class CondIsSaddled extends PropertyCondition<LivingEntity> {
 
 	static {
-		register(CondIsSaddled.class, "[exact:(exactly|properly)] saddled", "livingentities");
+		register(CondIsSaddled.class, "[:properly] saddled", "livingentities");
 	}
 
-	private boolean exact;
+	private boolean properly;
 
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		exact = parseResult.hasTag("exact");
+		properly = parseResult.hasTag("properly");
 		return super.init(exprs, matchedPattern, isDelayed, parseResult);
 	}
 
@@ -38,14 +38,14 @@ public class CondIsSaddled extends PropertyCondition<LivingEntity> {
 			return steerable.hasSaddle();
 		} else if (entity instanceof AbstractHorse horse) {
 			ItemStack saddle = horse.getInventory().getSaddle();
-			return exact ? (saddle != null && saddle.equals(new ItemStack(Material.SADDLE))) : (saddle != null);
+			return properly ? (saddle != null && saddle.equals(new ItemStack(Material.SADDLE))) : (saddle != null);
 		}
 		return false;
 	}
 
 	@Override
 	protected String getPropertyName() {
-		return exact ? "properly saddled" : "saddled";
+		return properly ? "properly saddled" : "saddled";
 	}
 
 }
