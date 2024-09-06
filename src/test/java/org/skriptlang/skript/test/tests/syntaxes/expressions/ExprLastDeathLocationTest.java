@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.easymock.EasyMock;
+import org.easymock.IArgumentMatcher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,8 +22,8 @@ public class ExprLastDeathLocationTest extends SkriptJUnitTest {
 	@Before
 	public void setup() {
 		player = EasyMock.niceMock(Player.class);
-		get = Effect.parse("set last death location of {_player} to location(0,0,0)", null);
-		set = Effect.parse("set {_loc} to last death location of {_player}", null);
+		set = Effect.parse("set last death location of {_player} to {_location}", null);
+		get = Effect.parse("set {_loc} to last death location of {_player}", null);
 	}
 
 	@Test
@@ -32,22 +33,43 @@ public class ExprLastDeathLocationTest extends SkriptJUnitTest {
 		if (set == null)
 			Assert.fail("Set statement was null");
 
-		ContextlessEvent event = ContextlessEvent.get();
-		Variables.setVariable("player", player, event, true);
 		Location location = new Location(Bukkit.getWorld("world"), 0, 0, 0);
 
-		player.setLastDeathLocation(location);
+		ContextlessEvent event = ContextlessEvent.get();
+		Variables.setVariable("player", player, event, true);
+		Variables.setVariable("location", location, event, true);
+
+		player.setLastDeathLocation(locationMatcher(location));
 		EasyMock.expectLastCall();
 		EasyMock.replay(player);
 		TriggerItem.walk(set, event);
 		EasyMock.verify(player);
 
 		EasyMock.resetToNice(player);
-		player.getLastDeathLocation();
-		EasyMock.expectLastCall();
+
+		EasyMock.expect(player.getLastDeathLocation()).andReturn(location);
 		EasyMock.replay(player);
 		TriggerItem.walk(get, event);
 		EasyMock.verify(player);
+	}
+
+	private <T> T locationMatcher(Location expectedLoc) {
+		EasyMock.reportMatcher(new IArgumentMatcher() {
+			@Override
+			public boolean matches(Object argument) {
+				if (argument instanceof Location location) {
+					return location.equals(expectedLoc);
+				}
+				return false;
+			}
+
+			@Override
+			public void appendTo(StringBuffer buffer) {
+				buffer.append("[location matcher]");
+			}
+		});
+
+		return null;
 	}
 
 }
