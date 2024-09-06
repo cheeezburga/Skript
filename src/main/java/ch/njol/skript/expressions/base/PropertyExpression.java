@@ -35,7 +35,7 @@ public abstract class PropertyExpression<F, T> extends SimpleExpression<T> {
 	@SuppressWarnings("ConstantValue")
 	public static String[] getPatterns(String property, String fromType) {
 		if (property == null || fromType == null)
-			return null;
+			throw new IllegalArgumentException("'property' or 'fromType' was null.");
 		return new String[]{"[the] " + property + " of %" + fromType + "%", "%" + fromType + "%'[s] " + property};
 	}
 
