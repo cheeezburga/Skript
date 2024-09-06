@@ -1,6 +1,10 @@
 package ch.njol.skript.expressions;
 
 import ch.njol.skript.classes.Changer.ChangeMode;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.util.coll.CollectionUtils;
 import org.bukkit.Location;
@@ -9,10 +13,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
 
+@Name("Last Death Location")
+@Description({
+	"Gets the last death location of a player, or offline player, if available.",
+	"Can also be set, reset, and deleted if the player is online."
+})
+@Examples({
+	"set {_loc} to the last death location of player",
+	"teleport player to last death location of (random element out of all players)"
+})
+@Since("INSERT VERSION")
 public class ExprLastDeathLocation extends SimplePropertyExpression<OfflinePlayer, Location> {
 
 	static {
-		register(ExprLastDeathLocation.class, Location.class, "[last] death location", "offlineplayers");
+		register(ExprLastDeathLocation.class, Location.class, "[last] death location[s]", "offlineplayers");
 	}
 
 	@Override
