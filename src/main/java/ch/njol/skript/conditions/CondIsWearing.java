@@ -50,26 +50,25 @@ public class CondIsWearing extends Condition {
 	
 	@Override
 	public boolean check(Event event) {
-		return entities.check(event,
-				entity -> types.check(event,
-						type -> {
-							EntityEquipment equipment = entity.getEquipment();
-							if (equipment == null)
-								return false; // spigot nullability, no identifier as to why this occurs
+		return entities.check(event, entity -> {
+			EntityEquipment equipment = entity.getEquipment();
+			if (equipment == null)
+				return false; // spigot nullability, no identifier as to why this occurs
 
-							ItemStack[] contents = Arrays.stream(EquipmentSlot.values())
-								.map(equipment::getItem)
-								.toArray(ItemStack[]::new);
+			ItemStack[] contents = Arrays.stream(EquipmentSlot.values())
+				.map(equipment::getItem)
+				.toArray(ItemStack[]::new);
 
-							for (ItemStack content : contents) {
-								if (type.isOfType(content) ^ type.isAll())
-									return !type.isAll();
-							}
-							return type.isAll();
-						}),
-				isNegated());
+			return types.check(event, type -> {
+				for (ItemStack content : contents) {
+					if (type.isOfType(content) ^ type.isAll())
+						return !type.isAll();
+				}
+				return type.isAll();
+			});
+		}, isNegated());
 	}
-	
+
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
 		return PropertyCondition.toString(this, PropertyType.BE, event, debug, entities,
