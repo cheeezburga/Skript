@@ -1,0 +1,52 @@
+package ch.njol.skript.expressions;
+
+import ch.njol.skript.classes.Changer.ChangeMode;
+import ch.njol.skript.expressions.base.SimplePropertyExpression;
+import ch.njol.util.coll.CollectionUtils;
+import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.jetbrains.annotations.Nullable;
+
+public class ExprLastDeathLocation extends SimplePropertyExpression<OfflinePlayer, Location> {
+
+	static {
+		register(ExprLastDeathLocation.class, Location.class, "[last] death location", "offlineplayers");
+	}
+
+	@Override
+	public @Nullable Location convert(OfflinePlayer offlinePlayer) {
+		return offlinePlayer instanceof Player player
+			? player.getLastDeathLocation()
+			: offlinePlayer.getLastDeathLocation();
+	}
+
+	@Override
+	public Class<?> @Nullable [] acceptChange(ChangeMode mode) {
+		return switch (mode) {
+			case SET, RESET, DELETE -> CollectionUtils.array(Location.class);
+			default -> null;
+		};
+	}
+
+	@Override
+	public void change(Event event, Object @Nullable [] delta, ChangeMode mode) {
+		Location loc = (delta != null && delta[0] instanceof Location location) ? location : null;
+		for (OfflinePlayer offlinePlayer : getExpr().getArray(event)) {
+			if (offlinePlayer instanceof Player player)
+				player.setLastDeathLocation(loc);
+		}
+	}
+
+	@Override
+	protected String getPropertyName() {
+		return "last death location";
+	}
+
+	@Override
+	public Class<? extends Location> getReturnType() {
+		return Location.class;
+	}
+
+}
