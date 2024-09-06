@@ -1,13 +1,12 @@
 package ch.njol.skript.expressions;
 
-import ch.njol.skript.Skript;
 import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
+import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
@@ -22,7 +21,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 
 @Name("Block Sound")
-@Description("Gets the sound that a given block, blockdata, or itemtype will use in a specific scenario.")
+@Description({
+	"Gets the sound that a given block, blockdata, or itemtype will use in a specific scenario.",
+	"This will actually return a string, in the form of \"SOUND_EXAMPLE\", which can be used in Skript syntax.",
+	"",
+	"Check out <a href=\"https://www.digminecraft.com/lists/sound_list_pc.php\">this website</a> for a list of sounds in Minecraft (Java Edition), " +
+		"or <a href=\"https://minecraft.wiki/w/Sound\">this one</a> to go to the sounds wiki page."
+})
 @Examples({
 	"play sound (break sound of dirt) at all players",
 	"set {_sounds::*} to place sounds of dirt, grass block, blue wool and stone"
@@ -30,37 +35,19 @@ import java.util.Objects;
 @Since("INSERT VERSION")
 public class ExprBlockSound extends SimpleExpression<String> {
 
+	private static final int BREAK = 1, FALL = 2, HIT = 3, PLACE = 4, STEP = 5;
+
 	static {
-		Skript.registerExpression(ExprBlockSound.class, String.class, ExpressionType.COMBINED,
-			"[the] break sound[s] of %blocks/blockdatas/itemtypes%",
-			"%blocks/blockdatas/itemtypes%'[s] break sound[s]",
-
-			"[the] fall sound[s] of %blocks/blockdatas/itemtypes%",
-			"%blocks/blockdatas/itemtypes%'[s] fall sound[s]",
-
-			"[the] hit sound[s] of %blocks/blockdatas/itemtypes%",
-			"%blocks/blockdatas/itemtypes%'[s] hit sound[s]",
-
-			"[the] place sound[s] of %blocks/blockdatas/itemtypes%",
-			"%blocks/blockdatas/itemtypes%'[s] place sound[s]",
-
-			"[the] step sound[s] of %blocks/blockdatas/itemtypes%",
-			"%blocks/blockdatas/itemtypes%'[s] step sound[s]");
+		SimplePropertyExpression.register(ExprBlockSound.class, String.class, "(1:break|2:fall|3:hit|4:place|5:step) sound[s]", "blocks/blockdatas/itemtypes");
 	}
 
-	private static final int BREAK = 0;
-	private static final int FALL = 2;
-	private static final int HIT = 4;
-	private static final int PLACE = 6;
-	private static final int STEP = 8;
-
-	private int soundPattern;
+	private int soundType;
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<?> objects;
 
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		soundPattern = matchedPattern;
+		soundType = parseResult.mark;
 		objects = exprs[0];
 		return true;
 	}
@@ -90,12 +77,12 @@ public class ExprBlockSound extends SimpleExpression<String> {
 		if (group == null)
 			return null;
 
-		return switch (this.soundPattern) {
-			case BREAK, BREAK + 1 -> group.getBreakSound();
-			case FALL, FALL + 1 -> group.getFallSound();
-			case HIT, HIT + 1 -> group.getHitSound();
-			case PLACE, PLACE + 1 -> group.getPlaceSound();
-			case STEP, STEP + 1 -> group.getStepSound();
+		return switch (this.soundType) {
+			case BREAK -> group.getBreakSound();
+			case FALL -> group.getFallSound();
+			case HIT -> group.getHitSound();
+			case PLACE -> group.getPlaceSound();
+			case STEP -> group.getStepSound();
 			default -> null;
 		};
 	}
@@ -112,12 +99,12 @@ public class ExprBlockSound extends SimpleExpression<String> {
 
 	@Override
 	public @NotNull String toString(@Nullable Event event, boolean debug) {
-		return switch (this.soundPattern) {
-			case BREAK, BREAK + 1 -> "break";
-			case FALL, FALL + 1 -> "fall";
-			case HIT, HIT + 1 -> "hit";
-			case PLACE, PLACE + 1 -> "place";
-			case STEP, STEP + 1 -> "step";
+		return switch (this.soundType) {
+			case BREAK -> "break";
+			case FALL -> "fall";
+			case HIT -> "hit";
+			case PLACE -> "place";
+			case STEP -> "step";
 			default -> null;
 		} + " sound of " + objects.toString(event, debug);
 	}
