@@ -1,21 +1,3 @@
-/**
- *   This file is part of Skript.
- *
- *  Skript is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Skript is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Skript.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Copyright Peter Güttinger, SkriptLang team and contributors
- */
 package ch.njol.skript.expressions.base;
 
 import org.bukkit.event.Event;
@@ -36,35 +18,50 @@ import java.util.Arrays;
 /**
  * Represents an expression which represents a property of another one. Remember to set the expression with {@link #setExpr(Expression)} in
  * {@link SyntaxElement#init(Expression[], int, Kleenean, ParseResult) init()}.
- * 
+ *
  * @see SimplePropertyExpression
  * @see #register(Class, Class, String, String)
  */
 public abstract class PropertyExpression<F, T> extends SimpleExpression<T> {
 
 	/**
+	 * A helper method to get the two default property patterns from a property and type parameter.
+	 * i.e. "property of %types%" and "%types%'[s] property"
+	 *
+	 * @param property the name of property
+	 * @param fromType the types that the property should apply to
+	 * @return an array of strings that represent the patterns of the provided property and types
+	 */
+	@SuppressWarnings("ConstantValue")
+	public static String[] getPatterns(String property, String fromType) {
+		if (property == null || fromType == null)
+			return null;
+		return new String[]{"[the] " + property + " of %" + fromType + "%", "%" + fromType + "%'[s] " + property};
+	}
+
+	/**
 	 * Registers an expression as {@link ExpressionType#PROPERTY} with the two default property patterns "property of %types%" and "%types%'[s] property"
-	 * 
+	 *
 	 * @param expressionClass the PropertyExpression class being registered.
 	 * @param type the main expression type the property is based off of.
 	 * @param property the name of the property.
 	 * @param fromType should be plural to support multiple objects but doesn't have to be.
 	 */
 	public static <T> void register(Class<? extends Expression<T>> expressionClass, Class<T> type, String property, String fromType) {
-		Skript.registerExpression(expressionClass, type, ExpressionType.PROPERTY, "[the] " + property + " of %" + fromType + "%", "%" + fromType + "%'[s] " + property);
+		Skript.registerExpression(expressionClass, type, ExpressionType.PROPERTY, getPatterns(property, fromType));
 	}
 
 	/**
 	 * Registers an expression as {@link ExpressionType#PROPERTY} with the two default property patterns "property [of %types%]" and "%types%'[s] property"
 	 * This method also makes the expression type optional to force a default expression on the property expression.
-	 * 
+	 *
 	 * @param expressionClass the PropertyExpression class being registered.
 	 * @param type the main expression type the property is based off of.
 	 * @param property the name of the property.
 	 * @param fromType should be plural to support multiple objects but doesn't have to be.
 	 */
 	public static <T> void registerDefault(Class<? extends Expression<T>> expressionClass, Class<T> type, String property, String fromType) {
-		Skript.registerExpression(expressionClass, type, ExpressionType.PROPERTY, "[the] " + property + " [of %" + fromType + "%]", "%" + fromType + "%'[s] " + property);
+		Skript.registerExpression(expressionClass, type, ExpressionType.PROPERTY, getPatterns(property, fromType));
 	}
 
 	@Nullable
@@ -72,7 +69,7 @@ public abstract class PropertyExpression<F, T> extends SimpleExpression<T> {
 
 	/**
 	 * Sets the expression this expression represents a property of. No reference to the expression should be kept.
-	 * 
+	 *
 	 * @param expr
 	 */
 	protected final void setExpr(Expression<? extends F> expr) {
@@ -98,7 +95,7 @@ public abstract class PropertyExpression<F, T> extends SimpleExpression<T> {
 	 * Converts the given source object(s) to the correct type.
 	 * <p>
 	 * Please note that the returned array must neither be null nor contain any null elements!
-	 * 
+	 *
 	 * @param event the event involved at the time of runtime calling.
 	 * @param source the array of the objects from the expressions.
 	 * @return An array of the converted objects, which may contain less elements than the source array, but must not be null.
