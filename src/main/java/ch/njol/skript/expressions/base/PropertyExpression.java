@@ -26,7 +26,7 @@ public abstract class PropertyExpression<F, T> extends SimpleExpression<T> {
 
 	/**
 	 * A helper method to get the two default property patterns from a property and type parameter.
-	 * i.e. "property of %types%" and "%types%'[s] property"
+	 * i.e. "[the] property of %types%" and "%types%'[s] property"
 	 *
 	 * @param property the name of property
 	 * @param fromType the types that the property should apply to
