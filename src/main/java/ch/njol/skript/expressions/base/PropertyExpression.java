@@ -30,13 +30,15 @@ public abstract class PropertyExpression<F, T> extends SimpleExpression<T> {
 	 *
 	 * @param property the name of property
 	 * @param fromType the types that the property should apply to
+	 * @param defaultExpression whether the types should be optional
 	 * @return an array of strings that represent the patterns of the provided property and types
 	 */
 	@SuppressWarnings("ConstantValue")
-	public static String[] getPatterns(String property, String fromType) {
+	public static String[] getPatterns(String property, String fromType, boolean defaultExpression) {
 		if (property == null || fromType == null)
 			throw new IllegalArgumentException("'property' or 'fromType' was null.");
-		return new String[]{"[the] " + property + " of %" + fromType + "%", "%" + fromType + "%'[s] " + property};
+		String types = defaultExpression ? "[of %" + fromType + "%]" : "of %" + fromType + "%";
+		return new String[]{"[the] " + property + " " + types, "%" + fromType + "%'[s] " + property};
 	}
 
 	/**
@@ -48,7 +50,7 @@ public abstract class PropertyExpression<F, T> extends SimpleExpression<T> {
 	 * @param fromType should be plural to support multiple objects but doesn't have to be.
 	 */
 	public static <T> void register(Class<? extends Expression<T>> expressionClass, Class<T> type, String property, String fromType) {
-		Skript.registerExpression(expressionClass, type, ExpressionType.PROPERTY, getPatterns(property, fromType));
+		Skript.registerExpression(expressionClass, type, ExpressionType.PROPERTY, getPatterns(property, fromType, false));
 	}
 
 	/**
@@ -61,7 +63,7 @@ public abstract class PropertyExpression<F, T> extends SimpleExpression<T> {
 	 * @param fromType should be plural to support multiple objects but doesn't have to be.
 	 */
 	public static <T> void registerDefault(Class<? extends Expression<T>> expressionClass, Class<T> type, String property, String fromType) {
-		Skript.registerExpression(expressionClass, type, ExpressionType.PROPERTY, getPatterns(property, fromType));
+		Skript.registerExpression(expressionClass, type, ExpressionType.PROPERTY, getPatterns(property, fromType, true));
 	}
 
 	@Nullable
