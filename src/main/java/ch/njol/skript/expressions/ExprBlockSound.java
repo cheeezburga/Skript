@@ -25,8 +25,8 @@ import java.util.Objects;
 	"Gets the sound that a given block, blockdata, or itemtype will use in a specific scenario.",
 	"This will actually return a string, in the form of \"SOUND_EXAMPLE\", which can be used in Skript syntax.",
 	"",
-	"Check out <a href=\"https://www.digminecraft.com/lists/sound_list_pc.php\">this website</a> for a list of sounds in Minecraft (Java Edition), " +
-		"or <a href=\"https://minecraft.wiki/w/Sound\">this one</a> to go to the sounds wiki page."
+	"Check out <a href=\"https://minecraft.wiki/w/Sounds.json\">this website</a> for a list of sounds in Minecraft, " +
+		"or <a href=\"https://minecraft.wiki/w/Sound\">this one</a> to go to the Sounds wiki page."
 })
 @Examples({
 	"play sound (break sound of dirt) at all players",
@@ -35,19 +35,57 @@ import java.util.Objects;
 @Since("INSERT VERSION")
 public class ExprBlockSound extends SimpleExpression<String> {
 
-	private static final int BREAK = 1, FALL = 2, HIT = 3, PLACE = 4, STEP = 5;
+	public enum SoundType {
+		BREAK {
+			@Override
+			public Sound getSound(SoundGroup group) {
+				return group.getBreakSound();
+			}
+		},
+
+		FALL {
+			@Override
+			public Sound getSound(SoundGroup group) {
+				return group.getFallSound();
+			}
+		},
+
+		HIT {
+			@Override
+			public Sound getSound(SoundGroup group) {
+				return group.getHitSound();
+			}
+		},
+
+		PLACE {
+			@Override
+			public Sound getSound(SoundGroup group) {
+				return group.getPlaceSound();
+			}
+		},
+
+		STEP {
+			@Override
+			public Sound getSound(SoundGroup group) {
+				return group.getStepSound();
+			}
+		};
+
+		public abstract @Nullable Sound getSound(SoundGroup group);
+	}
 
 	static {
 		SimplePropertyExpression.register(ExprBlockSound.class, String.class, "(1:break|2:fall|3:hit|4:place|5:step) sound[s]", "blocks/blockdatas/itemtypes");
 	}
 
-	private int soundType;
+	@SuppressWarnings("NotNullFieldNotInitialized")
+	private SoundType soundType;
 	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<?> objects;
 
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		soundType = parseResult.mark;
+		soundType = SoundType.values()[parseResult.mark - 1];
 		objects = exprs[0];
 		return true;
 	}
@@ -62,29 +100,23 @@ public class ExprBlockSound extends SimpleExpression<String> {
 			.toArray(String[]::new);
 	}
 
-	private @Nullable Sound convertAndGetSound(Object object) {
-		SoundGroup group = null;
-
+	private @Nullable SoundGroup getSoundGroup(Object object) {
 		if (object instanceof Block block) {
-			group = block.getBlockData().getSoundGroup();
+			return block.getBlockData().getSoundGroup();
 		} else if (object instanceof BlockData data) {
-			group = data.getSoundGroup();
+			return data.getSoundGroup();
 		} else if (object instanceof ItemType item) {
 			if (item.hasBlock())
-				group = item.getMaterial().createBlockData().getSoundGroup();
+				return item.getMaterial().createBlockData().getSoundGroup();
 		}
+		return null;
+	}
 
+	private @Nullable Sound convertAndGetSound(Object object) {
+		SoundGroup group = getSoundGroup(object);
 		if (group == null)
 			return null;
-
-		return switch (this.soundType) {
-			case BREAK -> group.getBreakSound();
-			case FALL -> group.getFallSound();
-			case HIT -> group.getHitSound();
-			case PLACE -> group.getPlaceSound();
-			case STEP -> group.getStepSound();
-			default -> null;
-		};
+		return this.soundType.getSound(group);
 	}
 
 	@Override
@@ -99,14 +131,7 @@ public class ExprBlockSound extends SimpleExpression<String> {
 
 	@Override
 	public @NotNull String toString(@Nullable Event event, boolean debug) {
-		return switch (this.soundType) {
-			case BREAK -> "break";
-			case FALL -> "fall";
-			case HIT -> "hit";
-			case PLACE -> "place";
-			case STEP -> "step";
-			default -> null;
-		} + " sound of " + objects.toString(event, debug);
+		return this.soundType.name().toLowerCase() + " sound of " + objects.toString(event, debug);
 	}
 
 }
