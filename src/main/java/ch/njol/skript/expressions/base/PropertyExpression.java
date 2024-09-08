@@ -1,17 +1,16 @@
 package ch.njol.skript.expressions.base;
 
-import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
-
 import ch.njol.skript.Skript;
-import org.skriptlang.skript.lang.converter.Converter;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.SyntaxElement;
 import ch.njol.skript.lang.util.SimpleExpression;
-import org.skriptlang.skript.lang.converter.Converters;
 import ch.njol.util.Kleenean;
+import org.bukkit.event.Event;
+import org.eclipse.jdt.annotation.Nullable;
+import org.skriptlang.skript.lang.converter.Converter;
+import org.skriptlang.skript.lang.converter.Converters;
 
 import java.util.Arrays;
 
@@ -25,20 +24,50 @@ import java.util.Arrays;
 public abstract class PropertyExpression<F, T> extends SimpleExpression<T> {
 
 	/**
-	 * A helper method to get the two default property patterns from a property and type parameter.
-	 * i.e. "[the] property of %types%" and "%types%'[s] property"
+	 * A helper method to get the property patterns given a property, type, and default expression parameter.
 	 *
-	 * @param property the name of property
-	 * @param fromType the types that the property should apply to
-	 * @param defaultExpression whether the types should be optional
-	 * @return an array of strings that represent the patterns of the provided property and types
+	 * @param property 		the property
+	 * @param fromType 		the type(s) that the property should apply to
+	 * @param defaultExpr 	whether the type(s) should be optional
+	 *
+	 * @return an array of strings representing the patterns of the given property and type(s)
+	 * @throws IllegalArgumentException if property or fromType is null
 	 */
 	@SuppressWarnings("ConstantValue")
-	public static String[] getPatterns(String property, String fromType, boolean defaultExpression) {
+	private static String[] patternsOf(String property, String fromType, boolean defaultExpr) {
 		if (property == null || fromType == null)
 			throw new IllegalArgumentException("'property' or 'fromType' was null.");
-		String types = defaultExpression ? "[of %" + fromType + "%]" : "of %" + fromType + "%";
+
+		String types = defaultExpr ? "[of %" + fromType + "%]" : "of %" + fromType + "%";
 		return new String[]{"[the] " + property + " " + types, "%" + fromType + "%'[s] " + property};
+	}
+
+	/**
+	 * Returns the standard property patterns given a property and type(s).
+	 * i.e. "[the] property of %types%" and "%types%'[s] property"
+	 *
+	 * @param property the property
+	 * @param fromType the type(s) that the property should apply to
+	 *
+	 * @return an array of strings representing the standard property patterns given a property and type(s)
+	 * @throws IllegalArgumentException if property or fromType is null
+	 */
+	public static String[] getPatterns(String property, String fromType) {
+		return patternsOf(property, fromType, false);
+	}
+
+	/**
+	 * Returns the property patterns given a property and type(s), with the latter being optional to force a default expression.
+	 * i.e. "[the] property [of %types%]" and "%types%'[s] property"
+	 *
+	 * @param property the property
+	 * @param fromType the type(s) that the property should apply to
+	 *
+	 * @return an array of strings representing the property patterns given a property and type(s), that force a default expression
+	 * @throws IllegalArgumentException if property or fromType is null
+	 */
+	public static String[] getDefaultPatterns(String property, String fromType) {
+		return patternsOf(property, fromType, true);
 	}
 
 	/**
@@ -50,7 +79,7 @@ public abstract class PropertyExpression<F, T> extends SimpleExpression<T> {
 	 * @param fromType should be plural to support multiple objects but doesn't have to be.
 	 */
 	public static <T> void register(Class<? extends Expression<T>> expressionClass, Class<T> type, String property, String fromType) {
-		Skript.registerExpression(expressionClass, type, ExpressionType.PROPERTY, getPatterns(property, fromType, false));
+		Skript.registerExpression(expressionClass, type, ExpressionType.PROPERTY, getPatterns(property, fromType));
 	}
 
 	/**
@@ -63,7 +92,7 @@ public abstract class PropertyExpression<F, T> extends SimpleExpression<T> {
 	 * @param fromType should be plural to support multiple objects but doesn't have to be.
 	 */
 	public static <T> void registerDefault(Class<? extends Expression<T>> expressionClass, Class<T> type, String property, String fromType) {
-		Skript.registerExpression(expressionClass, type, ExpressionType.PROPERTY, getPatterns(property, fromType, true));
+		Skript.registerExpression(expressionClass, type, ExpressionType.PROPERTY, getDefaultPatterns(property, fromType));
 	}
 
 	@Nullable
