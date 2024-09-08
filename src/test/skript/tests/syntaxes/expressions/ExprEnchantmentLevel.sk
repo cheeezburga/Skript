@@ -1,0 +1,10 @@
+test "enchantment level":
+	set {_i} to a diamond sword
+
+	enchant {_i} with sharpness 5
+	assert level of sharpness on {_i} is 5 with "level of sharpness should have been 5"
+
+	set level of sharpness on {_i} to 10
+	assert level of sharpness on {_i} is 10 with "level of sharpness should have been 10"
+
+	assert level of sharpness 5 is 5 with "level of sharpness 5 should have been 5"
