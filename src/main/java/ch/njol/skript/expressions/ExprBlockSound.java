@@ -23,7 +23,7 @@ import java.util.Objects;
 @Name("Block Sound")
 @Description({
 	"Gets the sound that a given block, blockdata, or itemtype will use in a specific scenario.",
-	"This will actually return a string, in the form of \"SOUND_EXAMPLE\", which can be used in Skript syntax.",
+	"This will return a string in the form of \"SOUND_EXAMPLE\", which can be used in the play sound syntax.",
 	"",
 	"Check out <a href=\"https://minecraft.wiki/w/Sounds.json\">this website</a> for a list of sounds in Minecraft, " +
 		"or <a href=\"https://minecraft.wiki/w/Sound\">this one</a> to go to the Sounds wiki page."
