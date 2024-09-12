@@ -34,9 +34,9 @@ public class BlockDataUtils {
 		int start = string.indexOf("[");
 		int end = string.indexOf("]");
 
-		if (start == -1 || end == -1 || start >= end)
-			return null;
-		return string.substring(start + 1, end).split(",");
+		return (start == -1 || end == -1 || start >= end)
+			? null
+			: string.substring(start + 1, end).split(",");
 	}
 
 	public static String @Nullable [] getTags(BlockData data) {
