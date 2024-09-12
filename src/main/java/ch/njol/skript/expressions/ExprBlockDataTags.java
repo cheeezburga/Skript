@@ -10,7 +10,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,7 +36,7 @@ public class ExprBlockDataTags extends SimpleExpression<String> {
 		for (BlockData data : datas.getArray(event)) {
 			String[] dataTags = BlockDataUtils.getTags(data);
 			if (dataTags != null)
-				tags.addAll(Arrays.asList(dataTags));
+				Collections.addAll(tags, dataTags);
 		}
 		return tags.toArray(String[]::new);
 	}
