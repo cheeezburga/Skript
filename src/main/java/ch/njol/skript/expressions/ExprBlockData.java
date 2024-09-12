@@ -1,6 +1,7 @@
 package ch.njol.skript.expressions;
 
 import ch.njol.skript.aliases.ItemType;
+import ch.njol.skript.bukkitutil.BlockDataUtils;
 import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
@@ -17,6 +18,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockDataMeta;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
@@ -25,15 +27,15 @@ import java.util.Set;
 @Name("Block Data")
 @Description({
 	"Get the <a href='classes.html#blockdata'>block data</a> associated with a block or itemtype.",
-	"This data can also be used to set blocks."
+	"This data can also be used to set blocks, or the set the blockdata of a valid item."
 })
 @Examples({
 	"set {data} to block data of target block",
 	"set block at player to {data}",
 	"set block data of target block to oak_stairs[facing=south;waterlogged=true]",
 	"",
-	"set {data} to block data of player's tool",
-
+	"set {data} to block data of oak log",
+	"set block data of {data} to oak_log[axis=z]"
 })
 @RequiredPlugins("Minecraft 1.13+")
 @Since("2.5, 2.5.2 (set), INSERT VERSION (itemtypes)")
@@ -55,19 +57,25 @@ public class ExprBlockData extends PropertyExpression<Object, BlockData> {
 		for (Object object : source) {
 			if (object instanceof Block block) {
 				datas.add(block.getBlockData());
-			} else if (object instanceof ItemType item && item.hasBlock()) {
+			} else if (object instanceof ItemType item && item.getItemMeta() instanceof BlockDataMeta meta) {
 				if (item.isAll()) {
 					for (ItemStack stack : item.getAll()) {
-						Material material = stack.getType();
-						if (material.isBlock())
-							datas.add(material.createBlockData());
+						addIfValid(datas, meta, stack);
 					}
-				} else { // item is 'any'
-					datas.add(item.getMaterial().createBlockData());
+				} else {
+					ItemStack random = item.getRandom();
+					if (random != null)
+						addIfValid(datas, meta, random);
 				}
 			}
 		}
-		return datas.toArray(BlockData[]::new);
+		return datas.isEmpty() ? new BlockData[0] : datas.toArray(BlockData[]::new);
+	}
+
+	private void addIfValid(Set<BlockData> datas, BlockDataMeta meta, ItemStack item) {
+		Material asBlock = BlockDataUtils.toValidBlock(item);
+		if (asBlock != null)
+			datas.add(meta.getBlockData(asBlock));
 	}
 
 	@Override
@@ -77,14 +85,21 @@ public class ExprBlockData extends PropertyExpression<Object, BlockData> {
 
 	@Override
 	public void change(Event event, Object @Nullable [] delta, ChangeMode mode) {
-		if (delta == null)
-			return;
-
-		BlockData data = ((BlockData) delta[0]);
-		for (Object object : getExpr().getArray(event)) {
-			if (object instanceof Block block)
-				block.setBlockData(data);
+		if (delta != null && delta[0] instanceof BlockData data) {
+			for (Object object : getExpr().getArray(event)) {
+				if (object instanceof Block block) {
+					block.setBlockData(data);
+				} else if (object instanceof ItemType item && item.getItemMeta() instanceof BlockDataMeta meta) {
+					meta.setBlockData(data);
+					item.setItemMeta(meta);
+				}
+			}
 		}
+	}
+
+	@Override
+	public boolean isSingle() {
+		return getExpr().isSingle();
 	}
 
 	@Override
