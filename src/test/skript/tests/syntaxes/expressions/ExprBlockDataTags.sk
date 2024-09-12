@@ -9,11 +9,14 @@ test "block data tags" when running minecraft "1.14.4":
 
 	set {_expected::campfire::*} to "facing", "waterlogged", "lit" and "signal_fire"
 	set {_expected::oak log::*} to "axis"
-	set {_expected::wheat seeds::*} to "age"
+	set {_expected::wheat::*} to "age"
 
 	loop indexes of {_expected::*}:
 		set {_i} to loop-value parsed as itemtype
+		broadcast "loop-value as item: %{_i}%"
 		set block at {_block} to {_i}
+		broadcast "i to block: %block at {_block}%"
+		broadcast "expected: %{_expected::%loop-value%::*}%"
 		assert testTags(block data of {_i}, {_expected::%loop-value%::*}) is true with "%loop-value% as itemtype had unexpected block data tags"
 		assert testTags(block at {_block}, {_expected::%loop-value%::*}) is true with "%loop-value% as block had unexpected block data tags"
 
@@ -22,7 +25,9 @@ test "block data tags" when running minecraft "1.14.4":
 	set block at {_block} to {_before}
 
 local function testTags(data: block data, tags: strings) :: boolean:
+	broadcast "%{_data}% should have tags %{_tags::*}%"
 	set {_data::*} to block data tags of {_data}
+	broadcast "%{_data}% has tags %{_data::*}%"
 	loop {_tags::*}:
 		if {_data::*} doesn't contain loop-value:
 			return false
