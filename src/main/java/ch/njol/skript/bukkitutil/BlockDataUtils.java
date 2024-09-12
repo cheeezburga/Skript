@@ -40,6 +40,8 @@ public class BlockDataUtils {
 	}
 
 	public static String @Nullable [] getTags(BlockData data) {
+		// should this replace "_" in the tags for a more skripty feel?
+		// and then obviously adjust logic elsewhere to replace " " back to "_"?
 		String[] tagsAndValues = getTagsAndValues(data);
 		if (tagsAndValues == null)
 			return null;
