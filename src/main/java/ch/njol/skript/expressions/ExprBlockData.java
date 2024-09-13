@@ -2,7 +2,6 @@ package ch.njol.skript.expressions;
 
 import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.bukkitutil.BlockDataUtils;
-import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
@@ -74,7 +73,7 @@ public class ExprBlockData extends PropertyExpression<Object, BlockData> {
 	}
 
 	private void addIfValid(Set<BlockData> datas, BlockDataMeta meta, ItemStack item) {
-		Material asBlock = BlockDataUtils.toValidBlock(item);
+		Material asBlock = BlockDataUtils.toBlock(item);
 		if (asBlock != null)
 			datas.add(meta.getBlockData(asBlock));
 	}
