@@ -30,10 +30,10 @@ import org.jetbrains.annotations.Nullable;
 			"\t\tset tamer of {_horse} to {_p}"
 })
 @Since("INSERT VERSION")
-public class ExprDomestication extends SimplePropertyExpression<LivingEntity, Number> {
+public class ExprDomestication extends SimplePropertyExpression<LivingEntity, Integer> {
 
 	static {
-		register(ExprDomestication.class, Number.class, "[:max[imum]] domestication level", "livingentities");
+		register(ExprDomestication.class, Integer.class, "[:max[imum]] domestication level", "livingentities");
 	}
 
 	private boolean max;
@@ -45,25 +45,18 @@ public class ExprDomestication extends SimplePropertyExpression<LivingEntity, Nu
 	}
 
 	@Override
-	public @Nullable Number convert(LivingEntity entity) {
-		if (entity instanceof AbstractHorse) {
-			AbstractHorse horse = (AbstractHorse) entity;
+	public @Nullable Integer convert(LivingEntity entity) {
+		if (entity instanceof AbstractHorse horse)
 			return max ? horse.getMaxDomestication() : horse.getDomestication();
-		}
 		return null;
 	}
 
 	@Override
 	public @Nullable Class<?>[] acceptChange(ChangeMode mode) {
-		switch (mode) {
-			case SET:
-			case ADD:
-			case REMOVE:
-			case RESET:
-				return CollectionUtils.array(Number.class);
-			default:
-				return null;
-		}
+		return switch (mode) {
+			case SET, ADD, REMOVE, RESET -> CollectionUtils.array(Number.class);
+			default -> null;
+		};
 	}
 
 	@Override
@@ -73,25 +66,17 @@ public class ExprDomestication extends SimplePropertyExpression<LivingEntity, Nu
 		int change = delta == null ? 0 : ((Number) delta[0]).intValue();
 
 		for (LivingEntity entity : getExpr().getArray(event)) {
-			if (entity instanceof AbstractHorse) {
-				AbstractHorse horse = (AbstractHorse) entity;
+			if (entity instanceof AbstractHorse horse) {
 				int level = max ? horse.getMaxDomestication() : horse.getDomestication();
 				switch (mode) {
-					case SET:
-						level = change;
-						break;
-					case ADD:
-						level += change;
-						break;
-					case REMOVE:
-						level -= change;
-						break;
-					case RESET:
-						level = 1;
-						break;
-					default:
+					case SET -> level = change;
+					case ADD -> level += change;
+					case REMOVE -> level -= change;
+					case RESET -> level = 1;
+					default -> {
 						assert false;
 						return;
+					}
 				}
 				level = max ? Math.max(level, 1) : Math2.fit(1, level, horse.getMaxDomestication());
 				if (max) {
@@ -106,8 +91,8 @@ public class ExprDomestication extends SimplePropertyExpression<LivingEntity, Nu
 	}
 
 	@Override
-	public Class<? extends Number> getReturnType() {
-		return Number.class;
+	public Class<? extends Integer> getReturnType() {
+		return Integer.class;
 	}
 
 	@Override
