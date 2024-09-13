@@ -7,7 +7,13 @@ import org.jetbrains.annotations.Nullable;
 
 public class BlockDataUtils {
 
-	public static Material toBlock(ItemStack item) {
+	/**
+	 * Returns a valid block Material based on a given ItemStack, or null if one doesn't exist.
+	 *
+	 * @param item the item to convert
+	 * @return the corresponding block Material, or null if one doesn't exist
+	 */
+	public static @Nullable Material toBlock(ItemStack item) {
 		Material material = item.getType();
 		if (material.isBlock()) // already a block
 			return material;
@@ -20,15 +26,17 @@ public class BlockDataUtils {
 			case PUMPKIN_SEEDS -> Material.PUMPKIN_STEM;
 			case MELON_SEEDS -> Material.MELON_STEM;
 			case SWEET_BERRIES -> Material.SWEET_BERRY_BUSH;
-			default -> material;
+			default -> null;
 		};
 	}
 
-	public static @Nullable Material toValidBlock(ItemStack item) {
-		Material asBlock = toBlock(item);
-		return asBlock.isBlock() ? asBlock : null;
-	}
-
+	/**
+	 * Gets the tags and values of a given blockdata as an array of strings, in the form of "tag=value", or null
+	 * if the blockdata has none.
+	 *
+	 * @param data the blockdata to get the tags and values of
+	 * @return the tags and values, as an array of strings, or null if none exist
+	 */
 	public static String @Nullable [] getTagsAndValues(BlockData data) {
 		String string = data.getAsString();
 		int start = string.indexOf("[");
@@ -39,6 +47,12 @@ public class BlockDataUtils {
 			: string.substring(start + 1, end).split(",");
 	}
 
+	/**
+	 * Gets just the tags of a given blockdata as an array of strings, or null if the blockdata has none.
+	 *
+	 * @param data the blockdata to get the tags of
+	 * @return the tags, as an array of strings, or null if none exist
+	 */
 	public static String @Nullable [] getTags(BlockData data) {
 		// should this replace "_" in the tags for a more skripty feel?
 		// and then obviously adjust logic elsewhere to replace " " back to "_"?
@@ -53,6 +67,17 @@ public class BlockDataUtils {
 		return tags;
 	}
 
+	/**
+	 * Gets the value of a specific tag on a given blockdata, or null if the tag isn't present.
+	 * This will return a(n):
+	 * 		boolean if the value is 'true' or 'false'
+	 * 		integer if the value is parseable via Integer#parseInt(String)
+	 * 		string 	if the value is not parsed as a boolean or integer
+	 *
+	 * @param data 	the blockdata to get the value of the tag from
+	 * @param tag 	the tag to get the value of
+	 * @return		the potentially parsed value of the tag, or null if it isn't present
+	 */
 	public static @Nullable Object getValue(BlockData data, String tag) {
 		String[] tagsAndValues = getTagsAndValues(data);
 		if (tagsAndValues == null)
