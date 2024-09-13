@@ -1,6 +1,11 @@
 package ch.njol.skript.expressions;
 
 import ch.njol.skript.bukkitutil.BlockDataUtils;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.RequiredPlugins;
+import ch.njol.skript.doc.Since;
 import ch.njol.skript.expressions.base.PropertyExpression;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
@@ -14,13 +19,17 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+@Name("Block Data Tags")
+@Description("Gets the block data tags associated with a blockdata.")
+@Examples("send block data tags of campfire")
+@RequiredPlugins("Minecraft 1.13+")
+@Since("INSERT VERSION")
 public class ExprBlockDataTags extends SimpleExpression<String> {
 
 	static {
 		PropertyExpression.register(ExprBlockDataTags.class, String.class, "[block[ ]data] tags", "blockdatas");
 	}
 
-	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<BlockData> datas;
 
 	@Override
