@@ -31,7 +31,7 @@ public class CondIsCharged extends PropertyCondition<Entity> {
 			return wither.isCharged();
 		}
 		return false;
-    }
+	}
 
 	@Override
 	protected String getPropertyName() {
