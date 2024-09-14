@@ -1,26 +1,9 @@
-/**
- *   This file is part of Skript.
- *
- *  Skript is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Skript is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Skript.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Copyright Peter Güttinger, SkriptLang team and contributors
- */
 package ch.njol.skript.effects;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Keywords;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Effect;
@@ -39,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 	"prevent {_armorstands::*} from ticking"
 })
 @Since("INSERT VERSION")
+@Keywords({"move", "moving", "ticking"})
 public class EffArmorStandBehaviour extends Effect {
 
 	static {
@@ -66,11 +50,11 @@ public class EffArmorStandBehaviour extends Effect {
 	@Override
 	protected void execute(Event event) {
 		for (Entity entity : entities.getArray(event)) {
-			if (entity instanceof ArmorStand) {
+			if (entity instanceof ArmorStand stand) {
 				if (ticking) {
-					((ArmorStand) entity).setCanTick(allow);
+					stand.setCanTick(allow);
 				} else {
-					((ArmorStand) entity).setCanMove(allow);
+					stand.setCanMove(allow);
 				}
 			}
 		}
