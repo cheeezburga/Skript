@@ -16,7 +16,7 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
 
 @Name("Armor Stand - Extremities")
-@Description("Allows users to modify the extremities of an armor stand (i.e. whether its has arms or a base plate).")
+@Description("Allows users to modify the extremities of an armor stand (i.e. whether it has arms or a base plate).")
 @Examples({
 	"show {_armorstand}'s arms",
 	"hide the base plate of {_armorstands::*}"

@@ -16,7 +16,7 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
 
 @Name("Armor Stand - Behaviour")
-@Description("Allows users to modify the behaviour of an armor stand (i.e. whether it can tick and can move).")
+@Description("Allows users to modify the behaviour of an armor stand (i.e. whether it can tick or move).")
 @Examples({
 	"allow {_armorstand} to move",
 	"prevent {_armorstands::*} from ticking"
@@ -29,7 +29,8 @@ public class EffArmorStandBehaviour extends Effect {
 		if (Skript.methodExists(ArmorStand.class, "canTick"))
 			Skript.registerEffect(EffArmorStandBehaviour.class,
 				"allow %livingentities% to (:tick|move)",
-				"prevent %livingentities% from (being able to (:tick|move)|tick:ticking|moving)"
+				"prevent %livingentities% from (ticking|being able to tick)",
+				"prevent %livingentities% from (moving|being able to move)"
 			);
 	}
 
@@ -43,7 +44,7 @@ public class EffArmorStandBehaviour extends Effect {
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		entities = (Expression<Entity>) exprs[0];
 		allow = matchedPattern == 0;
-		ticking = parseResult.hasTag("tick");
+		ticking = parseResult.hasTag("tick") || matchedPattern == 1;
 		return true;
 	}
 
