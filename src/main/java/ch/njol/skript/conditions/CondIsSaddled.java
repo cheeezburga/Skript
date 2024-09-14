@@ -15,7 +15,10 @@ import org.bukkit.entity.Steerable;
 import org.bukkit.inventory.ItemStack;
 
 @Name("Is Saddled")
-@Description("Checks whether a given entity (horse or steerable) is wearing a saddle.")
+@Description({
+	"Checks whether a given entity (horse or steerable) is saddled.",
+	"If 'properly' is used, this will only return true if the entity is wearing specifically a saddle item."
+})
 @Examples("send whether {_horse} is saddled")
 @Since("INSERT VERSION")
 public class CondIsSaddled extends PropertyCondition<LivingEntity> {
