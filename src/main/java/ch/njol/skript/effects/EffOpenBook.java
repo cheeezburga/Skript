@@ -22,7 +22,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.aliases.Aliases;
@@ -68,7 +68,7 @@ public class EffOpenBook extends Effect {
 		ItemType itemType = book.getSingle(e);
 		if (itemType != null) {
 			ItemStack itemStack = itemType.getRandom();
-			if (itemStack.getType() == Material.WRITTEN_BOOK) {
+			if (itemStack != null && itemStack.getType() == Material.WRITTEN_BOOK) {
 				for (Player player : players.getArray(e)) {
 					player.openBook(itemStack);
 				}

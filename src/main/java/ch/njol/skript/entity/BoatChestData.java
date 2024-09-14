@@ -27,7 +27,7 @@ import org.bukkit.Material;
 import org.bukkit.TreeSpecies;
 import org.bukkit.entity.ChestBoat;
 import org.bukkit.inventory.ItemStack;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
@@ -110,8 +110,7 @@ public class BoatChestData extends EntityData<ChestBoat> {
 	public boolean isOfItemType(ItemType itemType) {
 		int ordinal = -1;
 
-		ItemStack stack = itemType.getRandom();
-		Material type = stack.getType();
+		Material type = itemType.getMaterial();
 		if (type == Material.OAK_CHEST_BOAT)
 			ordinal = 0;
 		else if (type == Material.SPRUCE_CHEST_BOAT)
