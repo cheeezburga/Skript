@@ -10,6 +10,7 @@ import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
@@ -50,6 +51,8 @@ public class CondIsWearing extends Condition {
 	
 	@Override
 	public boolean check(Event event) {
+		ItemType[] cachedTypes = types.getAll(event);
+
 		return entities.check(event, entity -> {
 			EntityEquipment equipment = entity.getEquipment();
 			if (equipment == null)
@@ -59,13 +62,13 @@ public class CondIsWearing extends Condition {
 				.map(equipment::getItem)
 				.toArray(ItemStack[]::new);
 
-			return types.check(event, type -> {
+			return SimpleExpression.check(cachedTypes, type -> {
 				for (ItemStack content : contents) {
 					if (type.isOfType(content) ^ type.isAll())
 						return !type.isAll();
 				}
 				return type.isAll();
-			});
+			}, false, false);
 		}, isNegated());
 	}
 
