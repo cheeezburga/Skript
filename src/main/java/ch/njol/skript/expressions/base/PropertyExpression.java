@@ -9,7 +9,7 @@ import ch.njol.skript.lang.SyntaxElement;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 import org.bukkit.event.Event;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.lang.converter.Converter;
 import org.skriptlang.skript.lang.converter.Converters;
 
@@ -34,7 +34,6 @@ public abstract class PropertyExpression<F, T> extends SimpleExpression<T> {
 	 * @return an array of strings representing the patterns of the given property and type(s)
 	 * @throws IllegalArgumentException if property or fromType is null
 	 */
-	@SuppressWarnings("ConstantValue")
 	private static String[] patternsOf(String property, String fromType, boolean defaultExpr) {
 		if (property == null || fromType == null)
 			throw new IllegalArgumentException("'property' or 'fromType' was null.");
