@@ -1,5 +1,6 @@
 package ch.njol.skript.bukkitutil;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.inventory.ItemStack;
@@ -90,15 +91,29 @@ public class BlockDataUtils {
 				if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false"))
 					return Boolean.parseBoolean(value);
 
-				try {
-					return Integer.parseInt(value);
-				} catch (NumberFormatException ignored) {}
+				if (value.matches("\\d+")) {
+					try {
+						return Integer.parseInt(value);
+					} catch (NumberFormatException ignored) {}
+				}
 
 				return value;
 			}
 		}
 
 		return null;
+	}
+
+	public static BlockData setValue(BlockData data, String tag, Object value) {
+		if (value.toString().matches("[a-zA-Z0-9]+") || !data.getAsString().contains("["))
+			return data;
+
+		String newBlockData = data.getMaterial().getKey() + "[" + value + "]";
+		try {
+			return data.merge(Bukkit.createBlockData(newBlockData)); //potentially invalid value
+		} catch (IllegalArgumentException ignored) {
+			return data;
+		}
 	}
 
 }
