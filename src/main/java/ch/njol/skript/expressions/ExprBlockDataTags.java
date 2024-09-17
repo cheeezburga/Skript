@@ -27,7 +27,7 @@ import java.util.Set;
 public class ExprBlockDataTags extends SimpleExpression<String> {
 
 	static {
-		PropertyExpression.register(ExprBlockDataTags.class, String.class, "[block[ ]data] tags", "blockdatas");
+		PropertyExpression.register(ExprBlockDataTags.class, String.class, "block[ |-]data tag[s] [%strings%]", "blockdatas");
 	}
 
 	private Expression<BlockData> datas;
