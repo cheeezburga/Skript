@@ -1,30 +1,15 @@
-/**
- *   This file is part of Skript.
- *
- *  Skript is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Skript is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Skript.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Copyright Peter Güttinger, SkriptLang team and contributors
- */
 package ch.njol.skript.test.runner;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.SkriptAddon;
 import ch.njol.skript.patterns.PatternCompiler;
 import ch.njol.skript.patterns.SkriptPattern;
+import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.lang.experiment.Experiment;
 import org.skriptlang.skript.lang.experiment.ExperimentRegistry;
 import org.skriptlang.skript.lang.experiment.LifeCycle;
+
+import java.net.URI;
 
 /**
  * Features available only in test scripts.
@@ -38,10 +23,12 @@ public enum TestFeatures implements Experiment {
 	private final String codeName;
 	private final LifeCycle phase;
 	private final SkriptPattern compiledPattern;
+	private final @Nullable URI feedbackLink;
 
-	TestFeatures(String codeName, LifeCycle phase, String... patterns) {
+	TestFeatures(String codeName, LifeCycle phase, @Nullable URI feedbackLink, String... patterns) {
 		this.codeName = codeName;
 		this.phase = phase;
+		this.feedbackLink = feedbackLink;
 		switch (patterns.length) {
 			case 0:
 				this.compiledPattern = PatternCompiler.compile(codeName);
@@ -78,6 +65,11 @@ public enum TestFeatures implements Experiment {
 	@Override
 	public SkriptPattern pattern() {
 		return compiledPattern;
+	}
+
+	@Override
+	public @Nullable URI feedbackLink() {
+		return feedbackLink;
 	}
 
 	static {

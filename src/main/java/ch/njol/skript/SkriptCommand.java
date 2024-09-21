@@ -1,27 +1,8 @@
-/**
- *   This file is part of Skript.
- *
- *  Skript is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Skript is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Skript.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Copyright Peter Güttinger, SkriptLang team and contributors
- */
 package ch.njol.skript;
 
 import ch.njol.skript.aliases.Aliases;
 import ch.njol.skript.command.CommandHelp;
 import ch.njol.skript.doc.Documentation;
-import ch.njol.skript.doc.DocumentationIdProvider;
 import ch.njol.skript.doc.HTMLGenerator;
 import ch.njol.skript.doc.JSONGenerator;
 import ch.njol.skript.localization.ArgsMessage;
@@ -50,14 +31,9 @@ import org.skriptlang.skript.lang.script.Script;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-
 
 public class SkriptCommand implements CommandExecutor {
 
@@ -83,6 +59,8 @@ public class SkriptCommand implements CommandExecutor {
 			.add("check")
 			.add("changes")
 			.add("download")
+		).add(new CommandHelp("feedback", SkriptColor.DARK_CYAN)
+			.add("<experiment>")
 		).add("info"
 		).add("help");
 
@@ -347,6 +325,7 @@ public class SkriptCommand implements CommandExecutor {
 				}
 
 			} else if (args[0].equalsIgnoreCase("update")) {
+
 				SkriptUpdater updater = Skript.getInstance().getUpdater();
 				if (updater == null) { // Oh. That is bad
 					Skript.info(sender, "" + SkriptUpdater.m_internal_error);
@@ -359,7 +338,15 @@ public class SkriptCommand implements CommandExecutor {
 				} else if (args[1].equalsIgnoreCase("download")) {
 					updater.updateCheck(sender);
 				}
+
+			} else if (args[0].equalsIgnoreCase("feedback")) {
+
+				if (Skript.experiments().hasExperiment(args[1].toLowerCase(Locale.ROOT))) {
+
+				}
+
 			} else if (args[0].equalsIgnoreCase("info")) {
+
 				info(sender, "info.aliases");
 				info(sender, "info.documentation");
 				info(sender, "info.tutorials");

@@ -1,21 +1,3 @@
-/**
- *   This file is part of Skript.
- *
- *  Skript is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Skript is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Skript.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Copyright Peter Güttinger, SkriptLang team and contributors
- */
 package ch.njol.skript;
 
 import ch.njol.skript.doc.Documentation;
@@ -24,6 +6,7 @@ import ch.njol.util.StringUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.skriptlang.skript.lang.experiment.Experiment;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -38,15 +21,19 @@ public class SkriptCommandTabCompleter implements TabCompleter {
 	@Override
 	@Nullable
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		ArrayList<String> options = new ArrayList<>();
+		ArrayList<String> completions = new ArrayList<>();
 		
 		if (!command.getName().equalsIgnoreCase("skript"))
 			return null;
 		
 		if (args[0].equalsIgnoreCase("update") && args.length == 2) {
-			options.add("check");
-			options.add("changes");
-			options.add("download");
+			completions.add("check");
+			completions.add("changes");
+			completions.add("download");
+		} else if (args[0].equalsIgnoreCase("feedback") && args.length == 2) {
+			for (Experiment experiment : Skript.experiments().registered()) {
+				completions.add(experiment.codeName());
+			}
 		} else if (args[0].matches("(?i)(reload|disable|enable)") && args.length >= 2) {
 			File scripts = Skript.getInstance().getScriptsFolder();
 			String scriptsPathString = scripts.toPath().toString();
@@ -93,7 +80,7 @@ public class SkriptCommandTabCompleter implements TabCompleter {
 						if (fileString.isEmpty())
 							return;
 
-						options.add(fileString);
+						completions.add(fileString);
 					});
 			} catch (Exception e) {
 				//noinspection ThrowableNotThrown
@@ -102,28 +89,29 @@ public class SkriptCommandTabCompleter implements TabCompleter {
 			
 			// These will be added even if there are incomplete script arg
 			if (args.length == 2) {
-				options.add("all");
+				completions.add("all");
 				if (args[0].equalsIgnoreCase("reload")) {
-					options.add("config");
-					options.add("aliases");
-					options.add("scripts");
+					completions.add("config");
+					completions.add("aliases");
+					completions.add("scripts");
 				}
 			}
 
 		} else if (args.length == 1) {
-			options.add("help");
-			options.add("reload");
-			options.add("enable");
-			options.add("disable");
-			options.add("update");
-			options.add("info");
+			completions.add("help");
+			completions.add("reload");
+			completions.add("enable");
+			completions.add("disable");
+			completions.add("update");
+			completions.add("info");
+			completions.add("feedback");
 			if (Documentation.getDocsTemplateDirectory().exists())
-				options.add("gen-docs");
+				completions.add("gen-docs");
 			if (TestMode.DEV_MODE)
-				options.add("test");
+				completions.add("test");
 		}
 		
-		return options;
+		return completions;
 	}
 
 }
