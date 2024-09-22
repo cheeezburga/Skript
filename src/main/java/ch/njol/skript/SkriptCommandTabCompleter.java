@@ -99,7 +99,7 @@ public class SkriptCommandTabCompleter implements TabCompleter {
 				//noinspection ThrowableNotThrown
 				Skript.exception(e, "An error occurred while trying to update the list of disabled scripts!");
 			}
-			
+
 			// These will be added even if there are incomplete script arg
 			if (args.length == 2) {
 				options.add("all");
@@ -109,6 +109,10 @@ public class SkriptCommandTabCompleter implements TabCompleter {
 					options.add("scripts");
 				}
 			}
+
+		} else if (args[0].equalsIgnoreCase("feedback") && args.length >= 2) {
+
+
 
 		} else if (args.length == 1) {
 			options.add("help");
