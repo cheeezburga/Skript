@@ -121,13 +121,9 @@ public class ExprEntitySound extends SimpleExpression<String> {
 	}
 
 	private boolean bigOrSpeedy;
-	@SuppressWarnings("NotNullFieldNotInitialized")
 	private SoundType soundType;
-	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<Number> height;
-	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<LivingEntity> entities;
-	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<ItemType> item;
 
 	@Override
@@ -145,12 +141,10 @@ public class ExprEntitySound extends SimpleExpression<String> {
 
 	@Override
 	protected String @Nullable [] get(Event event) {
-		//noinspection ConstantValue
-		int height = this.height == null ? -1 : this.height.getOptionalSingle(event).orElse(-1).intValue();
+        int height = this.height == null ? -1 : this.height.getOptionalSingle(event).orElse(-1).intValue();
 
 		ItemStack defaultItem = new ItemStack(soundType == SoundType.EAT ? Material.COOKED_BEEF : Material.POTION);
-		//noinspection ConstantValue
-		ItemStack item = this.item == null ? defaultItem : this.item.getOptionalSingle(event).map(ItemType::getRandom).orElse(defaultItem);
+        ItemStack item = this.item == null ? defaultItem : this.item.getOptionalSingle(event).map(ItemType::getRandom).orElse(defaultItem);
 
 		return entities.stream(event)
 			.map(entity -> soundType.getSound(entity, height, item, bigOrSpeedy))
@@ -172,29 +166,27 @@ public class ExprEntitySound extends SimpleExpression<String> {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		String soundDescription = "unknown";
+		String sound = "unknown";
 		switch (soundType) {
-			case DAMAGE, DEATH, SWIM, AMBIENT -> soundDescription = soundType.name().toLowerCase();
+			case DAMAGE, DEATH, SWIM, AMBIENT -> sound = soundType.name().toLowerCase();
 			case FALL -> {
-				//noinspection ConstantValue
-				if (this.height == null) {
-					soundDescription = bigOrSpeedy ? "high fall damage" : "normal fall damage";
+                if (this.height == null) {
+					sound = bigOrSpeedy ? "high fall damage" : "normal fall damage";
 				} else {
-					soundDescription = "fall damage from a height of " + this.height.toString(event, debug);
+					sound = "fall damage from a height of " + this.height.toString(event, debug);
 				}
 			}
-			case SPLASH -> soundDescription = bigOrSpeedy ? "speedy splash" : "splash";
+			case SPLASH -> sound = bigOrSpeedy ? "speedy splash" : "splash";
 			case EAT, DRINK -> {
 				String action = soundType == SoundType.EAT ? "eating" : "drinking";
-				//noinspection ConstantValue
-				if (this.item == null) {
-					soundDescription = action;
+                if (this.item == null) {
+					sound = action;
 				} else {
-					soundDescription = action + " " + this.item.toString(event, debug);
+					sound = action + " " + this.item.toString(event, debug);
 				}
 			}
 		}
-		return soundDescription + " sound of " + entities.toString(event, debug);
+		return sound + " sound of " + entities.toString(event, debug);
 	}
 
 }
