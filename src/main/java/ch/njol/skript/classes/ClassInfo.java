@@ -218,7 +218,7 @@ public class ClassInfo<T> implements Debuggable {
 	 * @param name The name of this ClassInfo
 	 * @return This ClassInfo object
 	 */
-	public ClassInfo<T> name(final String name) {
+	public ClassInfo<T> name(String name) {
 		assert this.docName == null;
 		this.docName = name;
 		return this;
@@ -230,7 +230,7 @@ public class ClassInfo<T> implements Debuggable {
 	 * @param description The description(s) of this ClassInfo
 	 * @return This ClassInfo object
 	 */
-	public ClassInfo<T> description(final String... description) {
+	public ClassInfo<T> description(String... description) {
 		assert this.description == null;
 		this.description = description;
 		return this;
@@ -242,7 +242,7 @@ public class ClassInfo<T> implements Debuggable {
 	 * @param usage The usage(s) of this ClassInfo
 	 * @return This ClassInfo object
 	 */
-	public ClassInfo<T> usage(final String... usage) {
+	public ClassInfo<T> usage(String... usage) {
 		assert this.usage == null;
 		this.usage = usage;
 		return this;
@@ -254,7 +254,7 @@ public class ClassInfo<T> implements Debuggable {
 	 * @param examples The example(s) for this ClassInfo
 	 * @return This ClassInfo object
 	 */
-	public ClassInfo<T> examples(final String... examples) {
+	public ClassInfo<T> examples(String... examples) {
 		assert this.examples == null;
 		this.examples = examples;
 		return this;
@@ -266,7 +266,7 @@ public class ClassInfo<T> implements Debuggable {
 	 * @param since The version of the plugin in which this ClassInfo was added
 	 * @return This ClassInfo object
 	 */
-	public ClassInfo<T> since(final String since) {
+	public ClassInfo<T> since(String since) {
 		assert this.since == null;
 		this.since = since;
 		return this;
@@ -280,7 +280,7 @@ public class ClassInfo<T> implements Debuggable {
 	 * @param pluginNames The plugins, other than Skript, that this ClassInfo requires
 	 * @return This ClassInfo object
 	 */
-	public ClassInfo<T> requiredPlugins(final String... pluginNames) {
+	public ClassInfo<T> requiredPlugins(String... pluginNames) {
 		assert this.requiredPlugins == null;
 		this.requiredPlugins = pluginNames;
 		return this;
@@ -504,7 +504,7 @@ public class ClassInfo<T> implements Debuggable {
 	}
 	
 	@Override
-	public @NotNull String toString(final @Nullable Event event, final boolean debug) {
+	public @NotNull String toString(@Nullable Event event, boolean debug) {
 		if (debug)
 			return codeName + " (" + c.getCanonicalName() + ")";
 		return getName().getSingular();
