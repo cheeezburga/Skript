@@ -1,6 +1,6 @@
 package ch.njol.skript.doc;
 
-import org.skriptlang.skript.lang.experiment.LifeCycle;
+import ch.njol.skript.registrations.Feature;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -16,8 +16,7 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Experimental {
 
-	String featureName();
-	LifeCycle phase();
+	Feature experiment();
 	String feedbackLink() default "";
 
 }
