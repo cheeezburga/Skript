@@ -63,7 +63,7 @@ public class EffArmorStandExtremities extends Effect {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return (show ? "show " : "hide ") + "the " + (arms ? "arms " : "base plate ") + "of " + entities.toString(event, debug);
+		return (show ? "show" : "hide") + " the " + (arms ? "arms" : "base plate") + " of " + entities.toString(event, debug);
 	}
 
 }
