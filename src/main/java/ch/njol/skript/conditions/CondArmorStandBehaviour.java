@@ -6,6 +6,7 @@ import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Keywords;
 import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.RequiredPlugins;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
@@ -18,11 +19,12 @@ import org.bukkit.entity.LivingEntity;
 @Examples({
 	"if {_armorstands::*} are not able to tick:",
 	"if {_armorstand} is able to move:",
-	"if {_armorstand} can tick",
-	"if {_armorstand} cannot move"
+	"if {_armorstand} can tick:",
+	"if {_armorstand} cannot move:"
 })
 @Since("INSERT VERSION")
 @Keywords({"move", "moving", "ticking"})
+@RequiredPlugins("Paper")
 public class CondArmorStandBehaviour extends PropertyCondition<LivingEntity> {
 
 	static {
@@ -48,7 +50,13 @@ public class CondArmorStandBehaviour extends PropertyCondition<LivingEntity> {
 	}
 
 	@Override
+	protected PropertyType getPropertyType() {
+		return PropertyType.CAN;
+	}
+
+	@Override
 	public String getPropertyName() {
 		return tick ? "able to tick" : "able to move";
 	}
+
 }

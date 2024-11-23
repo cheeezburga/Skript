@@ -5,6 +5,7 @@ import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Keywords;
 import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.RequiredPlugins;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
@@ -23,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 })
 @Since("INSERT VERSION")
 @Keywords({"arms", "base plate"})
+@RequiredPlugins("Paper")
 public class EffArmorStandExtremities extends Effect {
 
 	static {

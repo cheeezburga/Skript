@@ -16,7 +16,7 @@ import org.bukkit.entity.LivingEntity;
 @Description("Allows users to check the extremities of an armor stand (i.e. whether it has arms or a base plate).")
 @Examples({
 	"send true if {_armorstand} has arms",
-	"if {_armorstand} has no base plate"
+	"if {_armorstand} has no base plate:"
 })
 @Since("INSERT VERSION")
 @Keywords({"arms", "base plate"})
@@ -39,6 +39,11 @@ public class CondArmorStandExtremities extends PropertyCondition<LivingEntity> {
 		if (livingEntity instanceof ArmorStand stand)
 			return arms ? stand.hasArms() : stand.hasBasePlate();
 		return false;
+	}
+
+	@Override
+	protected PropertyType getPropertyType() {
+		return PropertyType.HAVE;
 	}
 
 	@Override
