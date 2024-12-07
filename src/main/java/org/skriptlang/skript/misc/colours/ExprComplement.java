@@ -1,18 +1,43 @@
 package org.skriptlang.skript.misc.colours;
 
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
+import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.util.Color;
+import ch.njol.util.Kleenean;
 import org.jetbrains.annotations.Nullable;
 
+@Name("Complementary Colours")
+@Description({
+	"Returns the complementary colour of a given colour(s).",
+	"Can optionally use a HSL-based approach if need be, but this is rarely required."
+})
+@Examples({
+	"set {_bluesComplement} to complement of blue",
+	"set {_allComplements} to complementary colour of all colours"
+})
+@Since("INSERT VERSION")
 public class ExprComplement extends SimplePropertyExpression<Color, Color> {
 
 	static {
-		register(ExprComplement.class, Color.class, "complement[ary colo[u]r]", "colours");
+		register(ExprComplement.class, Color.class, "[:hsl] complement[ary colo[u]r]", "colours");
+	}
+
+	private boolean hsl;
+
+	@Override
+	public boolean init(Expression<?>[] expressions, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
+		this.hsl = parseResult.hasTag("hsl");
+		return super.init(expressions, matchedPattern, isDelayed, parseResult);
 	}
 
 	@Override
 	public @Nullable Color convert(Color from) {
-		return ColourUtils.complementColor(from);
+		return hsl ? ColourUtils.complementColorHSL(from) : ColourUtils.complementColor(from);
 	}
 
 	@Override
