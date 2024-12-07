@@ -7,7 +7,7 @@ import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
-import ch.njol.skript.lang.SkriptParser;
+import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.SyntaxStringBuilder;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.skript.util.Color;
@@ -26,6 +26,7 @@ import java.util.List;
 @Examples({
 	"set {_purple} to red blended with blue",
 	"set {_goldyPurple} to {_purple} blended with gold",
+	"set {_morePurpleThanGold} to {_purple} blended with gold by an amount of 10",
 	"set {_aBunch} to red blended with all colours where [input is not red]"
 })
 @Since("INSERT VERSION")
@@ -33,8 +34,8 @@ public class ExprBlend extends SimpleExpression<Color> {
 
 	static {
 		Skript.registerExpression(ExprBlend.class, Color.class, ExpressionType.COMBINED,
-			"%colours% (blended|mixed) with %colours% [by [[a[n] (factor|amount)] %-number%]",
-			"blend of %colours% (and|with) %colours% [by [[a[n] (factor|amount)] %-number%]");
+			"%colours% (blended|mixed) with %colours% [by [a[n] (factor|amount) of] %-number%]",
+			"blend of %colours% (and|with) %colours% [by [a[n] (factor|amount) of] %-number%]");
 	}
 
 	private Expression<Color> colours, blendWith;
@@ -42,7 +43,7 @@ public class ExprBlend extends SimpleExpression<Color> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
+	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		this.colours = (Expression<Color>) exprs[0];
 		this.blendWith = (Expression<Color>) exprs[1];
 		this.amount	= (Expression<Number>) exprs[2];
