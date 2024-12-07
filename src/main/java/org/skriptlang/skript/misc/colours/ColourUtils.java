@@ -5,6 +5,10 @@ import ch.njol.skript.util.ColorRGB;
 
 public class ColourUtils {
 
+	public static String toHex(Color color) {
+		return String.format("<#%02X%02X%02X>", color.getRed(), color.getGreen(), color.getBlue());
+	}
+
 	public static float[] rgbToHsl(Color color) {
 		float r = color.getRed() / 255f;
 		float g = color.getGreen() / 255f;
@@ -61,7 +65,8 @@ public class ColourUtils {
 	}
 
 	public static Color blendColors(Color c1, Color c2, double amount) {
-		amount = Math.max(0, Math.min(1, amount));
+		amount = Math.max(0, Math.min(100, amount));
+		amount /= 100.0;
 		int r = (int) (c1.getRed() * (1 - amount) + c2.getRed() * amount);
 		int g = (int) (c1.getGreen() * (1 - amount) + c2.getGreen() * amount);
 		int b = (int) (c1.getBlue() * (1 - amount) + c2.getBlue() * amount);
