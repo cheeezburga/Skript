@@ -1,6 +1,10 @@
 package org.skriptlang.skript.misc.colours;
 
 import ch.njol.skript.Skript;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser;
@@ -11,6 +15,20 @@ import ch.njol.util.Kleenean;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Name("Blended Colours")
+@Description({
+	"Returns the result of blending colours together. Optionally takes an amount to blend the colours by, which is",
+	"a number from 0 to 100. In that range, a 50 would be an expected equal blend of each colour (the default behaviour)."
+})
+@Examples({
+	"set {_purple} to red blended with blue",
+	"set {_goldyPurple} to {_purple} blended with gold",
+	"set {_aBunch} to red blended with all colours where [input is not red]"
+})
+@Since("INSERT VERSION")
 public class ExprBlend extends SimpleExpression<Color> {
 
 	static {
@@ -33,8 +51,22 @@ public class ExprBlend extends SimpleExpression<Color> {
 
 	@Override
 	protected Color @Nullable [] get(Event event) {
+		Color[] colours = this.colours.getArray(event);
+		Color[] blendWiths = this.blendWith.getArray(event);
+		Number amount = this.amount.getSingle(event);
+		if (amount == null)
+			amount = 50;
 
-		return new Color[0];
+		List<Color> blendedColours = new ArrayList<>();
+		for (Color colour : colours) {
+			Color blended = colour;
+			for (Color blendWith : blendWiths) {
+				blended = ColourUtils.blendColors(blended, blendWith, amount.doubleValue());
+			}
+			blendedColours.add(blended);
+		}
+
+		return blendedColours.toArray(new Color[0]);
 	}
 
 	@Override
@@ -49,13 +81,14 @@ public class ExprBlend extends SimpleExpression<Color> {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-        return new SyntaxStringBuilder(event, debug)
+		return "colours blended together";
+        /* return new SyntaxStringBuilder(event, debug)
 			.append(this.colours)
 			.append("blended with")
 			.append(this.blendWith)
 			.append("by a factor of")
 			.append(this.amount)
-			.toString();
+			.toString(); */
 	}
 
 }
