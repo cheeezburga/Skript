@@ -6,7 +6,7 @@ import ch.njol.skript.util.ColorRGB;
 public class ColourUtils {
 
 	public static String toHex(Color color) {
-		return String.format("<#%02X%02X%02X>", color.getRed(), color.getGreen(), color.getBlue());
+		return String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue());
 	}
 
 	public static float[] rgbToHsl(Color color) {
