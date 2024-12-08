@@ -35,7 +35,8 @@ public class ExprBlend extends SimpleExpression<Color> {
 	static {
 		Skript.registerExpression(ExprBlend.class, Color.class, ExpressionType.COMBINED,
 			"%colors% (blended|mixed) with %colors% [by [a[n] (factor|amount) of] %-number%]",
-			"blend of %colors% (and|with) %colors% [by [a[n] (factor|amount) of] %-number%]");
+			"blend of %colors% (and|with) %colors% [by [a[n] (factor|amount) of] %-number%]",
+			"%colors% and %colors% blen(ded|t) together [by [a[n] (factor|amount) of] %-number%]");
 	}
 
 	private Expression<Color> colours, blendWith;
@@ -54,9 +55,7 @@ public class ExprBlend extends SimpleExpression<Color> {
 	protected Color @Nullable [] get(Event event) {
 		Color[] colours = this.colours.getArray(event);
 		Color[] blendWiths = this.blendWith.getArray(event);
-		Number amount = this.amount.getSingle(event);
-		if (amount == null)
-			amount = 50;
+		Number amount = this.amount == null ? 50 : this.amount.getOptionalSingle(event).orElse(50);
 
 		List<Color> blendedColours = new ArrayList<>();
 		for (Color colour : colours) {
