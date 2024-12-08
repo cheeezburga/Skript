@@ -3,12 +3,27 @@ package org.skriptlang.skript.misc.colours;
 import ch.njol.skript.util.Color;
 import ch.njol.skript.util.ColorRGB;
 
+/**
+ * Utility class for colour manipulation and conversion.
+ */
 public class ColourUtils {
 
+	/**
+	 * Converts a {@link Color} to its hexadecimal representation.
+	 *
+	 * @param color the {@link Color} to convert
+	 * @return the hexadecimal string of the colour
+	 */
 	public static String toHex(Color color) {
 		return String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue());
 	}
 
+	/**
+	 * Converts a {@link Color} to HSL (hue, saturation, lightness).
+	 *
+	 * @param color the {@link Color} to convert
+	 * @return a float array representing the HSL values
+	 */
 	public static float[] rgbToHsl(Color color) {
 		float r = color.getRed() / 255f;
 		float g = color.getGreen() / 255f;
@@ -32,6 +47,12 @@ public class ColourUtils {
 		return new float[]{ h, s, l };
 	}
 
+	/**
+	 * Converts HSL values to a {@link ColorRGB} object.
+	 *
+	 * @param hsl a float array representing HSL values
+	 * @return a {@link ColorRGB} object given the HSL values
+	 */
 	public static ColorRGB hslToRgb(float[] hsl) {
 		float h = hsl[0], s = hsl[1], l = hsl[2];
 		float r, g, b;
@@ -50,6 +71,14 @@ public class ColourUtils {
 		return ColorRGB.fromRGBA(red, green, blue, 255);
 	}
 
+	/**
+	 * Helper method to convert hue values to RGB.
+	 *
+	 * @param p intermediate value
+	 * @param q intermediate value
+	 * @param t hue offset
+	 * @return the calculated RGB value
+	 */
 	private static float hueToRgb(float p, float q, float t) {
 		if (t < 0f)
 			t += 1f;
@@ -64,6 +93,14 @@ public class ColourUtils {
 		return p;
 	}
 
+	/**
+	 * Blends two {@link Color}s based on an amount from 0 to 100.
+	 *
+	 * @param c1 the first {@link Color}
+	 * @param c2 the second {@link Color}
+	 * @param amount the percentage amount to blend the colours (0 - 100)
+	 * @return the blended colour
+	 */
 	public static Color blendColors(Color c1, Color c2, double amount) {
 		amount = Math.max(0, Math.min(100, amount));
 		amount /= 100.0;
@@ -74,6 +111,12 @@ public class ColourUtils {
 		return ColorRGB.fromRGBA(r, g, b, a);
 	}
 
+	/**
+	 * Calculates the complement of a {@link Color}.
+	 *
+	 * @param color the {@link Color} to complement
+	 * @return the complementary colour
+	 */
 	public static Color complementColor(Color color) {
 		int r = 255 - color.getRed();
 		int g = 255 - color.getGreen();
@@ -81,12 +124,25 @@ public class ColourUtils {
 		return ColorRGB.fromRGBA(r, g, b, color.getAlpha());
 	}
 
+	/**
+	 * Calculates the complement of a {@link Color} using HSL adjustments.
+	 *
+	 * @param color the {@link Color} to complement
+	 * @return the complementary colour
+	 */
 	public static Color complementColorHSL(Color color) {
 		float[] hsl = rgbToHsl(color);
 		hsl[0] = (hsl[0] + 0.5f) % 1f;
 		return hslToRgb(hsl);
 	}
 
+	/**
+	 * Shades a {@link Color} by a given amount from 1 to 100.
+	 *
+	 * @param color the {@link Color} to shade
+	 * @param amount the amount to shade the colour by (1 - 100)
+	 * @return the shaded colour
+	 */
 	public static ColorRGB shadeColor(Color color, int amount) {
 		amount = Math.max(1, Math.min(100, amount));
 		double factor = (100 - amount) / 100.0;
@@ -96,6 +152,13 @@ public class ColourUtils {
 		return ColorRGB.fromRGBA(r, g, b, color.getAlpha());
 	}
 
+	/**
+	 * Shades a {@link Color} by a given amount from 1 to 100 using HSL adjustments.
+	 *
+	 * @param color the {@link Color} to shade using HSL adjustments
+	 * @param amount the amount to shade the colour by (1 - 100)
+	 * @return the shaded colour
+	 */
 	public static ColorRGB shadeColorHSL(Color color, int amount) {
 		amount = Math.max(1, Math.min(100, amount));
 		float[] hsl = rgbToHsl(color);
@@ -103,6 +166,13 @@ public class ColourUtils {
 		return hslToRgb(hsl);
 	}
 
+	/**
+	 * Tints a {@link Color} by a given amount from 1 to 100.
+	 *
+	 * @param color the {@link Color} to tint
+	 * @param amount the amount to tint the colour by (1 - 100)
+	 * @return the tinted colour
+	 */
 	public static ColorRGB tintColor(Color color, int amount) {
 		amount = Math.max(1, Math.min(100, amount));
 		double factor = amount / 100.0;
@@ -112,6 +182,13 @@ public class ColourUtils {
 		return ColorRGB.fromRGBA(r, g, b, color.getAlpha());
 	}
 
+	/**
+	 * Tints a {@link Color} by a given amount from 1 to 100 using HSL adjustments.
+	 *
+	 * @param color the {@link Color} to tint using HSL adjustments
+	 * @param amount the amount to tint the colour by (1 - 100)
+	 * @return the tinted colour
+	 */
 	public static ColorRGB tintColorHSL(Color color, int amount) {
 		amount = Math.max(1, Math.min(100, amount));
 		float[] hsl = rgbToHsl(color);
@@ -120,6 +197,13 @@ public class ColourUtils {
 		return hslToRgb(hsl);
 	}
 
+	/**
+	 * Rotates the hue of a {@link Color} by a given degree.
+	 *
+	 * @param color the {@link Color} to rotate the hue of
+	 * @param degrees the number of degrees to rotate the hue by
+	 * @return the hue-rotated colour
+	 */
 	public static Color rotateHue(Color color, int degrees) {
 		float[] hsl = rgbToHsl(color);
 		hsl[0] = (hsl[0] + degrees / 360f) % 1f;
@@ -128,6 +212,14 @@ public class ColourUtils {
 		return hslToRgb(hsl);
 	}
 
+	/**
+	 * Adjusts the brightness of a {@link Color} by an amount from -100 to 100.
+	 * This is similar to shading and tinting, but is slightly different.
+	 *
+	 * @param color the {@link Color} to adjust the brightness of
+	 * @param amount the amount to adjust the brightness by (-100 - 100)
+	 * @return the brightness-adjusted colour
+	 */
 	public static ColorRGB adjustBrightness(Color color, int amount) {
 		amount = Math.max(-100, Math.min(100, amount));
 		float[] hsb = rgbToHsb(color);
@@ -137,6 +229,13 @@ public class ColourUtils {
 		return hsbToRgb(hsb);
 	}
 
+	/**
+	 * Converts a {@link Color} to HSB (hue, saturation, brightness).
+	 * This is different to {@link #rgbToHsl(Color)}.
+	 *
+	 * @param color the {@link Color} to convert
+	 * @return a float array representing the HSB values
+	 */
 	private static float[] rgbToHsb(Color color) {
 		float r = color.getRed() / 255f;
 		float g = color.getGreen() / 255f;
@@ -162,6 +261,13 @@ public class ColourUtils {
 		return new float[]{ h, s, v };
 	}
 
+	/**
+	 * Converts HSB values to a {@link ColorRGB} object.
+	 * This is different to {@link #hslToRgb(float[])}.
+	 *
+	 * @param hsb a float array representing HSB values
+	 * @return a {@link ColorRGB} object given the HSB values
+	 */
 	private static ColorRGB hsbToRgb(float[] hsb) {
 		float h = hsb[0], s = hsb[1], v = hsb[2];
 		float r = 0f, g = 0f, b = 0f;
@@ -190,11 +296,23 @@ public class ColourUtils {
 		return ColorRGB.fromRGBA(red, green, blue, 255);
 	}
 
+	/**
+	 * Converts a {@link Color} to its grayscale equivalent.
+	 *
+	 * @param color the {@link Color} to convert to grayscale
+	 * @return the colour's grayscale equivalent
+	 */
 	public static ColorRGB toGrayscale(Color color) {
 		int gray = (int)(0.299 * color.getRed() + 0.587 * color.getGreen() + 0.114 * color.getBlue());
 		return ColorRGB.fromRGBA(gray, gray, gray, color.getAlpha());
 	}
 
+	/**
+	 * Converts a {@link Color} to its sepiatone equivalent.
+	 *
+	 * @param color the {@link Color} to convert to sepiatone
+	 * @return the colour's sepiatone equivalent
+	 */
 	public static ColorRGB toSepia(Color color) {
 		int r = color.getRed();
 		int g = color.getGreen();
@@ -208,6 +326,13 @@ public class ColourUtils {
 		return ColorRGB.fromRGBA(tr, tg, tb, color.getAlpha());
 	}
 
+	/**
+	 * Adjusts the temperature of a {@link Color} by changing the red and blue channel values.
+	 *
+	 * @param color the {@link Color} to adjust the temperature of
+	 * @param amount the amount to adjust the temperature by (-255 - 255)
+	 * @return the temperature-adjusted colour
+	 */
 	public static ColorRGB adjustTemperature(Color color, int amount) {
 		int r = color.getRed() + amount;
 		int b = color.getBlue() - amount;
