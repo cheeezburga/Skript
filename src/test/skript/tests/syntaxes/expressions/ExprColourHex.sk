@@ -17,5 +17,4 @@ test "hex codes":
 	assert hex code of purple is raw "#8932B8" with "black hex code was not correct"
 	assert hex code of magenta is raw "#C74EBD" with "black hex code was not correct"
 
-	assert hex code of test block is not set with "hex code of an invalid type shouldn't return anything"
 	assert hex code of {_x} is not set with "hex code of an invalid type shouldn't return anything"

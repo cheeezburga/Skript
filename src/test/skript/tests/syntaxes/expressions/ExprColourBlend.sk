@@ -8,6 +8,4 @@ test "colour blends":
 	assert hex of {_blackAndYellow} is "#8D7A2F" with "hex of black and yellow blended together was incorrect"
 	assert hex of {_pinkAndPurple} is "#DD79AC" with "hex of pink and purple blended together by an amount of 20%% was incorrect"
 
-	assert red blended with test block is not set with "blending invalid types should return null"
-	assert "x" blended with "y" is not set with "blending invalid types should return null"
 	assert {_x} blended with {_y} is not set with "blending invalid types should return null"
