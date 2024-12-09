@@ -1,4 +1,4 @@
-package org.skriptlang.skript.misc.colours;
+package org.skriptlang.skript.misc.colors;
 
 import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.skript.util.Color;
@@ -12,7 +12,7 @@ public class ExprHex extends SimplePropertyExpression<Color, String> {
 
 	@Override
 	public @Nullable String convert(Color from) {
-		return ColourUtils.toHex(from);
+		return ColorUtils.toHex(from);
 	}
 
 	@Override

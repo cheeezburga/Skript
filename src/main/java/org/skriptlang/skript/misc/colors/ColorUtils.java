@@ -1,4 +1,4 @@
-package org.skriptlang.skript.misc.colours;
+package org.skriptlang.skript.misc.colors;
 
 import ch.njol.skript.util.Color;
 import ch.njol.skript.util.ColorRGB;
@@ -6,7 +6,7 @@ import ch.njol.skript.util.ColorRGB;
 /**
  * Utility class for colour manipulation and conversion.
  */
-public class ColourUtils {
+public class ColorUtils {
 
 	/**
 	 * Converts a {@link Color} to its hexadecimal representation.

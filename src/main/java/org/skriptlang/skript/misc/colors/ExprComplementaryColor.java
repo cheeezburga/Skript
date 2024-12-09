@@ -1,4 +1,4 @@
-package org.skriptlang.skript.misc.colours;
+package org.skriptlang.skript.misc.colors;
 
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
@@ -21,10 +21,10 @@ import org.jetbrains.annotations.Nullable;
 	"set {_allComplements} to complementary colour of all colours"
 })
 @Since("INSERT VERSION")
-public class ExprComplement extends SimplePropertyExpression<Color, Color> {
+public class ExprComplementaryColor extends SimplePropertyExpression<Color, Color> {
 
 	static {
-		register(ExprComplement.class, Color.class, "[:hsl] complement[ary colo[u]r]", "colors");
+		register(ExprComplementaryColor.class, Color.class, "[:hsl] complement[ary colo[u]r]", "colors");
 	}
 
 	private boolean hsl;
@@ -37,12 +37,12 @@ public class ExprComplement extends SimplePropertyExpression<Color, Color> {
 
 	@Override
 	public @Nullable Color convert(Color from) {
-		return hsl ? ColourUtils.complementColorHSL(from) : ColourUtils.complementColor(from);
+		return hsl ? ColorUtils.complementColorHSL(from) : ColorUtils.complementColor(from);
 	}
 
 	@Override
 	protected String getPropertyName() {
-		return "complement";
+		return "complementary color";
 	}
 
 	@Override

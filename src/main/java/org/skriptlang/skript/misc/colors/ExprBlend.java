@@ -1,4 +1,4 @@
-package org.skriptlang.skript.misc.colours;
+package org.skriptlang.skript.misc.colors;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
@@ -61,7 +61,7 @@ public class ExprBlend extends SimpleExpression<Color> {
 		for (Color colour : colours) {
 			Color blended = colour;
 			for (Color blendWith : blendWiths) {
-				blended = ColourUtils.blendColors(blended, blendWith, amount.doubleValue());
+				blended = ColorUtils.blendColors(blended, blendWith, amount.doubleValue());
 			}
 			blendedColours.add(blended);
 		}
