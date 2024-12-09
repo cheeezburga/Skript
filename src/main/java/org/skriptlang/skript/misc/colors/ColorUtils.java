@@ -16,26 +16,36 @@ public class ColorUtils {
 	 * @return a float array representing the HSL values
 	 */
 	public static float @NotNull [] rgbToHsl(@NotNull Color color) {
-		float r = color.getRed() / 255f;
-		float g = color.getGreen() / 255f;
-		float b = color.getBlue() / 255f;
-		float max = Math.max(r, Math.max(g, b));
-		float min = Math.min(r, Math.min(g, b));
-		float h, s, l = (max + min) / 2f;
+		// normalize rgb to between 0 and 1
+		float red = color.getRed() / 255f;
+		float green = color.getGreen() / 255f;
+		float blue = color.getBlue() / 255f;
+
+		float max = Math.max(red, Math.max(green, blue));
+		float min = Math.min(red, Math.min(green, blue));
+
+		float hue, saturation, lightness = (max + min) / 2f; // lightness = midpoint of max and min
+
 		if (max == min) {
-			h = s = 0f;
+			// achromatic (no hue or saturation)
+			hue = saturation = 0f;
 		} else {
 			float delta = max - min;
-			s = l > 0.5f ? delta / (2f - max - min) : delta / (max + min);
-			if (max == r) {
-				h = ((g - b) / delta + (g < b ? 6f : 0f)) / 6f;
-			} else if (max == g) {
-				h = ((b - r) / delta + 2f) / 6f;
+
+			// saturation depends on lightness (scales differently if lightness > 0.5)
+			saturation = lightness > 0.5f ? delta / (2f - max - min) : delta / (max + min);
+
+			// determine hue by which channel is max
+			// normalize hue by converting from a 0-360 scale to a 0-1 scale by dividing by 6
+			if (max == red) {
+				hue = ((green - blue) / delta + (green < blue ? 6f : 0f)) / 6f;
+			} else if (max == green) {
+				hue = ((blue - red) / delta + 2f) / 6f;
 			} else {
-				h = ((r - g) / delta + 4f) / 6f;
+				hue = ((red - green) / delta + 4f) / 6f;
 			}
 		}
-		return new float[]{ h, s, l };
+		return new float[]{ hue, saturation, lightness };
 	}
 
 	/**
@@ -45,43 +55,48 @@ public class ColorUtils {
 	 * @return a {@link ColorRGB} object given the HSL values
 	 */
 	public static @NotNull ColorRGB hslToRgb(float @NotNull [] hsl) {
-		float h = hsl[0], s = hsl[1], l = hsl[2];
-		float r, g, b;
-		if (s == 0f) {
-			r = g = b = l;
+		float hue = hsl[0], saturation = hsl[1], lightness = hsl[2];
+		float red, green, blue;
+		if (saturation == 0f) {
+			// achromatic i.e. gray (all channels equal to lightness)
+			red = green = blue = lightness;
 		} else {
-			float q = l < 0.5f ? l * (1f + s) : l + s - l * s;
-			float p = 2f * l - q;
-			r = hueToRgb(p, q, h + 1f / 3f);
-			g = hueToRgb(p, q, h);
-			b = hueToRgb(p, q, h - 1f / 3f);
+			// higherBound and lowerBound define two boundary colors
+			float lowerBound = lightness < 0.5f ? lightness * (1f + saturation) : lightness + saturation - lightness * saturation;
+			float higherBound = 2f * lightness - lowerBound;
+			red = hueToRgb(higherBound, lowerBound, hue + 1f / 3f);
+			green = hueToRgb(higherBound, lowerBound, hue);
+			blue = hueToRgb(higherBound, lowerBound, hue - 1f / 3f);
 		}
-		int red = Math.round(r * 255f);
-		int green = Math.round(g * 255f);
-		int blue = Math.round(b * 255f);
-		return ColorRGB.fromRGBA(red, green, blue, 255);
+		int r = Math.round(red * 255f);
+		int g = Math.round(green * 255f);
+		int b = Math.round(blue * 255f);
+		return ColorRGB.fromRGBA(r, g, b, 255);
 	}
 
 	/**
 	 * Helper method to convert hue values to RGB.
 	 *
-	 * @param p intermediate value
-	 * @param q intermediate value
-	 * @param t hue offset
+	 * @param lowerBound intermediate value
+	 * @param higherBound intermediate value
+	 * @param hueOffset hue offset
 	 * @return the calculated RGB value
 	 */
-	private static float hueToRgb(float p, float q, float t) {
-		if (t < 0f)
-			t += 1f;
-		if (t > 1f)
-			t -= 1f;
-		if (t < 1f / 6f)
-			return p + (q - p) * 6f * t;
-		if (t < 1f / 2f)
-			return q;
-		if (t < 2f / 3f)
-			return p + (q - p) * (2f / 3f - t) * 6f;
-		return p;
+	private static float hueToRgb(float lowerBound, float higherBound, float hueOffset) {
+		// wrap hueOffset if out of 0-1 range
+		if (hueOffset < 0f)
+			hueOffset += 1f;
+		if (hueOffset > 1f)
+			hueOffset -= 1f;
+
+		// depending on hueOffset, interpolate between lowerBound and higherBound
+		if (hueOffset < 1f / 6f)
+			return lowerBound + (higherBound - lowerBound) * 6f * hueOffset;
+		if (hueOffset < 1f / 2f)
+			return higherBound;
+		if (hueOffset < 2f / 3f)
+			return lowerBound + (higherBound - lowerBound) * (2f / 3f - hueOffset) * 6f;
+		return lowerBound;
 	}
 
 	/**
@@ -93,8 +108,10 @@ public class ColorUtils {
 	 * @return the blended colour
 	 */
 	public static @NotNull Color blendColors(@NotNull Color c1, @NotNull Color c2, double amount) {
-		amount = Math.max(0, Math.min(100, amount));
-		amount /= 100.0;
+		// amount is a percentage (clamp then normalize to between 0 and 1)
+		amount = Math.max(0, Math.min(100, amount)) / 100.0;
+
+		// linearly interpolate each channel
 		int r = (int) (c1.getRed() * (1 - amount) + c2.getRed() * amount);
 		int g = (int) (c1.getGreen() * (1 - amount) + c2.getGreen() * amount);
 		int b = (int) (c1.getBlue() * (1 - amount) + c2.getBlue() * amount);
@@ -109,6 +126,7 @@ public class ColorUtils {
 	 * @return the complementary colour
 	 */
 	public static @NotNull Color complementColor(@NotNull Color color) {
+		// just invert each channel
 		int r = 255 - color.getRed();
 		int g = 255 - color.getGreen();
 		int b = 255 - color.getBlue();
@@ -123,6 +141,7 @@ public class ColorUtils {
 	 */
 	public static @NotNull Color complementColorHSL(@NotNull Color color) {
 		float[] hsl = rgbToHsl(color);
+		// adding 0.5 flips hue by 180 (i.e. finds the complement)
 		hsl[0] = (hsl[0] + 0.5f) % 1f;
 		return hslToRgb(hsl);
 	}
@@ -135,6 +154,7 @@ public class ColorUtils {
 	 * @return the shaded colour
 	 */
 	public static @NotNull ColorRGB shadeColor(@NotNull Color color, int amount) {
+		// reducing the channel values darkens the color
 		amount = Math.max(1, Math.min(100, amount));
 		double factor = (100 - amount) / 100.0;
 		int r = (int) (color.getRed() * factor);
@@ -151,6 +171,7 @@ public class ColorUtils {
 	 * @return the shaded colour
 	 */
 	public static @NotNull ColorRGB shadeColorHSL(@NotNull Color color, int amount) {
+		// reducing the lightness to shade
 		amount = Math.max(1, Math.min(100, amount));
 		float[] hsl = rgbToHsl(color);
 		hsl[2] *= (100 - amount) / 100f;
@@ -165,6 +186,7 @@ public class ColorUtils {
 	 * @return the tinted colour
 	 */
 	public static @NotNull ColorRGB tintColor(@NotNull Color color, int amount) {
+		// move each channel closer to 255 to lighten the colour
 		amount = Math.max(1, Math.min(100, amount));
 		double factor = amount / 100.0;
 		int r = (int) (color.getRed() + (255 - color.getRed()) * factor);
@@ -181,6 +203,7 @@ public class ColorUtils {
 	 * @return the tinted colour
 	 */
 	public static @NotNull ColorRGB tintColorHSL(@NotNull Color color, int amount) {
+		// increasing the lightness (towards 1) to tint
 		amount = Math.max(1, Math.min(100, amount));
 		float[] hsl = rgbToHsl(color);
 		hsl[2] += (1f - hsl[2]) * (amount / 100f);
@@ -196,6 +219,7 @@ public class ColorUtils {
 	 * @return the hue-rotated colour
 	 */
 	public static @NotNull Color rotateHue(@NotNull Color color, int degrees) {
+		// hue is a fraction of a circle, add (degrees/360) to rotate by that angle
 		float[] hsl = rgbToHsl(color);
 		hsl[0] = (hsl[0] + degrees / 360f) % 1f;
 		if (hsl[0] < 0f)
@@ -212,6 +236,7 @@ public class ColorUtils {
 	 * @return the brightness-adjusted colour
 	 */
 	public static @NotNull ColorRGB adjustBrightness(@NotNull Color color, int amount) {
+		// adjust brightness by scaling brightness directly (shocking ik)
 		amount = Math.max(-100, Math.min(100, amount));
 		float[] hsb = rgbToHsb(color);
 		float factor = amount / 100f;
@@ -228,28 +253,32 @@ public class ColorUtils {
 	 * @return a float array representing the HSB values
 	 */
 	private static float @NotNull [] rgbToHsb(@NotNull Color color) {
+		// normalize rgb to between 0 and 1
 		float r = color.getRed() / 255f;
 		float g = color.getGreen() / 255f;
 		float b = color.getBlue() / 255f;
+
+		// max defines brightness, delta defines saturation
 		float max = Math.max(r, Math.max(g, b));
 		float min = Math.min(r, Math.min(g, b));
 		float delta = max - min;
-		float h = 0f;
-		float s = max == 0f ? 0f : delta / max;
-		float v = max;
+		float hue = 0f;
+		float saturation = max == 0f ? 0f : delta / max;
+
+		// hue depends on which channel is max
 		if (delta != 0f) {
 			if (max == r) {
-				h = ((g - b) / delta) % 6f;
+				hue = ((g - b) / delta) % 6f;
 			} else if (max == g) {
-				h = ((b - r) / delta) + 2f;
+				hue = ((b - r) / delta) + 2f;
 			} else {
-				h = ((r - g) / delta) + 4f;
+				hue = ((r - g) / delta) + 4f;
 			}
-			h *= 60f;
-			if (h < 0f) h += 360f;
+			hue *= 60f;
+			if (hue < 0f) hue += 360f;
 		}
-		h /= 360f;
-		return new float[]{ h, s, v };
+		hue /= 360f;
+		return new float[]{ hue, saturation, max};
 	}
 
 	/**
@@ -260,31 +289,34 @@ public class ColorUtils {
 	 * @return a {@link ColorRGB} object given the HSB values
 	 */
 	private static @NotNull ColorRGB hsbToRgb(float @NotNull [] hsb) {
-		float h = hsb[0], s = hsb[1], v = hsb[2];
-		float r = 0f, g = 0f, b = 0f;
-		int i = (int) (h * 6f);
-		float f = h * 6f - i;
-		float p = v * (1f - s);
-		float q = v * (1f - f * s);
-		float t = v * (1f - (1f - f) * s);
-		switch (i % 6) {
+		float hue = hsb[0], saturation = hsb[1], brightness = hsb[2];
+		// determine hue sector and interpolate
+		float red = 0f, green = 0f, blue = 0f;
+		int hueSector = (int) (hue * 6f);
+		float sectorFraction = hue * 6f - hueSector;
+		float lowerBound = brightness * (1f - saturation);
+		float higherBound = brightness * (1f - sectorFraction * saturation);
+		float hueOffset = brightness * (1f - (1f - sectorFraction) * saturation);
+
+		// assign rgb values based on sector
+		switch (hueSector % 6) {
 			case 0:
-				r = v; g = t; b = p; break;
+				red = brightness; green = hueOffset; blue = lowerBound; break;
 			case 1:
-				r = q; g = v; b = p; break;
+				red = higherBound; green = brightness; blue = lowerBound; break;
 			case 2:
-				r = p; g = v; b = t; break;
+				red = lowerBound; green = brightness; blue = hueOffset; break;
 			case 3:
-				r = p; g = q; b = v; break;
+				red = lowerBound; green = higherBound; blue = brightness; break;
 			case 4:
-				r = t; g = p; b = v; break;
+				red = hueOffset; green = lowerBound; blue = brightness; break;
 			case 5:
-				r = v; g = p; b = q; break;
+				red = brightness; green = lowerBound; blue = higherBound; break;
 		}
-		int red = Math.round(r * 255f);
-		int green = Math.round(g * 255f);
-		int blue = Math.round(b * 255f);
-		return ColorRGB.fromRGBA(red, green, blue, 255);
+		int r = Math.round(red * 255f);
+		int g = Math.round(green * 255f);
+		int b = Math.round(blue * 255f);
+		return ColorRGB.fromRGBA(r, g, b, 255);
 	}
 
 	/**
@@ -294,6 +326,7 @@ public class ColorUtils {
 	 * @return the colour's grayscale equivalent
 	 */
 	public static @NotNull ColorRGB toGrayscale(@NotNull Color color) {
+		// weighted average simulates human perception
 		int gray = (int)(0.299 * color.getRed() + 0.587 * color.getGreen() + 0.114 * color.getBlue());
 		return ColorRGB.fromRGBA(gray, gray, gray, color.getAlpha());
 	}
@@ -305,16 +338,17 @@ public class ColorUtils {
 	 * @return the colour's sepiatone equivalent
 	 */
 	public static @NotNull ColorRGB toSepia(@NotNull Color color) {
+		// standard sepia formula
 		int r = color.getRed();
 		int g = color.getGreen();
 		int b = color.getBlue();
-		int tr = (int) (0.393 * r + 0.769 * g + 0.189 * b);
-		int tg = (int) (0.349 * r + 0.686 * g + 0.168 * b);
-		int tb = (int) (0.272 * r + 0.534 * g + 0.131 * b);
-		tr = Math.min(255, tr);
-		tg = Math.min(255, tg);
-		tb = Math.min(255, tb);
-		return ColorRGB.fromRGBA(tr, tg, tb, color.getAlpha());
+		int sepiaRed = (int) (0.393 * r + 0.769 * g + 0.189 * b);
+		int sepiaGreen = (int) (0.349 * r + 0.686 * g + 0.168 * b);
+		int sepiaBlue = (int) (0.272 * r + 0.534 * g + 0.131 * b);
+		sepiaRed = Math.min(255, sepiaRed);
+		sepiaGreen = Math.min(255, sepiaGreen);
+		sepiaBlue = Math.min(255, sepiaBlue);
+		return ColorRGB.fromRGBA(sepiaRed, sepiaGreen, sepiaBlue, color.getAlpha());
 	}
 
 	/**
@@ -325,6 +359,7 @@ public class ColorUtils {
 	 * @return the temperature-adjusted colour
 	 */
 	public static @NotNull ColorRGB adjustTemperature(@NotNull Color color, int amount) {
+		// increasing red and decreasing blue 'warms' the color, opposite cools
 		int r = color.getRed() + amount;
 		int b = color.getBlue() - amount;
 		r = Math.max(0, Math.min(255, r));
