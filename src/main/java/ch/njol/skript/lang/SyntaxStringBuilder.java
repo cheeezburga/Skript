@@ -36,6 +36,7 @@ public class SyntaxStringBuilder {
 	 * {@link Debuggable#toString(Event, boolean)}.
 	 *
 	 * @param object The object to add.
+	 * @return The builder.
 	 */
 	public SyntaxStringBuilder append(@NotNull Object object) {
 		Preconditions.checkNotNull(object);
@@ -50,7 +51,9 @@ public class SyntaxStringBuilder {
 	/**
 	 * Adds multiple objects to the string and returns the builder.
 	 * Spaces are automatically added between the provided objects.
+	 *
 	 * @param objects The objects to add.
+	 * @return The builder.
 	 */
 	public SyntaxStringBuilder append(@NotNull Object... objects) {
 		for (Object object : objects) {
