@@ -1,21 +1,3 @@
-/**
- *   This file is part of Skript.
- *
- *  Skript is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Skript is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Skript.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Copyright Peter Güttinger, SkriptLang team and contributors
- */
 package ch.njol.skript.util;
 
 import ch.njol.skript.localization.Adjective;
@@ -81,12 +63,16 @@ public enum SkriptColor implements Color {
 	
 	private ChatColor chat;
 	private DyeColor dye;
-	@Nullable
-	private Adjective adjective;
+	private @Nullable Adjective adjective;
+	private final int alpha, red, green, blue;
 	
 	SkriptColor(DyeColor dye, ChatColor chat) {
 		this.chat = chat;
 		this.dye = dye;
+		this.alpha = dye.getColor().getAlpha();
+		this.red = dye.getColor().getRed();
+		this.green = dye.getColor().getGreen();
+		this.blue = dye.getColor().getBlue();
 	}
 	
 	@Override
@@ -96,22 +82,22 @@ public enum SkriptColor implements Color {
 
 	@Override
 	public int getAlpha() {
-		return dye.getColor().getAlpha();
+		return alpha;
 	}
 
 	@Override
 	public int getRed() {
-		return dye.getColor().getRed();
+		return red;
 	}
 
 	@Override
 	public int getGreen() {
-		return dye.getColor().getGreen();
+		return green;
 	}
 
 	@Override
 	public int getBlue() {
-		return dye.getColor().getBlue();
+		return blue;
 	}
 
 	@Override
@@ -142,9 +128,8 @@ public enum SkriptColor implements Color {
 	public String getFormattedChat() {
 		return "" + chat;
 	}
-	
-	@Nullable
-	public Adjective getAdjective() {
+
+	public @Nullable Adjective getAdjective() {
 		return adjective;
 	}
 	
@@ -171,8 +156,7 @@ public enum SkriptColor implements Color {
 	 * @param name The String name of the color defined by Skript's .lang files.
 	 * @return Skript Color if matched up with the defined name
 	 */
-	@Nullable
-	public static SkriptColor fromName(String name) {
+	public static @Nullable SkriptColor fromName(String name) {
 		return names.get(name);
 	}
 	
@@ -206,8 +190,7 @@ public enum SkriptColor implements Color {
 	 * @return Skript Color if matched up with the defined short
 	 */
 	@Deprecated
-	@Nullable
-	public static SkriptColor fromDyeData(short data) {
+	public static @Nullable SkriptColor fromDyeData(short data) {
 		if (data < 0 || data >= 16)
 			return null;
 		
@@ -226,8 +209,7 @@ public enum SkriptColor implements Color {
 	 * @return Skript Color if matched up with the defined short
 	 */
 	@Deprecated
-	@Nullable
-	public static SkriptColor fromWoolData(short data) {
+	public static @Nullable SkriptColor fromWoolData(short data) {
 		if (data < 0 || data >= 16)
 			return null;
 		for (SkriptColor color : colors) {

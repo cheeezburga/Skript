@@ -22,6 +22,7 @@ public class ColorRGB implements Color {
 	private org.bukkit.Color bukkit;
 
 	private @Nullable DyeColor dye;
+	private final int alpha, red, green, blue;
 
 	/**
 	 * Subject to being private in the future. Use {@link #fromRGB(int, int, int)}
@@ -45,6 +46,10 @@ public class ColorRGB implements Color {
 	public ColorRGB(org.bukkit.Color bukkit) {
 		this.dye = DyeColor.getByColor(bukkit);
 		this.bukkit = bukkit;
+		this.alpha = bukkit.getAlpha();
+		this.red = bukkit.getRed();
+		this.green = bukkit.getGreen();
+		this.blue = bukkit.getBlue();
 	}
 
 	/**
@@ -87,22 +92,22 @@ public class ColorRGB implements Color {
 
 	@Override
 	public int getAlpha() {
-		return bukkit.getAlpha();
+		return alpha;
 	}
 
 	@Override
 	public int getRed() {
-		return bukkit.getRed();
+		return red;
 	}
 
 	@Override
 	public int getGreen() {
-		return bukkit.getGreen();
+		return green;
 	}
 
 	@Override
 	public int getBlue() {
-		return bukkit.getBlue();
+		return blue;
 	}
 
 	@Override

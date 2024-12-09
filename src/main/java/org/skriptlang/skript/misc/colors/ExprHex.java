@@ -12,7 +12,7 @@ public class ExprHex extends SimplePropertyExpression<Color, String> {
 
 	@Override
 	public @Nullable String convert(Color from) {
-		return ColorUtils.toHex(from);
+		return from.getHex();
 	}
 
 	@Override
