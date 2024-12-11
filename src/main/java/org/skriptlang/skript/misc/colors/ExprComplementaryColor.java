@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 public class ExprComplementaryColor extends SimplePropertyExpression<Color, Color> {
 
 	static {
-		register(ExprComplementaryColor.class, Color.class, "[:hsl] complement[ary colo[u]r]", "colors");
+		register(ExprComplementaryColor.class, Color.class, "[:hsl] complement[ary] colo[u]r[s]", "colors");
 	}
 
 	private boolean hsl;

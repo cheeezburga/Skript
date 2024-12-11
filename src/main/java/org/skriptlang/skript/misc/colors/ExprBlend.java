@@ -20,8 +20,9 @@ import java.util.List;
 
 @Name("Blended Colours")
 @Description({
-	"Returns the result of blending colours together. Optionally takes an amount to blend the colours by, which is",
-	"a number from 0 to 100. In that range, a 50 would be an expected equal blend of each colour (the default behaviour)."
+	"Returns the result of blending colours together. Optionally takes an amount to blend the colours by, which is" +
+		"a number from 0 to 100.",
+	"In that range, a 50 would be an expected equal blend of each colour (the default behaviour)."
 })
 @Examples({
 	"set {_purple} to red blended with blue",
