@@ -2,15 +2,10 @@ package ch.njol.skript.util;
 
 import ch.njol.skript.localization.Adjective;
 import ch.njol.skript.localization.Language;
-import ch.njol.skript.variables.Variables;
-import ch.njol.yggdrasil.Fields;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.NotSerializableException;
-import java.io.StreamCorruptedException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,7 +49,6 @@ public enum SkriptColor implements Color {
 			names.clear();
 			for (SkriptColor color : values()) {
 				String node = LANGUAGE_NODE + "." + color.name();
-				color.setAdjective(new Adjective(node + ".adjective"));
 				for (String name : Language.getList(node + ".names"))
 					names.put(name.toLowerCase(Locale.ENGLISH), color);
 			}
@@ -69,6 +63,7 @@ public enum SkriptColor implements Color {
 	SkriptColor(DyeColor dye, ChatColor chat) {
 		this.chat = chat;
 		this.dye = dye;
+		this.adjective = new Adjective(LANGUAGE_NODE + "." + name() + ".adjective");
 		this.alpha = dye.getColor().getAlpha();
 		this.red = dye.getColor().getRed();
 		this.green = dye.getColor().getGreen();
@@ -111,20 +106,6 @@ public enum SkriptColor implements Color {
 		return adjective.toString();
 	}
 	
-	@Override
-	public Fields serialize() throws NotSerializableException {
-		return new Fields(this, Variables.yggdrasil);
-	}
-	
-	@Override
-	public void deserialize(@NotNull Fields fields) throws StreamCorruptedException {
-		dye = fields.getObject("dye", DyeColor.class);
-		chat = fields.getObject("chat", ChatColor.class);
-		try {
-			adjective = fields.getObject("adjective", Adjective.class);
-		} catch (StreamCorruptedException ignored) {}
-	}
-	
 	public String getFormattedChat() {
 		return "" + chat;
 	}
@@ -146,12 +127,7 @@ public enum SkriptColor implements Color {
 	public byte getDyeData() {
 		return (byte) (15 - dye.getWoolData());
 	}
-	
-	private void setAdjective(@Nullable Adjective adjective) {
-		this.adjective = adjective;
-	}
-	
-	
+
 	/**
 	 * @param name The String name of the color defined by Skript's .lang files.
 	 * @return Skript Color if matched up with the defined name

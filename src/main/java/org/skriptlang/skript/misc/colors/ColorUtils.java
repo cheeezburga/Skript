@@ -2,12 +2,26 @@ package org.skriptlang.skript.misc.colors;
 
 import ch.njol.skript.util.Color;
 import ch.njol.skript.util.ColorRGB;
+import ch.njol.skript.util.SkriptColor;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Utility class for colour manipulation and conversion.
  */
 public class ColorUtils {
+
+	public static Color fromInt(int asInt) {
+		for (SkriptColor preset : SkriptColor.values()) {
+			if (preset.asInt() == asInt) {
+				return preset;
+			}
+		}
+		int alpha = (asInt >> 24) & 0xFF;
+		int red = (asInt >> 16) & 0xFF;
+		int green = (asInt >> 8) & 0xFF;
+		int blue = asInt & 0xFF;
+		return ColorRGB.fromRGBA(red, green, blue, alpha);
+	}
 
 	/**
 	 * Converts a {@link Color} to HSL (hue, saturation, lightness).

@@ -1,10 +1,9 @@
 package ch.njol.skript.util;
 
-import ch.njol.yggdrasil.YggdrasilSerializable.YggdrasilExtendedSerializable;
 import org.bukkit.DyeColor;
 import org.jetbrains.annotations.Nullable;
 
-public interface Color extends YggdrasilExtendedSerializable {
+public interface Color {
 
 	/**
 	 * @return The Bukkit color representing this color.
