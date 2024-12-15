@@ -38,22 +38,72 @@ import org.jetbrains.annotations.UnknownNullability;
 	"This effect will replace any armor that the entity is already wearing."
 })
 @Examples({
-		"equip player with diamond helmet",
-		"equip player with all diamond armor",
-		"unequip diamond chestplate from player",
-		"unequip all armor from player",
-		"unequip player's armor"
+	"equip player with diamond helmet",
+	"equip player with all diamond armor",
+	"unequip diamond chestplate from player",
+	"unequip all armor from player",
+	"unequip player's armor"
 })
 @Since("1.0, 2.7 (multiple entities, unequip), INSERT VERSION (wolves)")
 public class EffEquip extends Effect {
+
+	private static ItemType CHESTPLATE;
+	private static ItemType LEGGINGS;
+	private static ItemType BOOTS;
+	private static ItemType CARPET = new ItemType(Tag.WOOL_CARPETS);
+	private static ItemType WOLF_ARMOR;
+	private static final ItemType HORSE_ARMOR = new ItemType(Material.LEATHER_HORSE_ARMOR, Material.IRON_HORSE_ARMOR, Material.GOLDEN_HORSE_ARMOR, Material.DIAMOND_HORSE_ARMOR);
+	private static final ItemType SADDLE = new ItemType(Material.SADDLE);
+	private static final ItemType CHEST = new ItemType(Material.CHEST);
+
+	static {
+		boolean hasWolfArmor = Skript.fieldExists(Material.class, "WOLF_ARMOR");
+		WOLF_ARMOR = hasWolfArmor ? new ItemType(Material.WOLF_ARMOR) : new ItemType();
+
+		// added in 1.20.6
+		if (Skript.fieldExists(Tag.class, "ITEM_CHEST_ARMOR")) {
+			CHESTPLATE = new ItemType(Tag.ITEMS_CHEST_ARMOR);
+			LEGGINGS = new ItemType(Tag.ITEMS_LEG_ARMOR);
+			BOOTS = new ItemType(Tag.ITEMS_FOOT_ARMOR);
+		} else {
+			CHESTPLATE = new ItemType(
+				Material.LEATHER_CHESTPLATE,
+				Material.CHAINMAIL_CHESTPLATE,
+				Material.GOLDEN_CHESTPLATE,
+				Material.IRON_CHESTPLATE,
+				Material.DIAMOND_CHESTPLATE,
+        Material.NETHERITE_CHESTPLATE,
+				Material.ELYTRA
+			);
+
+			LEGGINGS = new ItemType(
+				Material.LEATHER_LEGGINGS,
+				Material.CHAINMAIL_LEGGINGS,
+				Material.GOLDEN_LEGGINGS,
+				Material.IRON_LEGGINGS,
+				Material.DIAMOND_LEGGINGS,
+        Material.NETHERITE_LEGGINGS
+			);
+
+			BOOTS = new ItemType(
+				Material.LEATHER_BOOTS,
+				Material.CHAINMAIL_BOOTS,
+				Material.GOLDEN_BOOTS,
+				Material.IRON_BOOTS,
+				Material.DIAMOND_BOOTS,
+        Material.NETHERITE_BOOTS
+			);
+		}
+	}
+
+	private static final ItemType[] ALL_EQUIPMENT = new ItemType[] {CHESTPLATE, LEGGINGS, BOOTS, HORSE_ARMOR, SADDLE, CHEST, CARPET, WOLF_ARMOR};
 
 	static {
 		Skript.registerEffect(EffEquip.class,
 				"equip [%livingentities%] with %itemtypes%",
 				"make %livingentities% wear %itemtypes%",
 				"unequip %itemtypes% [from %livingentities%]",
-				"unequip %livingentities%'[s] (armo[u]r|equipment)"
-			);
+				"unequip %livingentities%'[s] (armo[u]r|equipment)");
 	}
 
 	@SuppressWarnings("NotNullFieldNotInitialized")
@@ -78,64 +128,6 @@ public class EffEquip extends Effect {
 		}
 		return true;
 	}
-
-	private static ItemType CHESTPLATE;
-	private static ItemType LEGGINGS;
-	private static ItemType BOOTS;
-	private static ItemType CARPET;
-	private static ItemType WOLF_ARMOR;
-	private static final ItemType HORSE_ARMOR = new ItemType(Material.IRON_HORSE_ARMOR, Material.GOLDEN_HORSE_ARMOR, Material.DIAMOND_HORSE_ARMOR);
-	private static final ItemType SADDLE = new ItemType(Material.SADDLE);
-	private static final ItemType CHEST = new ItemType(Material.CHEST);
-
-	static {
-		boolean usesWoolCarpetTag = Skript.fieldExists(Tag.class, "WOOL_CARPET");
-		CARPET = new ItemType(usesWoolCarpetTag ? Tag.WOOL_CARPETS : Tag.CARPETS);
-
-		boolean hasWolfArmor = Skript.fieldExists(Material.class, "WOLF_ARMOR");
-		WOLF_ARMOR = hasWolfArmor ? new ItemType(Material.WOLF_ARMOR) : new ItemType();
-
-		// added in 1.20.6
-		if (Skript.fieldExists(Tag.class, "ITEM_CHEST_ARMOR")) {
-			CHESTPLATE = new ItemType(Tag.ITEMS_CHEST_ARMOR);
-			LEGGINGS = new ItemType(Tag.ITEMS_LEG_ARMOR);
-			BOOTS = new ItemType(Tag.ITEMS_FOOT_ARMOR);
-		} else {
-			CHESTPLATE = new ItemType(
-				Material.LEATHER_CHESTPLATE,
-				Material.CHAINMAIL_CHESTPLATE,
-				Material.GOLDEN_CHESTPLATE,
-				Material.IRON_CHESTPLATE,
-				Material.DIAMOND_CHESTPLATE,
-				Material.ELYTRA
-			);
-
-			LEGGINGS = new ItemType(
-				Material.LEATHER_LEGGINGS,
-				Material.CHAINMAIL_LEGGINGS,
-				Material.GOLDEN_LEGGINGS,
-				Material.IRON_LEGGINGS,
-				Material.DIAMOND_LEGGINGS
-			);
-
-			BOOTS = new ItemType(
-				Material.LEATHER_BOOTS,
-				Material.CHAINMAIL_BOOTS,
-				Material.GOLDEN_BOOTS,
-				Material.IRON_BOOTS,
-				Material.DIAMOND_BOOTS
-			);
-
-			// netherite
-			if (Skript.isRunningMinecraft(1,16)) {
-				CHESTPLATE.add(new ItemData(Material.NETHERITE_CHESTPLATE));
-				LEGGINGS.add(new ItemData(Material.NETHERITE_LEGGINGS));
-				BOOTS.add(new ItemData(Material.NETHERITE_BOOTS));
-			}
-		}
-	}
-
-	private static final ItemType[] ALL_EQUIPMENT = new ItemType[] {CHESTPLATE, LEGGINGS, BOOTS, HORSE_ARMOR, SADDLE, CHEST, CARPET, WOLF_ARMOR};
 
 	@Override
 	protected void execute(Event event) {
