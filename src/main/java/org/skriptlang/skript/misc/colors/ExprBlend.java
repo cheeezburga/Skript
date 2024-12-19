@@ -35,9 +35,9 @@ public class ExprBlend extends SimpleExpression<Color> {
 
 	static {
 		Skript.registerExpression(ExprBlend.class, Color.class, ExpressionType.COMBINED,
-			"%colors% (blended|mixed) with %colors% [by [a[n] (factor|amount) of] %-number%]",
-			"blend of %colors% (and|with) %colors% [by [a[n] (factor|amount) of] %-number%]",
-			"%colors% and %colors% blen(ded|t) together [by [a[n] (factor|amount) of] %-number%]");
+			"%colors% (blended|mixed) with %colors% [by [(a factor|an amount) of] %-number%]",
+			"blend of %colors% (and|with) %colors% [by [(a factor|an amount) of] %-number%]",
+			"%colors% and %colors% blen(ded|t) together [by [(a factor|an amount) of] %-number%]");
 	}
 
 	private Expression<Color> colours, blendWith;
@@ -48,7 +48,7 @@ public class ExprBlend extends SimpleExpression<Color> {
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		this.colours = (Expression<Color>) exprs[0];
 		this.blendWith = (Expression<Color>) exprs[1];
-		this.amount	= (Expression<Number>) exprs[2];
+		this.amount = (Expression<Number>) exprs[2];
 		return true;
 	}
 

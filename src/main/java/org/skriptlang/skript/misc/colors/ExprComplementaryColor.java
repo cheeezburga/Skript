@@ -41,13 +41,13 @@ public class ExprComplementaryColor extends SimplePropertyExpression<Color, Colo
 	}
 
 	@Override
-	protected String getPropertyName() {
-		return "complementary color";
+	public Class<? extends Color> getReturnType() {
+		return Color.class;
 	}
 
 	@Override
-	public Class<? extends Color> getReturnType() {
-		return Color.class;
+	protected String getPropertyName() {
+		return (hsl ? "hsl " : "") + "complementary color";
 	}
 
 }

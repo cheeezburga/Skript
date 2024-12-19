@@ -26,12 +26,13 @@ public class ExprHex extends SimplePropertyExpression<Color, String> {
 	}
 
 	@Override
+	public Class<? extends String> getReturnType() {
+		return String.class;
+	}
+
+	@Override
 	protected String getPropertyName() {
 		return "hex code";
 	}
 
-	@Override
-	public Class<? extends String> getReturnType() {
-		return String.class;
-	}
 }
