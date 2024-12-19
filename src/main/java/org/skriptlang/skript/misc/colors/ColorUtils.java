@@ -10,6 +10,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ColorUtils {
 
+	/**
+	 * Converts an integer representation of a color to its {@link Color} equivalent.
+	 *
+	 * @param asInt an integer representing a color
+	 * @return the {@link Color} represented by the integer
+	 */
 	public static Color fromInt(int asInt) {
 		for (SkriptColor preset : SkriptColor.values()) {
 			if (preset.asInt() == asInt) {
@@ -20,6 +26,37 @@ public class ColorUtils {
 		int red = (asInt >> 16) & 0xFF;
 		int green = (asInt >> 8) & 0xFF;
 		int blue = asInt & 0xFF;
+		return ColorRGB.fromRGBA(red, green, blue, alpha);
+	}
+
+	/**
+	 * Converts a hex code representation of a color to its {@link Color} equivalent.
+	 *
+	 * @param hex a hex code representing a color
+	 * @return the {@link Color} represented by the hex code
+	 *
+	 * @throws IllegalArgumentException if the hex string is not of a supported format
+	 */
+	public static ColorRGB fromHex(@NotNull String hex) {
+		if (hex.startsWith("#"))
+			hex = hex.substring(1);
+
+		int length = hex.length();
+		int alpha = 255, red, green, blue;
+
+		if (length == 6) {
+			red = Integer.parseInt(hex.substring(0, 2), 16);
+			green = Integer.parseInt(hex.substring(2, 4), 16);
+			blue = Integer.parseInt(hex.substring(4, 6), 16);
+		} else if (length == 8) {
+			alpha = Integer.parseInt(hex.substring(0, 2), 16);
+			red = Integer.parseInt(hex.substring(2, 4), 16);
+			green = Integer.parseInt(hex.substring(4, 6), 16);
+			blue = Integer.parseInt(hex.substring(6, 8), 16);
+		} else {
+			throw new UnsupportedOperationException("Unsupported hex format - requires #RRGGBB or #AARRGGBB");
+		}
+
 		return ColorRGB.fromRGBA(red, green, blue, alpha);
 	}
 
