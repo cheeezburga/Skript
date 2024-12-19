@@ -1,4 +1,4 @@
-package org.skriptlang.skript.misc.colors;
+package org.skriptlang.skript.common.colors;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.ClassInfo;

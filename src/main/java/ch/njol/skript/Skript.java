@@ -105,7 +105,7 @@ import org.skriptlang.skript.lang.experiment.ExperimentRegistry;
 import org.skriptlang.skript.lang.script.Script;
 import org.skriptlang.skript.lang.structure.Structure;
 import org.skriptlang.skript.lang.structure.StructureInfo;
-import org.skriptlang.skript.misc.colors.ColorModule;
+import org.skriptlang.skript.common.colors.ColorModule;
 
 import java.io.File;
 import java.io.IOException;
