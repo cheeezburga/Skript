@@ -82,14 +82,13 @@ public class ExprBlend extends SimpleExpression<Color> {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return "colours blended together";
-        /* return new SyntaxStringBuilder(event, debug)
+        return new SyntaxStringBuilder(event, debug)
 			.append(this.colours)
 			.append("blended with")
 			.append(this.blendWith)
 			.append("by a factor of")
 			.append(this.amount)
-			.toString(); */
+			.toString();
 	}
 
 }
