@@ -55,9 +55,9 @@ public enum SkriptColor implements Color {
 		});
 	}
 	
-	private ChatColor chat;
-	private DyeColor dye;
-	private @Nullable Adjective adjective;
+	private final ChatColor chat;
+	private final DyeColor dye;
+	private final Adjective adjective;
 	private final int alpha, red, green, blue;
 	
 	SkriptColor(DyeColor dye, ChatColor chat) {
@@ -110,7 +110,7 @@ public enum SkriptColor implements Color {
 		return "" + chat;
 	}
 
-	public @Nullable Adjective getAdjective() {
+	public Adjective getAdjective() {
 		return adjective;
 	}
 	

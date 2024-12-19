@@ -3,10 +3,11 @@ package org.skriptlang.skript.misc.colors;
 import ch.njol.skript.util.Color;
 import ch.njol.skript.util.ColorRGB;
 import ch.njol.skript.util.SkriptColor;
+import ch.njol.util.Math2;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Utility class for colour manipulation and conversion.
+ * Utility class for color manipulation and conversion.
  */
 public class ColorUtils {
 
@@ -113,7 +114,7 @@ public class ColorUtils {
 			red = green = blue = lightness;
 		} else {
 			// higherBound and lowerBound define two boundary colors
-			float lowerBound = lightness < 0.5f ? lightness * (1f + saturation) : lightness + saturation - lightness * saturation;
+			float lowerBound = lightness < 0.5f ? lightness * (1f + saturation) : (lightness + saturation) - (lightness * saturation);
 			float higherBound = 2f * lightness - lowerBound;
 			red = hueToRgb(higherBound, lowerBound, hue + 1f / 3f);
 			green = hueToRgb(higherBound, lowerBound, hue);
@@ -160,7 +161,7 @@ public class ColorUtils {
 	 */
 	public static @NotNull Color blendColors(@NotNull Color c1, @NotNull Color c2, double amount) {
 		// amount is a percentage (clamp then normalize to between 0 and 1)
-		amount = Math.max(0, Math.min(100, amount)) / 100.0;
+		amount = Math2.fit(0, amount, 100) / 100.0;
 
 		// linearly interpolate each channel
 		int r = (int) (c1.getRed() * (1 - amount) + c2.getRed() * amount);
@@ -206,7 +207,7 @@ public class ColorUtils {
 	 */
 	public static @NotNull ColorRGB shadeColor(@NotNull Color color, int amount) {
 		// reducing the channel values darkens the color
-		amount = Math.max(1, Math.min(100, amount));
+		amount = Math2.fit(1, amount, 100);
 		double factor = (100 - amount) / 100.0;
 		int r = (int) (color.getRed() * factor);
 		int g = (int) (color.getGreen() * factor);
@@ -223,7 +224,7 @@ public class ColorUtils {
 	 */
 	public static @NotNull ColorRGB shadeColorHSL(@NotNull Color color, int amount) {
 		// reducing the lightness to shade
-		amount = Math.max(1, Math.min(100, amount));
+		amount = Math2.fit(1, amount, 100);
 		float[] hsl = rgbToHsl(color);
 		hsl[2] *= (100 - amount) / 100f;
 		return hslToRgb(hsl);
@@ -238,7 +239,7 @@ public class ColorUtils {
 	 */
 	public static @NotNull ColorRGB tintColor(@NotNull Color color, int amount) {
 		// move each channel closer to 255 to lighten the colour
-		amount = Math.max(1, Math.min(100, amount));
+		amount = Math2.fit(1, amount, 100);
 		double factor = amount / 100.0;
 		int r = (int) (color.getRed() + (255 - color.getRed()) * factor);
 		int g = (int) (color.getGreen() + (255 - color.getGreen()) * factor);
@@ -255,7 +256,7 @@ public class ColorUtils {
 	 */
 	public static @NotNull ColorRGB tintColorHSL(@NotNull Color color, int amount) {
 		// increasing the lightness (towards 1) to tint
-		amount = Math.max(1, Math.min(100, amount));
+		amount = Math2.fit(1, amount, 100);
 		float[] hsl = rgbToHsl(color);
 		hsl[2] += (1f - hsl[2]) * (amount / 100f);
 		hsl[2] = Math.min(1f, hsl[2]);
@@ -288,7 +289,7 @@ public class ColorUtils {
 	 */
 	public static @NotNull ColorRGB adjustBrightness(@NotNull Color color, int amount) {
 		// adjust brightness by scaling brightness directly (shocking ik)
-		amount = Math.max(-100, Math.min(100, amount));
+		amount = Math2.fit(-100, amount, 100);
 		float[] hsb = rgbToHsb(color);
 		float factor = amount / 100f;
 		hsb[2] = hsb[2] + hsb[2] * factor;
@@ -326,7 +327,8 @@ public class ColorUtils {
 				hue = ((r - g) / delta) + 4f;
 			}
 			hue *= 60f;
-			if (hue < 0f) hue += 360f;
+			if (hue < 0f)
+				hue += 360f;
 		}
 		hue /= 360f;
 		return new float[]{ hue, saturation, max};
@@ -351,18 +353,36 @@ public class ColorUtils {
 
 		// assign rgb values based on sector
 		switch (hueSector % 6) {
-			case 0:
-				red = brightness; green = hueOffset; blue = lowerBound; break;
-			case 1:
-				red = higherBound; green = brightness; blue = lowerBound; break;
-			case 2:
-				red = lowerBound; green = brightness; blue = hueOffset; break;
-			case 3:
-				red = lowerBound; green = higherBound; blue = brightness; break;
-			case 4:
-				red = hueOffset; green = lowerBound; blue = brightness; break;
-			case 5:
-				red = brightness; green = lowerBound; blue = higherBound; break;
+			case 0 -> {
+				red = brightness;
+				green = hueOffset;
+				blue = lowerBound;
+			}
+			case 1 -> {
+				red = higherBound;
+				green = brightness;
+				blue = lowerBound;
+			}
+			case 2 -> {
+				red = lowerBound;
+				green = brightness;
+				blue = hueOffset;
+			}
+			case 3 -> {
+				red = lowerBound;
+				green = higherBound;
+				blue = brightness;
+			}
+			case 4 -> {
+				red = hueOffset;
+				green = lowerBound;
+				blue = brightness;
+			}
+			case 5 -> {
+				red = brightness;
+				green = lowerBound;
+				blue = higherBound;
+			}
 		}
 		int r = Math.round(red * 255f);
 		int g = Math.round(green * 255f);
@@ -378,7 +398,7 @@ public class ColorUtils {
 	 */
 	public static @NotNull ColorRGB toGrayscale(@NotNull Color color) {
 		// weighted average simulates human perception
-		int gray = (int)(0.299 * color.getRed() + 0.587 * color.getGreen() + 0.114 * color.getBlue());
+		int gray = (int) (0.299 * color.getRed() + 0.587 * color.getGreen() + 0.114 * color.getBlue());
 		return ColorRGB.fromRGBA(gray, gray, gray, color.getAlpha());
 	}
 
@@ -413,8 +433,8 @@ public class ColorUtils {
 		// increasing red and decreasing blue 'warms' the color, opposite cools
 		int r = color.getRed() + amount;
 		int b = color.getBlue() - amount;
-		r = Math.max(0, Math.min(255, r));
-		b = Math.max(0, Math.min(255, b));
+		r = Math2.fit(0, r, 255);
+		b = Math2.fit(0, b, 255);
 		return ColorRGB.fromRGBA(r, color.getGreen(), b, color.getAlpha());
 	}
 
