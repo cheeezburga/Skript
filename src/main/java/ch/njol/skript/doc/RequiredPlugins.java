@@ -16,6 +16,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface RequiredPlugins {
 
-    String[] value();
+	String[] value();
 
 }
