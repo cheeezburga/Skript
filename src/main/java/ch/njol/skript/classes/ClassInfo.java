@@ -30,7 +30,7 @@ import org.skriptlang.skript.lang.experiment.LifeCycle;
  */
 @SuppressFBWarnings("DM_STRING_VOID_CTOR")
 public class ClassInfo<T> implements Debuggable {
-	
+
 	private final Class<T> c;
 	private final String codeName;
 	private final Noun name;
@@ -66,7 +66,7 @@ public class ClassInfo<T> implements Debuggable {
 	 * Overrides documentation id assigned from class name.
 	 */
 	private @Nullable String documentationId = null;
-	
+
 	/**
 	 * @param c The class
 	 * @param codeName The name used in patterns
@@ -78,7 +78,7 @@ public class ClassInfo<T> implements Debuggable {
 		this.codeName = codeName;
 		name = new Noun("types." + codeName);
 	}
-	
+
 	/**
 	 * Incorrect spelling in method name. This will be removed in the future.
 	 */
@@ -86,13 +86,13 @@ public class ClassInfo<T> implements Debuggable {
 	public static boolean isVaildCodeName(final String name) {
 		return isValidCodeName(name);
 	}
-	
+
 	public static boolean isValidCodeName(final String name) {
-		return name.matches("[a-z0-9]+");
+		return name.matches("(?:any-)?[a-z0-9]+");
 	}
-	
+
 	// === FACTORY METHODS ===
-	
+
 	/**
 	 * @param parser A parser to parse values of this class or null if not applicable
 	 */
@@ -101,7 +101,7 @@ public class ClassInfo<T> implements Debuggable {
 		this.parser = parser;
 		return this;
 	}
-	
+
 	/**
 	 * @param cloner A {@link Cloner} to clone values when setting variables
 	 *                  or passing function arguments.
@@ -111,7 +111,7 @@ public class ClassInfo<T> implements Debuggable {
 		this.cloner = cloner;
 		return this;
 	}
-	
+
 	/**
 	 * @param userInputPatterns <u>Regex</u> patterns to match this class, e.g. in the expressions loop-[type], random [type] out of ..., or as command arguments. These patterns
 	 *            must be english and match singular and plural.
@@ -126,7 +126,7 @@ public class ClassInfo<T> implements Debuggable {
 		}
 		return this;
 	}
-	
+
 	/**
 	 * @param defaultExpression The default (event) value of this class or null if not applicable
 	 * @see EventValueExpression
@@ -174,7 +174,7 @@ public class ClassInfo<T> implements Debuggable {
 		serializer.register(this);
 		return this;
 	}
-	
+
 	public ClassInfo<T> serializeAs(final Class<?> serializeAs) {
 		assert this.serializeAs == null;
 		if (serializer != null)
@@ -182,12 +182,12 @@ public class ClassInfo<T> implements Debuggable {
 		this.serializeAs = serializeAs;
 		return this;
 	}
-	
+
 	@Deprecated
 	public ClassInfo<T> changer(final SerializableChanger<? super T> changer) {
 		return changer((Changer<? super T>) changer);
 	}
-	
+
 	public ClassInfo<T> changer(final Changer<? super T> changer) {
 		assert this.changer == null;
 		this.changer = changer;
@@ -208,12 +208,12 @@ public class ClassInfo<T> implements Debuggable {
 		Arithmetics.registerDifference(c, relativeType, math::difference);
 		return this;
 	}
-	
+
 	/**
 	 * Use this as {@link #name(String)} to suppress warnings about missing documentation.
 	 */
 	public final static String NO_DOC = new String();
-	
+
 	/**
 	 * Only used for Skript's documentation.
 	 * 
@@ -225,7 +225,7 @@ public class ClassInfo<T> implements Debuggable {
 		this.docName = name;
 		return this;
 	}
-	
+
 	/**
 	 * Only used for Skript's documentation.
 	 * 
@@ -237,7 +237,7 @@ public class ClassInfo<T> implements Debuggable {
 		this.description = description;
 		return this;
 	}
-	
+
 	/**
 	 * Only used for Skript's documentation.
 	 * 
@@ -249,7 +249,7 @@ public class ClassInfo<T> implements Debuggable {
 		this.usage = usage;
 		return this;
 	}
-	
+
 	/**
 	 * Only used for Skript's documentation.
 	 * 
@@ -261,7 +261,7 @@ public class ClassInfo<T> implements Debuggable {
 		this.examples = examples;
 		return this;
 	}
-	
+
 	/**
 	 * Only used for Skript's documentation.
 	 * 
@@ -273,7 +273,7 @@ public class ClassInfo<T> implements Debuggable {
 		this.since = since;
 		return this;
 	}
-	
+
 	/**
 	 * Other plugin dependencies for this ClassInfo.
 	 *
@@ -320,17 +320,17 @@ public class ClassInfo<T> implements Debuggable {
 		this.documentationId = id;
 		return this;
 	}
-	
+
 	// === GETTERS ===
-	
+
 	public Class<T> getC() {
 		return c;
 	}
-	
+
 	public Noun getName() {
 		return name;
 	}
-	
+
 	public String getCodeName() {
 		return codeName;
 	}
@@ -346,7 +346,7 @@ public class ClassInfo<T> implements Debuggable {
 	public @Nullable Cloner<? extends T> getCloner() {
 		return cloner;
 	}
-	
+
 	/**
 	 * Clones the given object using {@link ClassInfo#cloner},
 	 * returning the given object if no {@link Cloner} is registered.
@@ -441,12 +441,12 @@ public class ClassInfo<T> implements Debuggable {
 	public boolean hasDocs() {
 		return getDocName() != null && !ClassInfo.NO_DOC.equals(getDocName());
 	}
-	
+
 	// === ORDERING ===
 
 	private @Nullable Set<String> before;
 	private final Set<String> after = new HashSet<>();
-	
+
 	/**
 	 * Sets one or more classes that this class should occur before in the class info list. This only affects the order in which classes are parsed if it's unknown of which type
 	 * the parsed string is.
@@ -454,7 +454,7 @@ public class ClassInfo<T> implements Debuggable {
 	 * Please note that subclasses will always be registered before superclasses, no matter what is defined here or in {@link #after(String...)}.
 	 * <p>
 	 * This list can safely contain classes that may not exist.
-	 * 
+	 *
 	 * @param before
 	 * @return this ClassInfo
 	 */
@@ -463,7 +463,7 @@ public class ClassInfo<T> implements Debuggable {
 		this.before = new HashSet<>(Arrays.asList(before));
 		return this;
 	}
-	
+
 	/**
 	 * Sets one or more classes that this class should occur after in the class info list. This only affects the order in which classes are parsed if it's unknown of which type
 	 * the parsed string is.
@@ -471,7 +471,7 @@ public class ClassInfo<T> implements Debuggable {
 	 * Please note that subclasses will always be registered before superclasses, no matter what is defined here or in {@link #before(String...)}.
 	 * <p>
 	 * This list can safely contain classes that may not exist.
-	 * 
+	 *
 	 * @param after
 	 * @return this ClassInfo
 	 */
@@ -479,37 +479,37 @@ public class ClassInfo<T> implements Debuggable {
 		this.after.addAll(Arrays.asList(after));
 		return this;
 	}
-	
+
 	/**
 	 * @return Set of classes that should be after this one. May return null.
 	 */
 	public @Nullable Set<String> before() {
 		return before;
 	}
-	
+
 	/**
 	 * @return Set of classes that should be before this one. Never returns null.
 	 */
 	public Set<String> after() {
 		return after;
 	}
-	
+
 	// === GENERAL ===
-	
+
 	@Override
 	public @NotNull String toString() {
 		return getName().getSingular();
 	}
-	
+
 	public String toString(final int flags) {
 		return getName().toString(flags);
 	}
-	
+
 	@Override
 	public @NotNull String toString(@Nullable Event event, boolean debug) {
 		if (debug)
 			return codeName + " (" + c.getCanonicalName() + ")";
 		return getName().getSingular();
 	}
-	
+
 }
