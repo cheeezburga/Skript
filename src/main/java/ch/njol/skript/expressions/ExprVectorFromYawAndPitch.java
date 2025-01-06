@@ -23,27 +23,28 @@ import static ch.njol.skript.expressions.ExprYawPitch.fromYawAndPitch;
 @Since("2.2-dev28")
 public class ExprVectorFromYawAndPitch extends SimpleExpression<Vector> {
 
-	private static final double DEG_TO_RAD = Math.PI / 180;
-
 	static {
 		Skript.registerExpression(ExprVectorFromYawAndPitch.class, Vector.class, ExpressionType.COMBINED,
 			"[a] [new] vector (from|with) yaw %number% and pitch %number%",
 			"[a] [new] vector (from|with) pitch %number% and yaw %number%");
 	}
 
-	@SuppressWarnings("null")
 	private Expression<Number> pitch, yaw;
 
 	@Override
-	@SuppressWarnings({"unchecked", "null"})
+	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		yaw = (Expression<Number>) exprs[0];
-		pitch = (Expression<Number>) exprs[1];
+		if (matchedPattern == 0) {
+			yaw = (Expression<Number>) exprs[0];
+			pitch = (Expression<Number>) exprs[1];
+		} else {
+			yaw = (Expression<Number>) exprs[1];
+			pitch = (Expression<Number>) exprs[0];
+		}
 		return true;
 	}
 
 	@Override
-	@SuppressWarnings("null")
 	protected Vector[] get(Event event) {
 		Number skriptYaw = yaw.getSingle(event);
 		Number skriptPitch = pitch.getSingle(event);
