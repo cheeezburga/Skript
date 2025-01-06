@@ -57,6 +57,22 @@ public interface RuntimeErrorProducer {
 	}
 
 	/**
+	 * Dispatches a runtime error with the given text and highlighting.
+	 * Metadata will be provided along with the message, including line number, the docs name of the producer,
+	 * and the line content.
+	 * <br>
+	 * Implementations should ensure they call super() to print the error.
+	 *
+	 * @param message The text to display as the error message.
+	 * @param highlight The text to highlight in the error message.
+	 */
+	default void error(String message, String highlight) {
+		getRuntimeErrorManager().error(
+			new RuntimeError(Level.SEVERE, getErrorSource(), message, highlight)
+		);
+	}
+
+	/**
 	 * Dispatches a runtime warning with the given text.
 	 * Metadata will be provided along with the message, including line number, the docs name of the producer,
 	 * and the line content.
@@ -68,6 +84,22 @@ public interface RuntimeErrorProducer {
 	default void warning(String message) {
 		getRuntimeErrorManager().error(
 			new RuntimeError(Level.WARNING, getErrorSource(), message, toHighlight())
+		);
+	}
+
+	/**
+	 * Dispatches a runtime warning with the given text and highlighting.
+	 * Metadata will be provided along with the message, including line number, the docs name of the producer,
+	 * and the line content.
+	 * <br>
+	 * Implementations should ensure they call super() to print the warning.
+	 *
+	 * @param message The text to display as the error message.
+	 * @param highlight The text to highlight in the error message.
+	 */
+	default void warning(String message, String highlight) {
+		getRuntimeErrorManager().error(
+			new RuntimeError(Level.WARNING, getErrorSource(), message, highlight)
 		);
 	}
 
