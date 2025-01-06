@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static ch.njol.skript.expressions.ExprYawPitch.fromYawAndPitch;
 
-@Name("Vectors - Vector from Pitch and Yaw")
+@Name("Vectors - Vector from Yaw and Pitch")
 @Description("Creates a vector from a yaw and pitch value.")
 @Examples("set {_v} to vector from yaw 45 and pitch 45")
 @Since("2.2-dev28")
