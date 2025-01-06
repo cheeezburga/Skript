@@ -23,10 +23,9 @@ import org.jetbrains.annotations.Nullable;
 public class EffInvisible extends Effect {
 
 	static {
-		if (Skript.methodExists(LivingEntity.class, "isInvisible"))
-			Skript.registerEffect(EffInvisible.class,
-				"make %livingentities% (invisible|not visible)",
-				"make %livingentities% (visible|not invisible)");
+		Skript.registerEffect(EffInvisible.class,
+			"make %livingentities% (invisible|not visible)",
+			"make %livingentities% (visible|not invisible)");
 	}
 
 	private boolean invisible;

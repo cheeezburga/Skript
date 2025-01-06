@@ -5,14 +5,12 @@ import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.bukkitutil.DamageUtils;
 import ch.njol.skript.bukkitutil.HealthUtils;
 import ch.njol.skript.bukkitutil.ItemUtils;
-import ch.njol.skript.doc.Description;
-import ch.njol.skript.doc.Examples;
-import ch.njol.skript.doc.Name;
-import ch.njol.skript.doc.RequiredPlugins;
-import ch.njol.skript.doc.Since;
+import ch.njol.skript.config.Node;
+import ch.njol.skript.doc.*;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.skript.lang.SyntaxStringBuilder;
 import ch.njol.skript.util.slot.Slot;
 import ch.njol.util.Kleenean;
 import ch.njol.util.Math2;
@@ -22,6 +20,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
+import org.skriptlang.skript.log.runtime.SyntaxRuntimeErrorProducer;
 
 @Name("Damage/Heal/Repair")
 @Description({
@@ -36,7 +35,8 @@ import org.jetbrains.annotations.UnknownNullability;
 })
 @Since("1.0, 2.10 (damage cause)")
 @RequiredPlugins("Spigot 1.20.4+ (for damage cause)")
-public class EffHealth extends Effect {
+public class EffHealth extends Effect implements SyntaxRuntimeErrorProducer {
+
 	private static final boolean SUPPORTS_DAMAGE_SOURCE = Skript.classExists("org.bukkit.damage.DamageSource");
 
 	static {
@@ -46,6 +46,7 @@ public class EffHealth extends Effect {
 			"repair %itemtypes/slots% [by %-number%]");
 	}
 
+	private Node node;
 	private Expression<?> damageables;
 	private @UnknownNullability Expression<Number> amount;
 	private boolean isHealing, isRepairing;
@@ -58,7 +59,7 @@ public class EffHealth extends Effect {
 			Skript.error("Using the fake cause extension in effect 'damage' requires Spigot 1.20.4+");
 			return false;
 		}
-
+		this.node = getParser().getNode();
 		this.damageables = exprs[0];
 		this.isHealing = matchedPattern >= 1;
 		this.isRepairing = matchedPattern == 2;
@@ -73,8 +74,10 @@ public class EffHealth extends Effect {
 		double amount = 0;
 		if (this.amount != null) {
 			Number amountPostCheck = this.amount.getSingle(event);
-			if (amountPostCheck == null)
+			if (amountPostCheck == null) {
+				error("The " + getPatternType() + " amount was null.");
 				return;
+			}
 			amount = amountPostCheck.doubleValue();
 		}
 
@@ -90,8 +93,10 @@ public class EffHealth extends Effect {
 			} else if (obj instanceof Slot slot) {
 				ItemStack itemStack = slot.getItem();
 
-				if (itemStack == null)
+				if (itemStack == null) {
+					warning("The item in the provided slot was null, so skipping over it.");
 					continue;
+				}
 
 				if (this.amount == null) {
 					ItemUtils.setDamage(itemStack, 0);
@@ -112,7 +117,7 @@ public class EffHealth extends Effect {
 						DamageCause cause = exprCause == null ? null : exprCause.getSingle(event);
 						if (cause != null) {
 							HealthUtils.damage(damageable, amount, DamageUtils.getDamageSourceFromCause(cause));
-							return;
+							return; // is this right?
 						}
 					}
 					HealthUtils.damage(damageable, amount);
@@ -123,16 +128,28 @@ public class EffHealth extends Effect {
 	}
 
 	@Override
+	public Node getNode() {
+		return this.node;
+	}
+
+	@Override
+	public @Nullable String toHighlight() {
+		return amount.toString(null, false);
+	}
+
+	private String getPatternType() {
+		return isRepairing ? "repair" : isHealing ? "heal" : "damage";
+	}
+
+	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		String prefix = "damage ";
-		if (isRepairing) {
-			prefix = "repair ";
-		} else if (isHealing) {
-			prefix = "heal ";
-		}
-		return prefix + damageables.toString(event, debug)
-				   + (amount != null ? " by " + amount.toString(event, debug) : "")
-				   + (exprCause != null && event != null ? " with damage cause " + exprCause.getSingle(event) : "");
+		SyntaxStringBuilder builder = new SyntaxStringBuilder(event, debug)
+			.append(getPatternType(), damageables);
+		if (amount != null)
+			builder.append("by", amount);
+		if (exprCause != null && event != null)
+			builder.append("with damage cause", exprCause);
+		return builder.toString();
 	}
 
 }

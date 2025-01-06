@@ -45,9 +45,8 @@ public class EffHandedness extends Effect {
 	@Override
 	protected void execute(Event event) {
 		for (LivingEntity livingEntity : livingEntities.getArray(event)) {
-			if (livingEntity instanceof Mob) {
+			if (livingEntity instanceof Mob)
 				((Mob) livingEntity).setLeftHanded(leftHanded);
-			}
 		}
 	}
 
