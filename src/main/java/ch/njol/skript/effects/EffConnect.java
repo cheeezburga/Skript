@@ -1,9 +1,7 @@
 package ch.njol.skript.effects;
 
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-
 import ch.njol.skript.Skript;
+import ch.njol.skript.config.Node;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
@@ -11,9 +9,13 @@ import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.skript.lang.SyntaxStringBuilder;
 import ch.njol.skript.util.Utils;
 import ch.njol.util.Kleenean;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.log.runtime.SyntaxRuntimeErrorProducer;
 
 @Name("Connect")
 @Description({
@@ -28,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 	"transfer player to server \"localhost\" on port 25566"
 })
 @Since("2.3, 2.10 (transfer)")
-public class EffConnect extends Effect {
+public class EffConnect extends Effect implements SyntaxRuntimeErrorProducer {
 
 	public static final String BUNGEE_CHANNEL = "BungeeCord";
 	public static final String GET_SERVERS_CHANNEL = "GetServers";
@@ -42,13 +44,16 @@ public class EffConnect extends Effect {
 		);
 	}
 
+	private Node node;
 	private Expression<Player> players;
 	private Expression<String> server;
 	private Expression<Number> port;
 	private boolean transfer;
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
+		node = getParser().getNode();
 		players = (Expression<Player>) exprs[0];
 		server = (Expression<String>) exprs[1];
 		transfer = matchedPattern == 1;
@@ -70,24 +75,27 @@ public class EffConnect extends Effect {
 			.filter(Player::isOnline)
 			.toArray(Player[]::new);
 
-		if (server == null || players.length == 0)
+		if (server == null) {
+			error("The server to transfer players to, " + this.server.toString(null, false) + ", was null.");
 			return;
+		}
+		if (players.length == 0) {
+			error("At least 1 valid player must be included to transfer.");
+			return;
+		}
 
 		if (transfer) {
+			int port = 25565;
 			if (this.port != null) {
 				Number portNum = this.port.getSingle(event);
 				if (portNum == null) {
+					error("The port number, " + toHighlight() + ", was null.");
 					return;
 				}
-				int port = portNum.intValue();
-				for (Player player : players) {
-					player.transfer(server, port);
-				}
-			} else {
-				int defaultPort = 25565;
-				for (Player player : players) {
-					player.transfer(server, defaultPort);
-				}
+				port = portNum.intValue();
+			}
+			for (Player player : players) {
+				player.transfer(server, port);
 			}
 		} else {
 			// the message channel is case-sensitive, so let's fix that
@@ -106,13 +114,26 @@ public class EffConnect extends Effect {
 	}
 
 	@Override
+	public Node getNode() {
+		return this.node;
+	}
+
+	@Override
+	public @Nullable String toHighlight() {
+		// TODO come back to this. will only highlight in the server runtime error, not the port one
+		return this.server.toString(null, false);
+	}
+
+	@Override
 	public String toString(@Nullable Event event, boolean debug) {
+		SyntaxStringBuilder builder = new SyntaxStringBuilder(event, debug);
 		if (transfer) {
-			String portString = port != null ? " on port " + port.toString(event, debug) : "";
-			return "transfer " + players.toString(event, debug) + " to server " + server.toString(event, debug) + portString;
+			builder.append("transfer", players, "to server", server)
+				   .append(port == null ? "" : "on port" + port.toString(event, debug));
 		} else {
-			return "connect " + players.toString(event, debug) + " to proxy server " + server.toString(event, debug);
+			builder.append("connect", players, "to proxy server", server);
 		}
+		return builder.toString();
 	}
 
 }

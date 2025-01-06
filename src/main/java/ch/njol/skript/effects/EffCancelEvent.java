@@ -25,27 +25,28 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.jetbrains.annotations.Nullable;
 
 @Name("Cancel Event")
-@Description("Cancels the event (e.g. prevent blocks from being placed, or damage being taken).")
+@Description("Cancels an event (e.g. prevent blocks from being placed, or damage being taken).")
 @Examples({
 	"on damage:",
-		"\tvictim is a player",
-		"\tvictim has the permission \"skript.god\"",
-		"\tcancel the event"
+		"\tif victim is a player:",
+			"\t\tif victim has the permission \"skript.god\"",
+				"\t\t\tcancel the event"
 })
 @Since("1.0")
 public class EffCancelEvent extends Effect {
 
 	static {
-		Skript.registerEffect(EffCancelEvent.class, "cancel [the] event", "uncancel [the] event");
+		Skript.registerEffect(EffCancelEvent.class,
+			"cancel [the] event",
+			"uncancel [the] event");
 	}
 	
 	private boolean cancel;
 
 	@Override
-	public boolean init(Expression<?>[] expressions, int matchedPattern,
-						Kleenean isDelayed, ParseResult parseResult) {
+	public boolean init(Expression<?>[] expressions, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		if (isDelayed == Kleenean.TRUE) {
-			Skript.error("An event cannot be cancelled after it has already passed", ErrorQuality.SEMANTIC_ERROR);
+			Skript.error("An event cannot be cancelled after it has already passed.", ErrorQuality.SEMANTIC_ERROR);
 			return false;
 		}
 
@@ -65,27 +66,28 @@ public class EffCancelEvent extends Effect {
 				return true; // TODO warning if some event(s) cannot be cancelled even though some can (needs a way to be suppressed)
 		}
 
-		if (getParser().isCurrentEvent(PlayerLoginEvent.class))
+		if (getParser().isCurrentEvent(PlayerLoginEvent.class)) {
 			Skript.error("A connect event cannot be cancelled, but the player may be kicked ('kick player by reason of \"...\"')", ErrorQuality.SEMANTIC_ERROR);
-		else
+		} else {
 			Skript.error(Utils.A(getParser().getCurrentEventName()) + " event cannot be cancelled", ErrorQuality.SEMANTIC_ERROR);
+		}
 		return false;
 	}
 	
 	@Override
 	public void execute(Event event) {
-		if (event instanceof Cancellable)
-			((Cancellable) event).setCancelled(cancel);
-		if (event instanceof PlayerInteractEvent) {
+		if (event instanceof Cancellable cancellable)
+			cancellable.setCancelled(cancel);
+		if (event instanceof PlayerInteractEvent playerInteractEvent) {
 			EvtClick.interactTracker.eventModified((Cancellable) event);
-			((PlayerInteractEvent) event).setUseItemInHand(cancel ? Event.Result.DENY : Event.Result.DEFAULT);
-			((PlayerInteractEvent) event).setUseInteractedBlock(cancel ? Event.Result.DENY : Event.Result.DEFAULT);
-		} else if (event instanceof BlockCanBuildEvent) {
-			((BlockCanBuildEvent) event).setBuildable(!cancel);
-		} else if (event instanceof PlayerDropItemEvent) {
-			PlayerUtils.updateInventory(((PlayerDropItemEvent) event).getPlayer());
-		} else if (event instanceof InventoryInteractEvent) {
-			PlayerUtils.updateInventory(((Player) ((InventoryInteractEvent) event).getWhoClicked()));
+			playerInteractEvent.setUseItemInHand(cancel ? Event.Result.DENY : Event.Result.DEFAULT);
+			playerInteractEvent.setUseInteractedBlock(cancel ? Event.Result.DENY : Event.Result.DEFAULT);
+		} else if (event instanceof BlockCanBuildEvent blockCanBuildEvent) {
+			blockCanBuildEvent.setBuildable(!cancel);
+		} else if (event instanceof PlayerDropItemEvent playerDropItemEvent) {
+			PlayerUtils.updateInventory(playerDropItemEvent.getPlayer());
+		} else if (event instanceof InventoryInteractEvent inventoryInteractEvent) {
+			PlayerUtils.updateInventory(((Player) inventoryInteractEvent.getWhoClicked()));
 		}
 	}
 	

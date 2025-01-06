@@ -6,6 +6,7 @@ import ch.njol.skript.expressions.ExprHiddenPlayers;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.skript.lang.SyntaxStringBuilder;
 import ch.njol.util.Kleenean;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
@@ -43,11 +44,8 @@ public class EffEntityVisibility extends Effect {
 	}
 
 	private boolean reveal;
-
-	@UnknownNullability
-	private Expression<Entity> hidden;
-	@UnknownNullability
-	private Expression<Player> viewers;
+	private @UnknownNullability Expression<Entity> hidden;
+	private @UnknownNullability Expression<Player> viewers;
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -86,10 +84,9 @@ public class EffEntityVisibility extends Effect {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return (reveal ? "reveal " : "hide ") + "entities " +
-				hidden.toString(event, debug) +
-				(reveal ? " to " : " from ") +
-				viewers.toString(event, debug);
+		return new SyntaxStringBuilder(event, debug)
+			.append(reveal ? "reveal" : "hide", hidden, reveal ? "to" : "from", viewers)
+			.toString();
 	}
 
 }

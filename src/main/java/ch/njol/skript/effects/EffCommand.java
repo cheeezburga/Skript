@@ -1,11 +1,5 @@
 package ch.njol.skript.effects;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.jetbrains.annotations.Nullable;
-
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
@@ -14,10 +8,16 @@ import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.skript.lang.SyntaxStringBuilder;
 import ch.njol.skript.lang.VariableString;
 import ch.njol.skript.util.StringMode;
 import ch.njol.skript.util.Utils;
 import ch.njol.util.Kleenean;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.jetbrains.annotations.Nullable;
 
 @Name("Command")
 @Description({
@@ -71,7 +71,7 @@ public class EffCommand extends Effect {
 		for (String command : commands.getArray(event)) {
 			assert command != null;
 			if (command.startsWith("/"))
-				command = "" + command.substring(1);
+				command = command.substring(1);
 			if (senders != null) {
 				for (CommandSender sender : senders.getArray(event)) {
 					if (bungeecord) {
@@ -91,7 +91,11 @@ public class EffCommand extends Effect {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return "make " + (senders != null ? senders.toString(event, debug) : "the console") + " execute " + (bungeecord ? "bungeecord " : "") + "command " + commands.toString(event, debug);
+		return new SyntaxStringBuilder(event, debug)
+			.append("make")
+			.append(senders == null ? "the console" : senders)
+			.append("execute", bungeecord ? "bungeecord" : "", "command", commands)
+			.toString();
 	}
 
 }

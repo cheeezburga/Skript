@@ -4,6 +4,7 @@ import ch.njol.skript.Skript;
 import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.classes.Changer.ChangerUtils;
+import ch.njol.skript.config.Node;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
@@ -16,32 +17,33 @@ import ch.njol.util.Kleenean;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.log.runtime.SyntaxRuntimeErrorProducer;
 
 import java.util.function.Function;
 
-/**
- * @author Peter Güttinger
- */
 @Name("Enchant/Disenchant")
 @Description("Enchant or disenchant an existing item.")
-@Examples({"enchant the player's tool with sharpness 5",
-		"disenchant the player's tool"})
+@Examples({
+	"enchant the player's tool with sharpness 5",
+	"disenchant the player's tool"
+})
 @Since("2.0")
-public class EffEnchant extends Effect {
+public class EffEnchant extends Effect implements SyntaxRuntimeErrorProducer {
+
 	static {
 		Skript.registerEffect(EffEnchant.class,
-				"enchant %~itemtypes% with %enchantmenttypes%",
-				"disenchant %~itemtypes%");
+			"enchant %~itemtypes% with %enchantmenttypes%",
+			"disenchant %~itemtypes%");
 	}
-	
-	@SuppressWarnings("null")
+
+	private Node node;
 	private Expression<ItemType> items;
-	@Nullable
-	private Expression<EnchantmentType> enchantments;
+	private @Nullable Expression<EnchantmentType> enchantments;
 	
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
+		node = getParser().getNode();
 		items = (Expression<ItemType>) exprs[0];
 		if (!ChangerUtils.acceptsChange(items, ChangeMode.SET, ItemStack.class)) {
 			Skript.error(items + " cannot be changed, thus it cannot be (dis)enchanted");
@@ -58,8 +60,10 @@ public class EffEnchant extends Effect {
 
 		if (enchantments != null) {
 			EnchantmentType[] types = enchantments.getArray(event);
-			if (types.length == 0)
+			if (types.length == 0) {
+				error("The enchantments to be applied, " + toHighlight() + ", were null");
 				return;
+			}
 			changeFunction = item -> {
 				item.addEnchantments(types);
 				return item;
@@ -75,8 +79,20 @@ public class EffEnchant extends Effect {
 	}
 
 	@Override
-	public String toString(@Nullable Event event, boolean debug) {
-		return enchantments == null ? "disenchant " + items.toString(event, debug) : "enchant " + items.toString(event, debug) + " with " + enchantments;
+	public Node getNode() {
+		return this.node;
 	}
-	
+
+	@Override
+	public @Nullable String toHighlight() {
+		return this.enchantments == null ? null : this.enchantments.toString(null, false);
+	}
+
+	@Override
+	public String toString(@Nullable Event event, boolean debug) {
+		if (enchantments == null)
+			return "disenchant " + items.toString(event, debug);
+		return "enchant " + items.toString(event, debug) + " with " + enchantments;
+	}
+
 }

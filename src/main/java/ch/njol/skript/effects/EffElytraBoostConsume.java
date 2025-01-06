@@ -1,7 +1,11 @@
 package ch.njol.skript.effects;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.doc.*;
+import ch.njol.skript.doc.Description;
+import ch.njol.skript.doc.Examples;
+import ch.njol.skript.doc.Name;
+import ch.njol.skript.doc.RequiredPlugins;
+import ch.njol.skript.doc.Since;
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
@@ -11,11 +15,11 @@ import org.bukkit.event.Event;
 import org.jetbrains.annotations.Nullable;
 
 @Name("Consume Boosting Firework")
-@Description("Prevent the firework used in an 'elytra boost' event to be consumed.")
+@Description("Prevents the firework used in an 'elytra boost' event from being consumed.")
 @Examples({
 	"on elytra boost:",
 		"\tif the used firework will be consumed:",
-			"\t\tprevent the used firework from being consume"
+			"\t\tprevent the used firework from being consumed"
 })
 @RequiredPlugins("Paper")
 @Since("2.10")
@@ -43,9 +47,8 @@ public class EffElytraBoostConsume extends Effect {
 
 	@Override
 	protected void execute(Event event) {
-		if (!(event instanceof PlayerElytraBoostEvent boostEvent))
-			return;
-		boostEvent.setShouldConsume(consume);
+		if (event instanceof PlayerElytraBoostEvent boostEvent)
+			boostEvent.setShouldConsume(consume);
 	}
 
 	@Override

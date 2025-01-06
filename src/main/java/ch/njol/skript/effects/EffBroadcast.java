@@ -1,12 +1,5 @@
 package ch.njol.skript.effects;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
@@ -35,13 +28,24 @@ import org.bukkit.event.Event;
 import org.bukkit.event.server.BroadcastMessageEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 @Name("Broadcast")
 @Description("Broadcasts a message to the server.")
 @Examples({
 	"broadcast \"Welcome %player% to the server!\"",
 	"broadcast \"Woah! It's a message!\""
 })
-@Since("1.0, 2.6 (broadcasting objects), 2.6.1 (using advanced formatting)")
+@Since({
+	"1.0",
+	"2.6 (broadcasting objects)",
+	"2.6.1 (using advanced formatting)"
+})
 public class EffBroadcast extends Effect {
 
 	private static final Pattern HEX_PATTERN = Pattern.compile("(?i)&x((?:&\\p{XDigit}){6})");
@@ -50,19 +54,17 @@ public class EffBroadcast extends Effect {
 		Skript.registerEffect(EffBroadcast.class, "broadcast %objects% [(to|in) %-worlds%]");
 	}
 
-	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<?> messageExpr;
-	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<?>[] messages;
-	@Nullable
-	private Expression<World> worlds;
+	private @Nullable Expression<World> worlds;
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		messageExpr = LiteralUtils.defendExpression(exprs[0]);
-		messages = messageExpr instanceof ExpressionList ?
-			((ExpressionList<?>) messageExpr).getExpressions() : new Expression[] {messageExpr};
+		messages = messageExpr instanceof ExpressionList
+			? ((ExpressionList<?>) messageExpr).getExpressions()
+			: new Expression[]{messageExpr};
 		worlds = (Expression<World>) exprs[1];
 		return LiteralUtils.canInitSafely(messageExpr);
 	}

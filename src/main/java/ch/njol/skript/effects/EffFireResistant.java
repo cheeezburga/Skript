@@ -30,7 +30,6 @@ public class EffFireResistant extends Effect {
 			Skript.registerEffect(EffFireResistant.class, "make %itemtypes% [:not] (fire resistant|resistant to fire)");
 	}
 
-	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<ItemType> items;
 	private boolean not;
 

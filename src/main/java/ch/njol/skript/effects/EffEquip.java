@@ -1,7 +1,6 @@
 package ch.njol.skript.effects;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.aliases.ItemData;
 import ch.njol.skript.aliases.ItemType;
 import ch.njol.skript.bukkitutil.PlayerUtils;
 import ch.njol.skript.doc.Description;
@@ -106,7 +105,6 @@ public class EffEquip extends Effect {
 				"unequip %livingentities%'[s] (armo[u]r|equipment)");
 	}
 
-	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<LivingEntity> entities;
 	private @UnknownNullability Expression<ItemType> itemTypes;
 

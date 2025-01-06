@@ -46,9 +46,8 @@ public class EffDropLeash extends Effect {
 
 	@Override
 	protected void execute(Event event) {
-		if (!(event instanceof EntityUnleashEvent unleashEvent))
-			return;
-		unleashEvent.setDropLeash(allowLeashDrop);
+		if (event instanceof EntityUnleashEvent unleashEvent)
+			unleashEvent.setDropLeash(allowLeashDrop);
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package ch.njol.skript.effects;
 
 import ch.njol.skript.Skript;
+import ch.njol.skript.config.Node;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
@@ -14,12 +15,13 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.log.runtime.SyntaxRuntimeErrorProducer;
 
 @Name("Update Block")
 @Description({
 	"Updates the blocks by setting them to a selected block",
 	"Using 'without physics' will not send updates to the surrounding blocks of the blocks being set.",
-	"Example: Updating a block next to a sand block in the air 'without physics' will not cause the sand block to fall."
+	"For example, updating a block next to a sand block in the air 'without physics' will not cause the adjacent sand block to fall."
 })
 @Examples({
 	"update {_blocks::*} as gravel",
@@ -28,13 +30,14 @@ import org.jetbrains.annotations.Nullable;
 })
 @Since("2.10")
 // Originally sourced from SkBee by ShaneBee (https://github.com/ShaneBeee/SkBee/blob/master/src/main/java/com/shanebeestudios/skbee/elements/other/effects/EffBlockstateUpdate.java)
-public class EffBlockUpdate extends Effect {
+public class EffBlockUpdate extends Effect implements SyntaxRuntimeErrorProducer {
 
 	static {
 		Skript.registerEffect(EffBlockUpdate.class,
 			"update %blocks% (as|to be) %blockdata% [physics:without [neighbo[u]r[ing]|adjacent] [physic[s]] update[s]]");
 	}
 
+	private Node node;
 	private boolean physics;
 	private Expression<Block> blocks;
 	private Expression<BlockData> blockData;
@@ -42,6 +45,7 @@ public class EffBlockUpdate extends Effect {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
+		this.node = getParser().getNode();
 		this.physics = !parseResult.hasTag("physics");
 		this.blocks = (Expression<Block>) exprs[0];
 		this.blockData = (Expression<BlockData>) exprs[1];
@@ -51,11 +55,23 @@ public class EffBlockUpdate extends Effect {
 	@Override
 	protected void execute(Event event) {
 		BlockData data = this.blockData.getSingle(event);
-		if (data == null)
+		if (data == null) {
+			error("The block data to update to, " + toHighlight() + ", was null.");
 			return;
-		for (Block block : this.blocks.getArray(event)) {
-			block.setBlockData(data, this.physics);
 		}
+
+		for (Block block : this.blocks.getArray(event))
+			block.setBlockData(data, this.physics);
+	}
+
+	@Override
+	public Node getNode() {
+		return this.node;
+	}
+
+	@Override
+	public @Nullable String toHighlight() {
+		return this.blockData.toString(null, false);
 	}
 
 	@Override

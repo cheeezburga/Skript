@@ -30,11 +30,10 @@ public class EffCharge extends Effect {
 				"[:un](charge|power) %entities%");
 	}
 
-	@SuppressWarnings("NotNullFieldNotInitialized")
 	private Expression<Entity> entities;
 	private boolean charge;
 
-	@SuppressWarnings({"unchecked", "null"})
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		entities = (Expression<Entity>) exprs[0];
