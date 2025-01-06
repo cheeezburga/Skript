@@ -27,7 +27,8 @@ public class ExprVectorFromYawAndPitch extends SimpleExpression<Vector> {
 
 	static {
 		Skript.registerExpression(ExprVectorFromYawAndPitch.class, Vector.class, ExpressionType.COMBINED,
-				"[a] [new] vector (from|with) yaw %number% and pitch %number%");
+			"[a] [new] vector (from|with) yaw %number% and pitch %number%",
+			"[a] [new] vector (from|with) pitch %number% and yaw %number%");
 	}
 
 	@SuppressWarnings("null")
