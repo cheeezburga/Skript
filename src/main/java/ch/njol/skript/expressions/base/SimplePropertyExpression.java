@@ -48,11 +48,6 @@ public abstract class SimplePropertyExpression<F, T> extends PropertyExpression<
 		return node;
 	}
 
-	@Override
-	public String toHighlight() {
-		return rawExpr;
-	}
-
 	/**
 	 * Used to collect the property type used in the register method.
 	 * This forms the toString of this SimplePropertyExpression.
