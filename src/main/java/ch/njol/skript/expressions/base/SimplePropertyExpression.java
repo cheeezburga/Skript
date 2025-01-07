@@ -48,6 +48,10 @@ public abstract class SimplePropertyExpression<F, T> extends PropertyExpression<
 		return node;
 	}
 
+	public String getRawExpr() {
+		return rawExpr;
+	}
+
 	/**
 	 * Used to collect the property type used in the register method.
 	 * This forms the toString of this SimplePropertyExpression.
