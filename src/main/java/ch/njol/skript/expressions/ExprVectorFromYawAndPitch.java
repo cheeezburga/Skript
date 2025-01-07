@@ -34,13 +34,8 @@ public class ExprVectorFromYawAndPitch extends SimpleExpression<Vector> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		if (matchedPattern == 0) {
-			yaw = (Expression<Number>) exprs[0];
-			pitch = (Expression<Number>) exprs[1];
-		} else {
-			yaw = (Expression<Number>) exprs[1];
-			pitch = (Expression<Number>) exprs[0];
-		}
+		pitch = (Expression<Number>) exprs[matchedPattern ^ 1];
+		yaw = (Expression<Number>) exprs[matchedPattern];
 		return true;
 	}
 
