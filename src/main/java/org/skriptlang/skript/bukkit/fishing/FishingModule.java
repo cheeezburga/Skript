@@ -25,7 +25,8 @@ public class FishingModule implements AddonModule {
 		ExprFishingApproachAngle.register(registry);
 		ExprFishingBiteTime.register(registry);
 		ExprFishingHook.register(registry);
-
+		ExprFishingHookEntity.register(registry);
+		ExprFishingWaitTime.register(registry);
 	}
 
 }
