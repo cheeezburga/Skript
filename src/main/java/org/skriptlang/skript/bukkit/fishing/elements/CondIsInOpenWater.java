@@ -4,6 +4,7 @@ import ch.njol.skript.conditions.base.PropertyCondition;
 import ch.njol.skript.doc.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FishHook;
+import org.skriptlang.skript.registration.SyntaxRegistry;
 
 @Name("Is Fish Hook in Open Water")
 @Description({
@@ -20,17 +21,14 @@ import org.bukkit.entity.FishHook;
 @Since("2.10")
 public class CondIsInOpenWater extends PropertyCondition<Entity> {
 	
-	static {
-		register(CondIsInOpenWater.class, PropertyType.BE,
+	public static void register(SyntaxRegistry registry) {
+		register(registry, CondIsInOpenWater.class, PropertyType.BE,
 			"in open water[s]", "entities");
 	}
 
 	@Override
 	public boolean check(Entity entity) {
-		if (!(entity instanceof FishHook hook))
-			return false;
-
-		return hook.isInOpenWater();
+		return entity instanceof FishHook hook && hook.isInOpenWater();
 	}
 
 	@Override
