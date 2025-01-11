@@ -4,6 +4,7 @@ import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.config.Node;
 import ch.njol.skript.doc.*;
+import ch.njol.skript.expressions.base.EventValueExpression;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
@@ -35,9 +36,10 @@ public class ExprFishingApproachAngle extends SimpleExpression<Float> implements
 	private static final float DEFAULT_MAXIMUM_DEGREES = 360;
 
 	public static void register(SyntaxRegistry registry) {
-		registry.register(SyntaxRegistry.EXPRESSION, SyntaxInfo.Expression.builder(ExprFishingApproachAngle.class, Float.class)
+		registry.register(SyntaxRegistry.EXPRESSION, SyntaxInfo.Expression
+			.builder(ExprFishingApproachAngle.class, Float.class)
 			.addPattern("(min:min[imum]|max[imum]) fish[ing] approach[ing] angle")
-			.priority(SyntaxInfo.SIMPLE)
+			.priority(EventValueExpression.DEFAULT_PRIORITY)
 			.build()
 		);
 	}

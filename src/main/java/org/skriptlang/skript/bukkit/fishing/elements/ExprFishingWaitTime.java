@@ -3,8 +3,8 @@ package org.skriptlang.skript.bukkit.fishing.elements;
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.doc.*;
+import ch.njol.skript.expressions.base.EventValueExpression;
 import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.skript.util.Timespan;
@@ -13,6 +13,8 @@ import org.bukkit.entity.FishHook;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.registration.SyntaxInfo;
+import org.skriptlang.skript.registration.SyntaxRegistry;
 
 @Name("Fishing Wait Time")
 @Description({
@@ -31,9 +33,13 @@ public class ExprFishingWaitTime extends SimpleExpression<Timespan> {
 	private static final int DEFAULT_MINIMUM_TICKS = 5 * 20;
 	private static final int DEFAULT_MAXIMUM_TICKS = 30 * 20;
 
-	static {
-		Skript.registerExpression(ExprFishingWaitTime.class, Timespan.class, ExpressionType.EVENT,
-			"(min:min[imum]|max[imum]) fish[ing] wait[ing] time");
+	public static void register(SyntaxRegistry registry) {
+		registry.register(SyntaxRegistry.EXPRESSION, SyntaxInfo.Expression
+			.builder(ExprFishingWaitTime.class, Timespan.class)
+			.priority(EventValueExpression.DEFAULT_PRIORITY)
+			.addPattern("(min:min[imum]|max[imum]) fish[ing] wait[ing] time")
+			.build()
+		);
 	}
 
 	private boolean isMin;

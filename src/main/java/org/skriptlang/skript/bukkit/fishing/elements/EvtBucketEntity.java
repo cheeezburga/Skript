@@ -1,11 +1,11 @@
 package org.skriptlang.skript.bukkit.fishing.elements;
 
-import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
 import ch.njol.skript.doc.Since;
 import ch.njol.skript.entity.EntityData;
+import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.Literal;
 import ch.njol.skript.lang.SkriptEvent;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
@@ -18,22 +18,26 @@ import org.bukkit.event.player.PlayerBucketEntityEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.bukkit.registration.BukkitRegistryKeys;
+import org.skriptlang.skript.bukkit.registration.BukkitSyntaxInfos;
+import org.skriptlang.skript.registration.SyntaxRegistry;
 
 import java.util.Arrays;
 import java.util.List;
 
-@Name("Bucket Catch Entity")
-@Description("Called when a player catches an entity in a bucket.")
-@Examples({
-	"on bucket catch of a puffer fish:",
-		"\tsend \"You caught a fish with a %future event-item%!\" to player"
-})
-@Since("2.10")
 public class EvtBucketEntity extends SkriptEvent {
 
-	static {
-		Skript.registerEvent("Bucket Catch Entity", EvtBucketEntity.class, PlayerBucketEntityEvent.class,
-			"bucket (catch[ing]|captur(e|ing)) [[of] %-entitydatas%]");
+	public static void register(SyntaxRegistry registry) {
+		registry.register(BukkitRegistryKeys.EVENT, BukkitSyntaxInfos.Event
+			.builder(EvtBucketEntity.class, "Bucket Catch Entity")
+			.addEvent(PlayerBucketEntityEvent.class)
+			.addDescription("Called when a player catches an entity in a bucket.")
+			.addExamples(
+				"on bucket catch of a puffer fish",
+					"\tsend \"You caught a fish with a %future event-item%!\" to player"
+			)
+			.build()
+		);
 
 		EventValues.registerEventValue(PlayerBucketEntityEvent.class, ItemStack.class, PlayerBucketEntityEvent::getOriginalBucket);
 		EventValues.registerEventValue(PlayerBucketEntityEvent.class, ItemStack.class, PlayerBucketEntityEvent::getEntityBucket, EventValues.TIME_FUTURE);

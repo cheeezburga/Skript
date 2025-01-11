@@ -4,6 +4,7 @@ import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer.ChangeMode;
 import ch.njol.skript.config.Node;
 import ch.njol.skript.doc.*;
+import ch.njol.skript.expressions.base.EventValueExpression;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
@@ -35,9 +36,10 @@ public class ExprFishingBiteTime extends SimpleExpression<Timespan> implements S
 
 	public static void register(SyntaxRegistry registry) {
 		if (Skript.methodExists(FishHook.class, "getTimeUntilBite"))
-			registry.register(SyntaxRegistry.EXPRESSION, SyntaxInfo.Expression.builder(ExprFishingBiteTime.class, Timespan.class)
+			registry.register(SyntaxRegistry.EXPRESSION, SyntaxInfo.Expression
+				.builder(ExprFishingBiteTime.class, Timespan.class)
 				.addPattern("fish[ing] bit(e|ing) [wait] time")
-				.priority(SyntaxInfo.SIMPLE)
+				.priority(EventValueExpression.DEFAULT_PRIORITY)
 				.build()
 			);
 	}
