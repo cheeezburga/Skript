@@ -551,11 +551,11 @@ public final class Skript extends JavaPlugin implements Listener {
 			skript.loadModules(
 				new FishingModule(),
 				new InputModule(),
-				new BreedingModule()
+				new BreedingModule(),
+				new FurnaceModule()
 			);
 			DisplayModule.load();
 			TagModule.load();
-			FurnaceModule.load();
 			LootTableModule.load();
 		} catch (final Exception e) {
 			exception(e, "Could not load required .class files: " + e.getLocalizedMessage());
