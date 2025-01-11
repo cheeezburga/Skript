@@ -550,9 +550,9 @@ public final class Skript extends JavaPlugin implements Listener {
 			// todo: become proper module once registry api is merged
 			skript.loadModules(
 				new FishingModule(),
-				new InputModule()
+				new InputModule(),
+				new BreedingModule()
 			);
-			BreedingModule.load();
 			DisplayModule.load();
 			TagModule.load();
 			FurnaceModule.load();
