@@ -2,6 +2,7 @@ package org.skriptlang.skript.bukkit.fishing.elements;
 
 import ch.njol.skript.Skript;
 import ch.njol.skript.classes.Changer.ChangeMode;
+import ch.njol.skript.config.Node;
 import ch.njol.skript.doc.*;
 import ch.njol.skript.expressions.base.EventValueExpression;
 import ch.njol.skript.lang.Expression;
@@ -13,6 +14,7 @@ import org.bukkit.entity.FishHook;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.jetbrains.annotations.Nullable;
+import org.skriptlang.skript.log.runtime.SyntaxRuntimeErrorProducer;
 import org.skriptlang.skript.registration.SyntaxInfo;
 import org.skriptlang.skript.registration.SyntaxRegistry;
 
@@ -28,7 +30,7 @@ import org.skriptlang.skript.registration.SyntaxRegistry;
 })
 @Events("Fishing")
 @Since("2.10")
-public class ExprFishingWaitTime extends SimpleExpression<Timespan> {
+public class ExprFishingWaitTime extends SimpleExpression<Timespan> implements SyntaxRuntimeErrorProducer {
 
 	private static final int DEFAULT_MINIMUM_TICKS = 5 * 20;
 	private static final int DEFAULT_MAXIMUM_TICKS = 30 * 20;
@@ -42,29 +44,33 @@ public class ExprFishingWaitTime extends SimpleExpression<Timespan> {
 		);
 	}
 
+	private Node node;
+	private String expr;
 	private boolean isMin;
 
 	@Override
-	public boolean init(Expression<?>[] expressions, int matchedPattern,
-						Kleenean isDelayed, ParseResult parseResult) {
+	public boolean init(Expression<?>[] expressions, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		if (!getParser().isCurrentEvent(PlayerFishEvent.class)) {
 			Skript.error("The 'fishing wait time' expression can only be used in a fishing event.");
 			return false;
 		}
-
+		node = getParser().getNode();
+		expr = parseResult.expr;
 		isMin = parseResult.hasTag("min");
 		return true;
 	}
 
 	@Override
 	protected Timespan @Nullable [] get(Event event) {
-		if (!(event instanceof PlayerFishEvent fishEvent))
+		if (event instanceof PlayerFishEvent fishEvent) {
+			if (isMin) {
+				return new Timespan[]{new Timespan(Timespan.TimePeriod.TICK, fishEvent.getHook().getMinWaitTime())};
+			}
+			return new Timespan[]{new Timespan(Timespan.TimePeriod.TICK, fishEvent.getHook().getMaxWaitTime())};
+		} else {
+			error("The 'fishing wait time' expression can only be used in a fishing event.", expr);
 			return null;
-
-		if (isMin) {
-			return new Timespan[]{new Timespan(Timespan.TimePeriod.TICK, fishEvent.getHook().getMinWaitTime())};
 		}
-		return new Timespan[]{new Timespan(Timespan.TimePeriod.TICK, fishEvent.getHook().getMaxWaitTime())};
 	}
 
 	@Override
@@ -77,8 +83,10 @@ public class ExprFishingWaitTime extends SimpleExpression<Timespan> {
 
 	@Override
 	public void change(Event event, Object @Nullable [] delta, ChangeMode mode) {
-		if (!(event instanceof PlayerFishEvent fishEvent))
+		if (!(event instanceof PlayerFishEvent fishEvent)) {
+			error("The 'fishing wait time' expression can only be used in a fishing event.", expr);
 			return;
+		}
 
 		FishHook hook = fishEvent.getHook();
 
@@ -119,6 +127,11 @@ public class ExprFishingWaitTime extends SimpleExpression<Timespan> {
 	@Override
 	public Class<? extends Timespan> getReturnType() {
 		return Timespan.class;
+	}
+
+	@Override
+	public Node getNode() {
+		return node;
 	}
 
 	@Override

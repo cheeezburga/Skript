@@ -6,7 +6,6 @@ import ch.njol.skript.config.Node;
 import ch.njol.skript.doc.*;
 import ch.njol.skript.expressions.base.EventValueExpression;
 import ch.njol.skript.lang.Expression;
-import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.skript.util.Timespan;
@@ -16,7 +15,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.jetbrains.annotations.Nullable;
 import org.skriptlang.skript.log.runtime.SyntaxRuntimeErrorProducer;
-import org.skriptlang.skript.registration.DefaultSyntaxInfos;
 import org.skriptlang.skript.registration.SyntaxInfo;
 import org.skriptlang.skript.registration.SyntaxRegistry;
 
