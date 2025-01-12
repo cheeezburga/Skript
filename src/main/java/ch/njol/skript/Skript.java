@@ -105,7 +105,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
@@ -552,9 +551,9 @@ public final class Skript extends JavaPlugin implements Listener {
 				new FishingModule(),
 				new InputModule(),
 				new BreedingModule(),
-				new FurnaceModule()
+				new FurnaceModule(),
+				new DisplayModule()
 			);
-			DisplayModule.load();
 			TagModule.load();
 			LootTableModule.load();
 		} catch (final Exception e) {
