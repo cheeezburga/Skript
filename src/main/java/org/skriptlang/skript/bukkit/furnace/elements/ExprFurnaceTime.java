@@ -109,7 +109,7 @@ public class ExprFurnaceTime extends PropertyExpression<Block, Timespan> impleme
 	protected Timespan @Nullable [] get(Event event, Block[] source) {
 		return get(source, block -> {
 			if (block == null) {
-				error("A block passed through was null.", getExpr().toString());
+				error("A block passed through was not set.", getExpr().toString());
 				return null;
 			}
 

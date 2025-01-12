@@ -102,7 +102,7 @@ public class EffRegisterTag extends Effect implements SyntaxRuntimeErrorProducer
 	protected void execute(Event event) {
 		String name = this.name.getSingle(event);
 		if (name == null) {
-			error("The provided name was null.", this.name.toString());
+			error("The provided name was not set.", this.name.toString());
 			return;
 		}
 
