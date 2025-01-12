@@ -70,9 +70,9 @@ public class DisplayModule implements AddonModule {
 			ExprDisplayBillboard.register(registry);
 			ExprDisplayBrightness.register(registry);
 			ExprDisplayGlowOverride.register(registry);
-			ExprDisplayHeightWidth.register(registry); // TODO test this one, for behaviour and error/warnings
+			ExprDisplayHeightWidth.register(registry);
 			ExprDisplayInterpolation.register(registry);
-			ExprDisplayShadow.register(registry); // TODO this one too
+			ExprDisplayShadow.register(registry);
 			ExprDisplayTeleportDuration.register(registry); // 1.20.4+
 			ExprDisplayTransformationRotation.register(registry);
 			ExprDisplayTransformationScaleTranslation.register(registry);
