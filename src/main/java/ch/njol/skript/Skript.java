@@ -552,9 +552,9 @@ public final class Skript extends JavaPlugin implements Listener {
 				new InputModule(),
 				new BreedingModule(),
 				new FurnaceModule(),
-				new DisplayModule()
+				new DisplayModule(),
+				new TagModule()
 			);
-			TagModule.load();
 			LootTableModule.load();
 		} catch (final Exception e) {
 			exception(e, "Could not load required .class files: " + e.getLocalizedMessage());
