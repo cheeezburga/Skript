@@ -34,10 +34,12 @@ public class CondArmorStandBehaviour extends PropertyCondition<LivingEntity> {
 		}
 	}
 
+	private int pattern;
 	private boolean tick;
 
 	@Override
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
+		pattern = matchedPattern;
 		tick = parseResult.hasTag("tick");
 		return super.init(exprs, matchedPattern, isDelayed, parseResult);
 	}
@@ -51,7 +53,7 @@ public class CondArmorStandBehaviour extends PropertyCondition<LivingEntity> {
 
 	@Override
 	protected PropertyType getPropertyType() {
-		return PropertyType.CAN;
+		return pattern == 0 ? PropertyType.BE : PropertyType.CAN;
 	}
 
 	@Override
