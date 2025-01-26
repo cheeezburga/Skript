@@ -82,7 +82,7 @@ public class ExprColorOf extends PropertyExpression<Object, Color> {
 					return ColorRGB.fromBukkitColor(DisplayData.DEFAULT_BACKGROUND_COLOR);
 				org.bukkit.Color bukkitColor = display.getBackgroundColor();
 				if (bukkitColor == null)
-					return null;
+					return ColorRGB.fromBukkitColor(DisplayData.DEFAULT_BACKGROUND_COLOR);
 				return ColorRGB.fromBukkitColor(bukkitColor);
 			}
 			return getColor(object);
